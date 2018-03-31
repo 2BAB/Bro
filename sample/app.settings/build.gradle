@@ -1,0 +1,14 @@
+apply plugin: 'com.android.library'
+apply plugin: 'bro'
+apply from: '../sample_common.gradle'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation deps.appcompatV7
+    implementation deps.bro
+    annotationProcessor deps.broCompiler
+
+    implementation project(':base.common')
+}
+
+

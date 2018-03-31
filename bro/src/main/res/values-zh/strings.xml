@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_page_not_found">404 未找到该页面</string>
+    <string name="default_page_permission_denied">暂无权限访问该页面</string>
+    <string name="default_page_not_new_instance_method">未接收到页面参数，请检查是否实现了 newInstance(Bundle args) 方法</string>
+    <string name="default_page_unknown_error">未知错误</string>
+</resources>

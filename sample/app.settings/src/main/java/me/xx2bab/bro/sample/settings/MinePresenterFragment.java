@@ -1,0 +1,50 @@
+package me.xx2bab.bro.sample.settings;
+
+import android.app.Fragment;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import me.xx2bab.bro.sample.common.mine.IMinePresenter;
+
+public class MinePresenterFragment extends Fragment implements IMinePresenter {
+
+    private int count = 0;
+    private TextView countView;
+
+    public static IMinePresenter newInstance(Bundle args) {
+        MinePresenterFragment fragment = new MinePresenterFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_mine, container, false);
+        countView = (TextView) view.findViewById(R.id.mine_count);
+        countView.setText(count + "");
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+    }
+
+    @Override
+    public void updateCount() {
+        count++;
+        if (countView != null) {
+            countView.setText(count + "");
+        }
+    }
+}

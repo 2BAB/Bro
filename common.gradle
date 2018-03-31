@@ -1,0 +1,43 @@
+ext {
+    broDevVersion = "0.9.99.1"
+    broLatestReleaseVersion = "0.9.99.1"
+    broMinSdkVersion = 15
+    broTargetSdkVersion = 27
+    broCompileSdkVersion = 27
+    broBuildToolsVersion = '27.0.3'
+    broSourceCompatibilityVersion = JavaVersion.VERSION_1_7
+    broTargetCompatibilityVersion = JavaVersion.VERSION_1_7
+}
+
+// Dependencies
+def supportLibVersion = '27.1.0'
+def deps = [
+
+        // Android
+        androidGradle      : 'com.android.tools.build:gradle:3.0.1',
+
+        // JavaLib
+        javapoet           : 'com.squareup:javapoet:1.7.0',
+        autoService        : 'com.google.auto.service:auto-service:1.0-rc2',
+
+        // Common
+        appcompatV7        : "com.android.support:appcompat-v7:$supportLibVersion",
+        supportV4          : "com.android.support:support-v4:$supportLibVersion",
+        recyclerview       : "com.android.support:recyclerview-v7:$supportLibVersion",
+        design             : "com.android.support:design:$supportLibVersion",
+        fastjson           : 'com.alibaba:fastjson:1.1.55.android',
+
+        // Bro
+        bro              : "me.xx2bab.bro:bro:$broLatestReleaseVersion",
+        broCompiler      : "me.xx2bab.bro:bro-compiler:$broLatestReleaseVersion",
+        broAnnotations   : "me.xx2bab.bro:bro-annotations:$broLatestReleaseVersion",
+        broCommon        : "me.xx2bab.bro:bro-common:$broLatestReleaseVersion",
+
+        broAnnotationsDev: "me.xx2bab.bro:bro-annotations:$broDevVersion",
+        broCommonDev     : "me.xx2bab.bro:bro-common:$broDevVersion",
+
+        // Test
+        junit              : 'junit:junit:4.12'
+
+]
+ext.deps = deps

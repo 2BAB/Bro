@@ -1,0 +1,22 @@
+apply plugin: 'java-library'
+apply from: rootProject.file('publish.gradle')
+apply from: rootProject.file('common.gradle')
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation deps.javapoet
+    implementation deps.autoService
+    implementation deps.fastjson
+
+    if (project.hasProperty('broPublish')) {
+        implementation deps.broAnnotationsDev
+        implementation deps.broCommonDev
+    } else {
+        implementation project(':bro-annotations')
+        implementation project(':bro-common')
+    }
+}
+
+sourceCompatibility = broSourceCompatibilityVersion
+targetCompatibility = broTargetCompatibilityVersion

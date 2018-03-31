@@ -1,0 +1,27 @@
+apply plugin: 'com.android.application'
+apply plugin: 'bro'
+apply from: '../sample_common.gradle'
+
+android {
+    defaultConfig {
+        applicationId "me.xx2bab.bro.sample"
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation deps.appcompatV7
+    implementation deps.supportV4
+    implementation deps.recyclerview
+    implementation deps.design
+    implementation deps.fastjson
+    implementation deps.bro
+    annotationProcessor deps.broCompiler
+
+    implementation project(':app.home')
+    implementation project(':app.settings')
+}
+
+//bro {
+//    isPlugadgetEnabled true
+//}

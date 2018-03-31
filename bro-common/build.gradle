@@ -1,0 +1,11 @@
+apply plugin: 'java-library'
+apply from: rootProject.file('publish.gradle')
+apply from: rootProject.file('common.gradle')
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation deps.fastjson
+}
+
+sourceCompatibility = broSourceCompatibilityVersion
+targetCompatibility = broTargetCompatibilityVersion

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="me.xx2bab.bro.sample.home">
+
+    <application>
+        <activity
+            android:name="me.xx2bab.bro.sample.home.HomeActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="me.xx2bab.bro.sample.home.MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:screenOrientation="portrait"></activity>
+    </application>
+
+</manifest>

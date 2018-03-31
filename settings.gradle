@@ -1,0 +1,13 @@
+if (hasProperty('broPublish')) {
+    include (':' + getProperty('broPublish'))
+}
+
+if (!hasProperty('broPublish')) {
+    include ':bro'
+    include ':bro-compiler'
+    include ':bro-annotations'
+    include ':bro-common'
+    include ':bro-gradle-plugin'
+}
+
+rootProject.name = 'bro-parent'

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="me.xx2bab.bro.sample.settings">
+
+    <application>
+        <activity
+            android:name="me.xx2bab.bro.sample.settings.SettingsActivity"
+            android:theme="@style/Theme.AppCompat.Light">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.VIEW"/>
+                <data
+                    android:host="settings"
+                    android:scheme="broapp" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

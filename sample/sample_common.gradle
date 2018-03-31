@@ -1,0 +1,37 @@
+apply from: rootProject.file('../common.gradle')
+
+android {
+
+    compileSdkVersion broCompileSdkVersion
+    buildToolsVersion broBuildToolsVersion
+
+    defaultConfig {
+        minSdkVersion broMinSdkVersion
+        targetSdkVersion broTargetSdkVersion
+        versionCode 1
+        versionName broDevVersion
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            zipAlignEnabled false
+            versionNameSuffix '-snapshot'
+            buildConfigField "boolean", "ENABLED_DEBUG", "true"
+        }
+
+        release {
+            debuggable false
+            minifyEnabled false
+            zipAlignEnabled true
+            buildConfigField "boolean", "ENABLED_DEBUG", "false"
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+    }
+}
