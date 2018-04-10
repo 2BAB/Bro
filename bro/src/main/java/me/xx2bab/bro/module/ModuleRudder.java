@@ -14,8 +14,8 @@ public class ModuleRudder {
     private HashMap<String, BroProperties> moduleMap;
     private Map<String, ModuleEntity> moduleInstanceMap;
 
-    public ModuleRudder(HashMap<String, BroProperties> moduleMap) {
-        this.moduleMap = moduleMap;
+    public ModuleRudder() {
+        this.moduleMap = Bro.getBroMap().getBroModuleMap();
         initModuleClasses();
     }
 
@@ -27,7 +27,7 @@ public class ModuleRudder {
                 IBroModule instance = (IBroModule) Class.forName(name).newInstance();
                 instance.onCreate();
                 ModuleEntity bean = new ModuleEntity();
-                bean.nick = entry.getKey();
+                bean.nick = entry.getKey(); // class canonical name
                 bean.instance = instance;
                 bean.properties = entry.getValue();
                 moduleInstanceMap.put(entry.getKey(), bean);
@@ -38,11 +38,11 @@ public class ModuleRudder {
         }
     }
 
-    public IBroModule getModule(String moduleNick) {
+    public <T extends IBroModule> T getModule(Class<T> moduleClass) {
         IBroModule broModule = null;
         BroProperties properties = null;
         for (Map.Entry<String, ModuleEntity> entry : moduleInstanceMap.entrySet()) {
-            if (entry.getKey().equals(moduleNick)) {
+            if (entry.getKey().equals(moduleClass.getCanonicalName())) {
                 broModule = entry.getValue().instance;
                 properties = entry.getValue().properties;
                 break;
@@ -50,17 +50,17 @@ public class ModuleRudder {
         }
 
         if (Bro.getBroInterceptor().onGetModule(Bro.appContext,
-                moduleNick,
+                moduleClass.getCanonicalName(),
                 broModule,
                 properties)) {
             return null;
         }
         if (broModule == null) {
-            BroRuntimeLog.e("The Module Nick \"" + moduleNick + "\" is not found by Bro!");
+            BroRuntimeLog.e("The Module \"" + moduleClass + "\" is not found by Bro!");
             Bro.getBroMonitor().onModuleException(BroErrorType.MODULE_CANT_FIND_TARGET);
             return null;
         }
-        return broModule;
+        return (T) broModule;
     }
 
 }

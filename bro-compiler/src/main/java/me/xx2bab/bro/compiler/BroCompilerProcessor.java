@@ -29,7 +29,7 @@ import javax.lang.model.util.Types;
 
 import me.xx2bab.bro.annotations.BroActivity;
 import me.xx2bab.bro.annotations.BroApi;
-import me.xx2bab.bro.annotations.BroModule;
+import me.xx2bab.bro.annotations.BroModuleContext;
 import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.compiler.util.BroCompileLogger;
 import me.xx2bab.bro.common.BroProperties;
@@ -45,7 +45,7 @@ public class BroCompilerProcessor extends AbstractProcessor {
         supportedAnnotations = new ArrayList<>();
         supportedAnnotations.add(BroActivity.class);
         supportedAnnotations.add(BroApi.class);
-        supportedAnnotations.add(BroModule.class);
+        supportedAnnotations.add(BroModuleContext.class);
     }
 
     private Types typeUtils;
@@ -125,7 +125,7 @@ public class BroCompilerProcessor extends AbstractProcessor {
                 TypeElement typeElement = (TypeElement) element;
                 String packageName = typeElement.getQualifiedName().toString();
                 String nick = parseNick(element);
-                String extraParams = parseExtraParams(element, nick, supportedAnnotations.get(i).getSimpleName());
+                String extraParams = parseExtraParams(element);
                 exposeMap.put(nick, new BroProperties(packageName, extraParams));
             }
             exposeMaps.put(supportedAnnotations.get(i).getSimpleName(), exposeMap);
@@ -156,19 +156,30 @@ public class BroCompilerProcessor extends AbstractProcessor {
         List<? extends AnnotationMirror> list = element.getAnnotationMirrors();
         for (int i = 0; i < list.size(); i++) {
             String annotationType = list.get(i).getAnnotationType().toString();
-            if (annotationType.contains("me.xx2bab.bro.annotations")) {
+            if (annotationType.equals(BroActivity.class.getCanonicalName())) {
                 Map<? extends ExecutableElement, ? extends AnnotationValue> map = list.get(i).getElementValues();
                 for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : map.entrySet()) {
                     if (entry.getKey().toString().equals("value()")) {
                         return entry.getValue().toString().replace("\"", "");
                     }
                 }
+            } else if (annotationType.equals(BroApi.class.getCanonicalName())) {
+                String apiInterface = parseApiInterface(element);
+                if (apiInterface == null) {
+                    // todo: print the class name
+                    throw new IllegalStateException( ": Bro Api Must implements the interface " +
+                            "which extends from IBroApi!");
+                } else {
+                    return apiInterface;
+                }
+            } else if (annotationType.equals(BroModuleContext.class.getCanonicalName())) {
+                return element.toString();
             }
         }
         return null;
     }
 
-    private String parseExtraParams(Element element, String nick, String type) {
+    private String parseExtraParams(Element element) {
         JSONObject jsonObject = new JSONObject();
         List<? extends AnnotationMirror> list = element.getAnnotationMirrors();
 
@@ -189,13 +200,13 @@ public class BroCompilerProcessor extends AbstractProcessor {
             jsonObject.put(annotationType, value);
         }
 
-        if (type.equals(BroApi.class.getSimpleName())) {
-            String ApiInterface = parseApiInterface(element);
-            if (ApiInterface == null) {
-                throw new IllegalStateException(nick + ": Bro Api Must implements the interface which extends from IBroApi!");
-            }
-            jsonObject.put("ApiInterface", ApiInterface);
-        }
+//        if (type.equals(BroApi.class.getSimpleName())) {
+//            String ApiInterface = parseApiInterface(element);
+//            if (ApiInterface == null) {
+//                throw new IllegalStateException(nick + ": Bro Api Must implements the interface which extends from IBroApi!");
+//            }
+//            jsonObject.put("ApiInterface", ApiInterface);
+//        }
 
         return jsonObject.toString();
     }

@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import java.util.List;
+
 import java.util.Set;
 
 import me.xx2bab.bro.Bro;
@@ -29,7 +29,7 @@ public class ActivityRudder {
         this.validated = true;
         this.intercepted = false;
 
-        if (builder.context == null || builder.targetUri == null || builder.finders == null) {
+        if (builder.context == null || builder.targetUri == null) {
             this.validated = false;
             Bro.getBroMonitor().onActivityRudderException(BroErrorType.PAGE_MISSING_ARGUMENTS, null);
             return;
@@ -121,7 +121,7 @@ public class ActivityRudder {
     }
 
     private Intent findActivity(Intent intent) {
-        for (IActivityFinder finder : builder.finders) {
+        for (IActivityFinder finder : Bro.getConfig().getActivityFinders()) {
             Intent temp = new Intent(intent);
             temp = finder.find(builder.context, temp);
             if (temp != null) {
@@ -161,7 +161,6 @@ public class ActivityRudder {
 
         private static final int INVALIDATE = -128;
 
-        private List<IActivityFinder> finders;
         private Context context;
         private String category;
         private Bundle extras;
@@ -170,9 +169,8 @@ public class ActivityRudder {
         private boolean justForCheck = false;
         private Uri targetUri;
 
-        public Builder(Context context, List<IActivityFinder> finders) {
+        public Builder(Context context) {
             this.context = context;
-            this.finders = finders;
         }
 
         public Builder withCategory(String category) {

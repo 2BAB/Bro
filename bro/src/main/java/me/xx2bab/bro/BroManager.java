@@ -2,10 +2,7 @@ package me.xx2bab.bro;
 
 import android.content.Context;
 
-import java.util.List;
-
 import me.xx2bab.bro.activity.ActivityRudder;
-import me.xx2bab.bro.activity.IActivityFinder;
 import me.xx2bab.bro.api.ApiRudder;
 import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.common.IBroMap;
@@ -14,14 +11,12 @@ import me.xx2bab.bro.module.ModuleRudder;
 
 class BroManager {
 
-    private List<IActivityFinder> activityFinders;
     private ApiRudder apiRudder;
     private ModuleRudder moduleRudder;
 
     BroManager(IBroMap broMap) {
-        activityFinders = Bro.getConfig().getActivityFinders();
-        apiRudder = new ApiRudder(broMap.getBroApiMap());
-        moduleRudder = new ModuleRudder(broMap.getBroModuleMap());
+        apiRudder = new ApiRudder();
+        moduleRudder = new ModuleRudder();
 
         // todo: plugin matters
     }
@@ -30,17 +25,12 @@ class BroManager {
         return apiRudder.getApi(apiInterface);
     }
 
-    IBroApi getApi(String nick) {
-        return apiRudder.getApi(nick);
+    <T extends IBroModule> T getModule(Class<T> moduleClass) {
+        return moduleRudder.getModule(moduleClass);
     }
-
-    IBroModule getModule(String moduleNick) {
-        return moduleRudder.getModule(moduleNick);
-    }
-
 
     ActivityRudder.Builder startPageFrom(Context context) {
-        return new ActivityRudder.Builder(context, activityFinders);
+        return new ActivityRudder.Builder(context);
     }
 
 }

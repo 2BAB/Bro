@@ -68,12 +68,8 @@ public class Bro {
         return broManager.getApi(apiInterface);
     }
 
-    public static IBroApi getApi(String apiInterface) {
-        return broManager.getApi(apiInterface);
-    }
-
-    public static IBroModule getModule(String moduleNick) {
-        return broManager.getModule(moduleNick);
+    public static <T extends IBroModule> T getModuleContext(Class<T> moduleClass) {
+        return broManager.getModule(moduleClass);
     }
 
 

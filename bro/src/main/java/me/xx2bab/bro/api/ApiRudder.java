@@ -1,26 +1,26 @@
 package me.xx2bab.bro.api;
 
-import java.util.HashMap;
+import java.util.List;
 
-import me.xx2bab.bro.common.BroProperties;
+import me.xx2bab.bro.Bro;
 import me.xx2bab.bro.common.IBroApi;
 
 public class ApiRudder {
 
-    private IApiFinder annoApiFinder;
+    private List<IApiFinder> apiFinders;
 
-    public ApiRudder(HashMap<String, BroProperties> apiMap) {
-        // todo: multiple impl
-        annoApiFinder = new AnnoApiFinder(apiMap);
+    public ApiRudder() {
+        apiFinders = Bro.getConfig().getApiFinders();
     }
 
     public <T extends IBroApi> T getApi(Class<T> apiInterface) {
-        return annoApiFinder.getApi(apiInterface);
+        for (IApiFinder apiFinder : apiFinders) {
+            T api = apiFinder.getApi(apiInterface);
+            if (api != null) {
+                return api;
+            }
+        }
+        return null;
     }
-
-    public IBroApi getApi(String nick) {
-        return annoApiFinder.getApi(nick);
-    }
-
 
 }
