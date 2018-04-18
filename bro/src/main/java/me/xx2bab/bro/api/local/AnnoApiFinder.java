@@ -2,12 +2,8 @@ package me.xx2bab.bro.api.local;
 
 import android.os.IInterface;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import me.xx2bab.bro.Bro;
 import me.xx2bab.bro.api.ApiEntity;
@@ -20,60 +16,58 @@ import me.xx2bab.bro.util.BroRuntimeLog;
 public class AnnoApiFinder implements IApiFinder {
 
     private List<ApiEntity> apiEntityList;
+    private ConcurrentHashMap<String, ApiEntity> cachedApis;
 
     public AnnoApiFinder() {
-        initApiEntity();
+        cachedApis = new ConcurrentHashMap<>();
     }
 
     @Override
     public <T extends IBroApi> T getApi(Class<T> apiInterface) {
+        // ignoring the aidl interface
         if (IInterface.class.getCanonicalName().equals(apiInterface.getSuperclass().getCanonicalName())) {
             return null;
         }
-        IBroApi broApi = null;
-        BroProperties properties = null;
-        for (ApiEntity bean : apiEntityList) {
-            if (bean.interfaze.equals(apiInterface.getCanonicalName())) {
-                broApi = bean.instance;
-                properties = bean.properties;
-                break;
-            }
+
+        // finding from cache
+        if (cachedApis.containsKey(apiInterface.getCanonicalName())) {
+            return (T) cachedApis.get(apiInterface.getCanonicalName());
         }
 
-        if (Bro.getBroInterceptor().onGetApi(Bro.appContext,
-                apiInterface.getCanonicalName(),
-                broApi,
-                properties)) {
+        if (!Bro.getBroMap().getBroApiMap().containsKey(apiInterface.getCanonicalName())) {
             return null;
         }
-        if (broApi == null) {
-            BroRuntimeLog.e("The Api Impl of \"" + apiInterface.getCanonicalName() + "\" is not found by Bro!");
-            Bro.getBroMonitor().onApiException(BroErrorType.API_CANT_FIND_TARGET);
+
+        BroProperties broProperties = Bro.getBroMap().getBroApiMap().get(apiInterface.getCanonicalName());
+        IBroApi api;
+        try {
+            api = (IBroApi) Class.forName(broProperties.clazz).newInstance();
+            api.onInit();
+            doCaching(apiInterface.getCanonicalName(), api, broProperties);
+            if (Bro.getBroInterceptor().onGetApi(Bro.appContext,
+                    apiInterface.getCanonicalName(),
+                    api,
+                    broProperties)) {
+                return null;
+            }
+
+        } catch (Exception e) {
+            BroRuntimeLog.e("Bro Provider named " + apiInterface.getCanonicalName()
+                    + " init failed : " + e.getMessage());
+            Bro.getBroMonitor().onApiException(BroErrorType.API_INIT_ERROR);
             return null;
         }
-        return (T) broApi;
+
+        return (T) api;
     }
 
 
-    public void initApiEntity() {
-        apiEntityList = new ArrayList<>();
-        for (Map.Entry<String, BroProperties> entry : Bro.getBroMap().getBroApiMap().entrySet()) {
-            try {
-                JSONObject extraParam = JSON.parseObject(entry.getValue().extraParams);
-                ApiEntity entity = new ApiEntity();
-                entity.nick = entry.getKey();
-                entity.instance = (IBroApi) Class.forName(entry.getValue().clazz).newInstance();
-                entity.interfaze = extraParam.getString("ApiInterface");
-                entity.properties = entry.getValue();
-
-                entity.instance.onInit();
-
-                apiEntityList.add(entity);
-            } catch (Exception e) {
-                BroRuntimeLog.e("Bro Provider named " + entry.getValue().clazz + " init failed : " + e.getMessage());
-                Bro.getBroMonitor().onApiException(BroErrorType.API_INIT_ERROR);
-            }
-        }
+    private void doCaching(String apiCanonicalName, IBroApi api, BroProperties broProperties) {
+        ApiEntity entity = new ApiEntity();
+        entity.nick = apiCanonicalName;
+        entity.instance = api;
+        entity.properties = broProperties;
+        cachedApis.put(apiCanonicalName, entity);
     }
 
 }

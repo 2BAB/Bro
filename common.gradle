@@ -1,5 +1,5 @@
 ext {
-    broDevVersion = "0.9.99.1"
+    broDevVersion = "0.9.99.2"
     broLatestReleaseVersion = "0.9.99.1"
     broMinSdkVersion = 15
     broTargetSdkVersion = 27
@@ -25,7 +25,7 @@ def deps = [
         supportV4          : "com.android.support:support-v4:$supportLibVersion",
         recyclerview       : "com.android.support:recyclerview-v7:$supportLibVersion",
         design             : "com.android.support:design:$supportLibVersion",
-        fastjson           : 'com.alibaba:fastjson:1.1.55.android',
+        fastjson           : 'com.alibaba:fastjson:1.1.68.android',
 
         // Bro
         bro              : "me.xx2bab.bro:bro:$broLatestReleaseVersion",

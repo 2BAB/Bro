@@ -3,7 +3,9 @@ package me.xx2bab.bro.api;
 import java.util.List;
 
 import me.xx2bab.bro.Bro;
+import me.xx2bab.bro.base.BroErrorType;
 import me.xx2bab.bro.common.IBroApi;
+import me.xx2bab.bro.util.BroRuntimeLog;
 
 public class ApiRudder {
 
@@ -20,6 +22,9 @@ public class ApiRudder {
                 return api;
             }
         }
+
+        BroRuntimeLog.e("The Api Impl of \"" + apiInterface.getCanonicalName() + "\" is not found by Bro!");
+        Bro.getBroMonitor().onApiException(BroErrorType.API_CANT_FIND_TARGET);
         return null;
     }
 
