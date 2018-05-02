@@ -14,7 +14,7 @@ def supportLibVersion = '27.1.0'
 def deps = [
 
         // Android
-        androidGradle      : 'com.android.tools.build:gradle:3.0.1',
+        androidGradle      : 'com.android.tools.build:gradle:3.1.1',
 
         // JavaLib
         javapoet           : 'com.squareup:javapoet:1.7.0',

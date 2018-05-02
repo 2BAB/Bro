@@ -6,9 +6,6 @@ class BroExtension {
 
     Project project
 
-    // Library
-    String packageName
-
     BroExtension(Project project) {
         this.project = project
     }

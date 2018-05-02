@@ -1,13 +1,23 @@
+
 if (hasProperty('broPublish')) {
     include (':' + getProperty('broPublish'))
 }
 
 if (!hasProperty('broPublish')) {
+    // main
     include ':bro'
     include ':bro-compiler'
     include ':bro-annotations'
     include ':bro-common'
     include ':bro-gradle-plugin'
+
+    // livereload
+    include ':bro-livereload-core'
+    include ':bro-livereload-plugin'
+
 }
+
+project(':bro-livereload-core').projectDir = new File('livereload/bro-livereload-core')
+project(':bro-livereload-plugin').projectDir = new File('livereload/bro-livereload-plugin')
 
 rootProject.name = 'bro-parent'

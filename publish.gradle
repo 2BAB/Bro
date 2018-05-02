@@ -4,35 +4,35 @@ group 'me.xx2bab.bro'
 version broDevVersion
 
 // publish to maven local
-//apply plugin: 'maven'
-//
-//uploadArchives {
-//    repositories {
-//        mavenDeployer {
-//            repository(url: uri(System.getProperty("user.home") + '/.m2/repository'))
-//            pom.groupId = group
-//            pom.artifactId = ARTIFACT_ID
-//            pom.version = broDevVersion
-//        }
-//    }
-//}
+apply plugin: 'maven'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri(System.getProperty("user.home") + '/.m2/repository'))
+            pom.groupId = group
+            pom.artifactId = ARTIFACT_ID
+            pom.version = broDevVersion
+        }
+    }
+}
 
 // publish to jCenter
-apply plugin: 'com.novoda.bintray-release'
+//apply plugin: 'com.novoda.bintray-release'
 
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
-publish {
-    userOrg = '2BAB'
-    groupId = group
-    artifactId = ARTIFACT_ID
-    publishVersion = broDevVersion
-    desc = 'Modularity Solution of Android'
-    website = 'https://github.com/2BAB/Bro'
-    bintrayUser = properties.getProperty("bintray.user")
-    bintrayKey = properties.getProperty("bintray.apikey")
-}
+//publish {
+//    userOrg = '2BAB'
+//    groupId = group
+//    artifactId = ARTIFACT_ID
+//    publishVersion = broDevVersion
+//    desc = 'Modularity Solution of Android'
+//    website = 'https://github.com/2BAB/Bro'
+//    bintrayUser = properties.getProperty("bintray.user")
+//    bintrayKey = properties.getProperty("bintray.apikey")
+//}
 
 
 //apply plugin: 'com.jfrog.bintray'

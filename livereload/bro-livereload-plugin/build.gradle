@@ -1,0 +1,19 @@
+apply plugin: 'groovy'
+apply from: rootProject.file('publish.gradle')
+apply from: rootProject.file('common.gradle')
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation deps.fastjson
+    implementation deps.androidGradle
+    implementation 'org.javassist:javassist:3.22.0-GA'
+    if (project.hasProperty('broPublish')) {
+        compile deps.broCommonDev
+    } else {
+        compile project(':bro-common')
+    }
+}
+
+sourceCompatibility = broSourceCompatibilityVersion
+targetCompatibility = broTargetCompatibilityVersion
