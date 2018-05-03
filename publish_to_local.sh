@@ -6,4 +6,4 @@
 ./gradlew -PbroPublish=bro-gradle-plugin :bro-gradle-plugin:clean :bro-gradle-plugin:publishToMavenLocal
 ./gradlew -PbroPublish=bro :bro:clean :bro:assembleRelease :bro:publishReleasePublicationToMavenLocal
 
-# ./gradlew -PbroPublish=bro-liverealod-plugin :bro-liverealod-plugin:clean :bro-liverealod-plugin:publishToMavenLocal
+# ./gradlew -PbroPublish=bro-livereload-plugin :bro-livereload-plugin:clean :bro-livereload-plugin:publishToMavenLocal

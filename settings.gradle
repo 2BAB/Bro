@@ -1,8 +1,10 @@
-
+// Used in publishing
 if (hasProperty('broPublish')) {
     include (':' + getProperty('broPublish'))
+
 }
 
+// Used in common developing (for IDE)
 if (!hasProperty('broPublish')) {
     // main
     include ':bro'
@@ -17,7 +19,13 @@ if (!hasProperty('broPublish')) {
 
 }
 
-project(':bro-livereload-core').projectDir = new File('livereload/bro-livereload-core')
-project(':bro-livereload-plugin').projectDir = new File('livereload/bro-livereload-plugin')
+// Override the projectDir for a clean structure
+if(findProject(':bro-livereload-core') != null) {
+    project(':bro-livereload-core').projectDir = new File('livereload/bro-livereload-core')
+}
+if(findProject(':bro-livereload-plugin') != null) {
+    project(':bro-livereload-plugin').projectDir = new File('livereload/bro-livereload-plugin')
+}
+
 
 rootProject.name = 'bro-parent'
