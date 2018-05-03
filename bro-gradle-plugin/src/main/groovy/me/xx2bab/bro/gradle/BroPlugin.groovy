@@ -36,9 +36,9 @@ class BroPlugin implements Plugin<Project> {
         }
     }
 
-    private boolean isApplication() {
-        if (project.hasProperty(Constants.GRADLE_ENV_APP_OUTPUTS) &&
-                project.getProperties().get("bro.forceBuildApp") == true) {
+    boolean isApplication() {
+        if (project.hasProperty("bro.forceBuildLib") &&
+                project.getProperties().get("bro.forceBuildLib") == true) {
             return true
         }
         return project.plugins.hasPlugin(AppPlugin)

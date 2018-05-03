@@ -4,7 +4,7 @@ class LiveReloadAppPlugin extends LiveReloadBasePlugin {
 
     protected void onAfterEvaluate() {
         if (Env.instance.enable) {
-            BroPlugadgetInjector.doLibraryInject(project)
+            BroPlugadgetInjector.collectAppInfo(project)
         }
     }
 

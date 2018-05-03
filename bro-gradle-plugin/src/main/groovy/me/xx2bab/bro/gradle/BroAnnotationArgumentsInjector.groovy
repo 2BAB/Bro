@@ -66,14 +66,14 @@ class BroAnnotationArgumentsInjector {
     static String getBuildBundlesAssetsPath(def variant, Project project) {
         String result = ""
         String variantName = variant.name.capitalize()
-        Task processResourcesTask = project.tasks["merge${variantName}Assets"]
-        if (processResourcesTask == null || processResourcesTask.outputs.files.size() == 0) {
+        Task packageAssetsTask = project.tasks["package${variantName}Assets"]
+        if (packageAssetsTask == null || packageAssetsTask.outputs.files.size() == 0) {
             throw new IllegalStateException("")
         }
 
-        processResourcesTask.outputs.files.each {
+        packageAssetsTask.outputs.files.each {
             String path = it.absolutePath
-            if (path != null && path.contains(File.separator + 'intermediates' + File.separator + 'bundles' + File.separator)) {
+            if (path != null && path.contains(File.separator + 'intermediates' + File.separator + 'packagedAssets' + File.separator)) {
                 result = path
             }
         }
