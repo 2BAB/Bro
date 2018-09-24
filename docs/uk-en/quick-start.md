@@ -1,21 +1,21 @@
-## 概念解释
+# Concepts
 
-Bro 提供的模块化，分解为三个部分；
+The modularity provided by Bro is broken down into three parts.
 
-1. **Application** (Host，等同与后续所述的「主工程」「壳工程」「主 Bundle」)：即一般工程中做了 `apply plugin: 'com.android.application'` 的主模块，该模块一般用于打包 Apk 和做 Application 入口的配置与初始化；
-2. **Library** (Business Bundle & SDK，等同于后续所述的「业务模块」「业务 Bundle」及一些「Java Bundle」)：即一般工程中做了 `apply plugin: 'com.android.library'` 的业务模块（抑或 SDK），该类模块一般用作各个业务模块，并可独立打包独立输出 AAR，所有业务模块间除了特殊情况不做相互依赖，一般只对 Common 模块有依赖；**此外，当 Library 作为本地热部署的模块打包时，Bro 称之为 Plugadget，是 Library 的一个变种；**
-3. **Common** (API - Interface Center)：Common 首先是一个特殊的 Library，被除自己外的所有的业务模块依赖，内部存放所有业务的对外 Interface，虽然大部分 Android 模块化的库、文章没有明确提到 Common 是一个必要的 Library，但是不管是阿里云、微信等大公司的模块化方案均不成文地拥有这样一个接口集合模块；
+1. **Application** (Host,equals to the [main project] , [shell project] and [main Bundle] mentioned later):In general engineering have ` apply plugin: '. Com. Android application ` main module while are used to package APK and do application entry configuration and initialization;
+2.  **Library** (Business Bundle & SDK,equals to「business module」「Business Bundle」and「Java Bundle」 ):In general engineering is done ` apply plugin: 'com. Android. Library' ` business module (or SDK) which is used as a business module and can package and output AAR independently.Among all business module in addition to the special circumstances do not depend on each other and only be dependent on Common modules in general; **In addition, When the Library is packaged as a local hot-deployed module, Bro calls it Plugadget, which is a variant of the Library;**
+3. **Common** (API - Interface Center): Common is first a special  Library, and is dependent on all business modules except itself and store all the external Interface of all business inside.Although most of the Android modular libraries and articles do not explicitly mention that Common is a necessary Library, the modules of major companies such as aliyun and WeChat have such an interface module.
 
-关于模块化存在的形式，分成两种：
+As for the  modularity existence form, there are two kinds:
 
-1. 单工程多模块：如 Sample 工程，主工程源码依赖了业务模块（`compile project(:bizmodule)`），适合比较小的工程做简单划分；
-2. 多工程多模块：像各种插件化框架做到的那样，每个 Module 都是一个单独的 Repo 单独打包发布（AAR），主工程二进制依赖业务（`compile 'com.example.appname.bizmodule'`），但依赖主工程进行打包调试（APK），对中大型的工程建议使用此种模式；
+1. Single project multiple modules: such as Sample project,the source code of the main project relying on the business model（`compile 'com.example.appname.bizmodule'`）, is suitable for relatively small projects to do small projects division;
+2. Multi-project multi-modules:each Module is a separate Repo individually packaged release (AAR), as various plug-in frameworks do.The main project binaries depend on the business(`compile 'com.example.appname.bizmodule'`),but it relies on the main project for package debugging (APK).As for medium and large projects,recommend this model:
 
-## 初始化
+## Initialize
 
-### 引入 Bro
+### Import Bro
 
-在每个模块的 build.gradle 中引入 Bro 的插件：
+Import Bro plug-in in each module's build.gradle
 
 ``` gradle
 buildscript {
@@ -30,14 +30,14 @@ buildscript {
 }
 ```
 
-之后在每个模块的 build.gradle 中请 `apply plugin: 'bro'`；
+Then apply `apply plugin: 'bro'` in each module's build.gradle
 
 
-### Application 中初始化配置
+### Initialize the configuration in the Application
 
 ``` java
 public class App extends Application {
-    
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -85,7 +85,7 @@ public class App extends Application {
             }
 
             @Override
-            public void onApiException(int errorCode) {
+            public void onApiException(int  errorCode) {
 
             }
         };
@@ -97,5 +97,3 @@ public class App extends Application {
                 config);
      }         
 ```
-
-

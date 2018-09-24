@@ -1,26 +1,34 @@
-Bro is a light Modularity Solution of Android.
+Bro is a lightweight Android modularity solution
 
-## Features
-
-- Help process the route of Activity；
-- 你想要给不同的用户群体展示不同的界面、功能，但是你必须在所有相关的地方加上 if/else；
-- 你维护的模块需要吐出一些接口给其他模块调用，你们都不想被对方直接依赖，但是又没有一个全局的双向通信管道，可能会有大量的 BroadcastReceiver 和 EventBus 到处飞线；
-- 尽管你正在维护的是一个小型的 App（可能不超过 10 人），但是团队成员们还是想尽量独立地开发自己的模块，甚至是独立打包和运行自己的应用，而不受其他人的影响（例如想注释掉你的代码模块）；
+## problems&scenarios
+- The processes that you jump among Native,H5,RN,Weex are complicated and don't have a uniform logic
+(for example,some pages need login status while others.)
+- You want to display different UI and function to different user groups,but you must add if/else in all relevant places
+- The module you are maintaining must let out some interfaces to let other modules call. And all of you don't want to be
+dependent on each other directly but don't have global bidirectional communication channels.You may hav a lot of BroadcastReceiver and EventBus everywhere.
+- Althogh you are maintaining a small App ( Probably no more than ten people),but team members should develop their own modules as independently as possible
+even package and run you own applications independently without being influenced by others.(such as commenting out their code module to make their code running. )
 - ...
 
-所有的这些问题，都是我所碰到，并且 Bro 想尝试去解决的。如果你了解过 Oasis Feng 16 年底在 MDCC 上分享的 [《回归初心，从容器化到组件化》](https://github.com/MDCC2016/Android-Session-Slides/blob/master/02-From.Containerization.To.Modularity.pdf)，或许会对模块化、组件化的概念有不错的理解。一定要强调一点的是，**Bro 的目标不是一个路由框架，而是以组件解耦、高效开发为目标的模块化框架**（不过 Bro 并没有多数的组件化框架那样，做让各个组件独立启动独立 Debug 的选项，而是各个模块还是长在了主工程的这个容器之上，然后通过本地热部署的方式解耦模块的打包）
+All of these problems are what I have met and what Bro tries to solve.If you have knew [<From.Containerization.To.Modularity> ](https://github.com/MDCC2016/Android-Session-Slides/blob/master/02-From.Containerization.To.Modularity.pdf)
+ shared by Oasis Feng in the end of 2016,you may have a good understanding of the concept of modularization and componentization.
+ It's important to emphasize one thing,** Bro's goal is not to  be a routing framework, but to be a modular framework aimed at component decoupling and efficient development. **
+ (But Bro isn't like most of componentized framework which has the option for each component to start debug independently. The module are still on top of the main project's container and then decouple modules and packaging through local hot deployment.)
 
+ ## Feature
 
-## 特性
+ - Bro provides the startup callbacks required for the modules.
 
-- 提供模块所需的启动回调；
-- 提供模块间的基础路由支持，实现 Native Activity 和 WebPage 以及 Weex、RN 等容器的轻松互跳和全局统一的 Uri 规则；
-- 提供模块间的接口暴露和接口获取服务（服务化 Api），并可籍此实现跨模块的 Fragment、Service 的获取或启动；
-- 页面和服务的**自定义**属性支持；
-- 提供全局的拦截器和监控器来拦截上述所有过程，并可以在拦截器中方便地获取到页面、服务的自定义属性；
-- 全自动生成页面路由代码、文档，以及服务代码、文档，并包括各类自定义属性；
-- 提供模块以普通的 aar 格式输出，集成到宿主打整包；同时提供模块以 apk 的形式输出做本地热部署（仅推荐在本地 Debug 时使用）；
-- 更多的自定义空间，请参考后续文档的最佳实践部分；
+ - Bro supports inter-module basic routing and implements easy interhopping and globally uniform Uri rules for Native Activity and webex, RN and other containers;
 
+ - Bro provides the interface exposure service and interface acquisition service between modules,and by it realize the acquisition or start of cross-module Fragment and Service.
 
+ - Bro supports custom properties of pages and service.
 
+ - Bro provides global interceptors and monitors to intercept all the processes above-mentioned and acquires the custom properties of pages and service in interceptors conveniently.
+
+ - Bro automatically generates the page routing code and documentations as well as the service code and  documentations,including all kinds of custom properties.
+
+ - Bro provides modules that are output in normal aar format and then integrates into the host to package in whole.At the same time,provide module output in the form of apk for local hot deployment.(only recommended for local debug)
+
+ - For more customization please refer to the best practices section of subsequent documentation.
