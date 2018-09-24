@@ -17,19 +17,19 @@ IBroInterceptor interceptor = new IBroInterceptor() {
     @Override
     public boolean onStartActivity(Context context, String s, Intent intent, BroProperties broProperties) {
 
-        // The search and Parameter splicing have been completed, you can do login interception and other functions here only before junping(get the information of whether login is required from broProperties, please refer to the best practice below)
+        // The search and Parameter splicing have been completed, you can do login interception and other functions here only before jumping(get the information of whether login is required from broProperties, please refer to the best practice below)
         return false;
     }
 
     @Override
     public boolean onGetApi(Context context, String s, IBroApi iBroApi, BroProperties broProperties) {
-        // After finding the broApi, you can replace an instance of the API, and so on, before returning .(this is common with Mock data)
+        // After finding the BroApi, you can replace an instance of the API, and so on, before returning .(this is often seen with Mock data)
         return false;
     }
 
     @Override
     public boolean onGetModule(Context context, String s, IBroModule iBroModule, BroProperties broProperties) {
-        // After finding the broModule, you can replace the instance of module and other functions, before returning. (usually seen in Mock data)
+        // After finding the BroModule, you can replace the instance of module and other functions, before returning. (usually seen in Mock data)
         return false;
     }
 };
@@ -37,17 +37,17 @@ IBroInterceptor interceptor = new IBroInterceptor() {
 IBroMonitor monitor = new IBroMonitor() {
     @Override
     public void onActivityException(int i, ActivityRudder.Builder builder) {
-        // When Activity throws a error during a lookup or jump.
+        // When Activity throws an error during a lookup or jump.
     }
 
     @Override
     public void onModuleException(int i) {
-        // When it throws a error while looking for Module.
+        // When it throws an error while looking for Module.
     }
 
     @Override
     public void onApiException(int i) {
-         // When it throws a error while looking for Api.
+         // When it throws an error while looking for Api.
     }
 };
 
@@ -62,11 +62,11 @@ Bro(sApplication,
 
 ## Best practices
 ### Page permission validation (scene validation)
-In order to attract users, many apps do not check logins on the first few pages until some important operations(such as logging into "favorites", "member purchase",etc.) that pop up the login box or upgrade to membership. At this time, we can define two annotations as @needlogin @needvip in the Common module, and then add the annotations in the corresponding page:
+In order to attract users, many apps do not check logins on the first few pages until some important operations(such as logging into "favorites", "member purchase",etc.) that pop up the login box or upgrade to membership. At this time, we can define two annotations as @needlogin @needvip in the Common module, and then add the annotations in the corresponding pagee:
 ```
 @NeedLogin
 @NeedVip("1")
-@BroActivity("TestActivity")
+@BroActivity("TestActivity")e
 public class TestActivity extends Activity {...}
 ```
 This code will create the extraParams of BroProperties as:
