@@ -26,7 +26,7 @@ public class DataApiImpl implements IDataApi {
     }
 
 // Provide a life cycle for the service which declares its dependencies on other services before calling onInit()
-// and then call onInit() sequentially after parsing out a dependency  tree.
+// and then call onInit() sequentially after parsing out a dependency tree.
 // If there is a cycle dependency, it will throw an exception at startup.
     @Override
     public List<Class<? extends IBroApi>> onEvaluate() {
@@ -38,14 +38,14 @@ public class DataApiImpl implements IDataApi {
 ```
 
 ### Using a service
- ``Class``es pass into the interface is used to get the corresponding implementation for the interface. Generally, we only do a single mapping of the interface-implementation.(you can only get the first implementation if you have multiple implementations, while it's not usual in practical use)
+ ``Class``es pass into the interface is used to get the corresponding implementation for the interface. Generally, we only do a single mapping of the interface-implementation. (you can only get the first implementation if you have multiple implementations, while it's not usual in practical use)
 ```
 Bro.getApi(IDataApi.class).getTestData1();
 ```
 
 ## Best Practice
 ### Extend the boundaries of navigation through BroApi services
-We have discussed the reason why don't provide a approach for navigation between Fragment, Service, etc. In fact, it's not just Fragment, Service. In most cases, modules also depend on  more fine-grained components in the level of View. They may not be provided by a simple data interface, but they can be encapsulated and exposed through the interface of BroApi.
+We have discussed the reason why don't provide an approach for navigation between Fragment, Service, etc. In fact, it's not just Fragment, Service. In most cases, modules also depend on more fine-grained components in the level of View. They may not be provided by a simple data interface, but they can be encapsulated and exposed through the interface of BroApi.
 ```
 class DummyView extends View implements DummyAction {
       ...
@@ -61,5 +61,5 @@ class DummyApiImpl implements IDummyApi {
       }
 }
 ```
-In the example, we've encapsulated the operation of DummyView into a DummyAction and exposed it. The user only needs to convert it into a View when they need to do some operations related View. In most cases, we can continue to use DummyAction to do the DummyView operation.
+In the example, we've encapsulated the operation of DummyView into a DummyAction and exposed it. The user only needs to convert it into a View when they need to do some operations relative View. In most cases, we can continue to use DummyAction to do the DummyView operation.
 Flexible use of return of interfaces can create some incredible effects in some special scenarios, and providing more possibilities for improving the efficiency and decoupling of modules.

@@ -29,7 +29,7 @@ IBroInterceptor interceptor = new IBroInterceptor() {
 
     @Override
     public boolean onGetModule(Context context, String s, IBroModule iBroModule, BroProperties broProperties) {
-        // After finding the BroModule, you can replace the instance of module and other functions, before returning. (usually seen in Mock data)
+        // After finding the BroModule, you can replace the instance of the module and other functions, before returning. (usually seen in Mock data)
         return false;
     }
 };
@@ -58,7 +58,7 @@ Bro(sApplication,
         config);
 ```
 ### Parameter description
-- BroProperties,  divided into two parts: clazz is the actual class name of the annotated class; extraParam is a JSON string that contains any annotations(full class name) except the ones with beginning of @Broxxx and its contents, as well as some other class-related parameters  collected by Bro during its compilation.
+- BroProperties,  divided into two parts: clazz is the actual class name of the annotated class; extraParam is a JSON string that contains any annotations(full class name) except the ones with the beginning of @Broxxx and its contents, as well as some other class-related parameters collected by Bro during its compilation.
 
 ## Best practices
 ### Page permission validation (scene validation)
@@ -80,7 +80,7 @@ This code will create the extraParams of BroProperties as:
 This allows you to check in the interceptor whether the Activity jump contains such descriptions (NeedLogin, NeedVip), and do some controlling and jumping to the corresponding logic for global page permissions (for example, jump to the login page after an interception).
 
 ### Degrading and Immediate Bug Solving
-Generally, we can preset an online configuration check in the interceptor. When we get a bug in page and we can't find a way to fix it at once, we can turn off the access to a specific page by activatig the  configuration, and displaying a customized 404 page. This method to deal with emergency is very effective, getting more time for actual bug fixes and reducing user loss.
+Generally, we can preset an online configuration check in the interceptor. When we get a bug in the page and we can't find a way to fix it at once, we can turn off the access to a specific page by activating the configuration, and displaying a customized 404 page. This method to deal with an emergency is very effective, getting more time for actual bug fixes and reducing user loss.
 
 
 At the same time, when a Native page has a corresponding Web implementation version(it is better to unify the Uri), we can also accomplish the graceful degradation of Native -> Web by push configuring when a Bug occurs in Native Activity. Thus, the bug will not affect the user's use.
