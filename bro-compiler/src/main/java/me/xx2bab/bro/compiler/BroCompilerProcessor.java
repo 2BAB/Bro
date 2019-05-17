@@ -1,7 +1,6 @@
 package me.xx2bab.bro.compiler;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.auto.service.AutoService;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -15,7 +14,6 @@ import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
@@ -30,13 +28,13 @@ import javax.lang.model.util.Types;
 import me.xx2bab.bro.annotations.BroActivity;
 import me.xx2bab.bro.annotations.BroApi;
 import me.xx2bab.bro.annotations.BroModule;
-import me.xx2bab.bro.common.IBroApi;
-import me.xx2bab.bro.compiler.util.BroCompileLogger;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.Constants;
+import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.compiler.generator.CodeGenerator;
+import me.xx2bab.bro.compiler.util.BroCompileLogger;
 
-@AutoService(Processor.class)
+//@AutoService(Processor.class)
 public class BroCompilerProcessor extends AbstractProcessor {
 
     private static List<Class<? extends Annotation>> supportedAnnotations;

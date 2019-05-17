@@ -75,7 +75,7 @@ public class App extends Application {
         };
 
         Bro.init(baseContext,
-                new BroInfoMapImpl(),
+                null,
                 interceptor,
                 monitor,
                 config);

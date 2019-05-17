@@ -1,31 +1,31 @@
 ext {
-    broDevVersion = "0.9.99.1"
-    broLatestReleaseVersion = "0.9.99.1"
+    broDevVersion = "0.10.11"
+    broLatestReleaseVersion = "0.10.11"
     broMinSdkVersion = 15
-    broTargetSdkVersion = 27
-    broCompileSdkVersion = 27
-    broBuildToolsVersion = '27.0.3'
+    broTargetSdkVersion = 28
+    broCompileSdkVersion = 28
+    broBuildToolsVersion = '28.0.3'
     broSourceCompatibilityVersion = JavaVersion.VERSION_1_7
     broTargetCompatibilityVersion = JavaVersion.VERSION_1_7
 }
 
 // Dependencies
-def supportLibVersion = '27.1.0'
+def supportLibVersion = '28.0.0'
 def deps = [
 
         // Android
-        androidGradle      : 'com.android.tools.build:gradle:3.0.1',
+        androidGradle      : 'com.android.tools.build:gradle:3.4.1',
 
         // JavaLib
-        javapoet           : 'com.squareup:javapoet:1.7.0',
-        autoService        : 'com.google.auto.service:auto-service:1.0-rc2',
+        javapoet           : 'com.squareup:javapoet:1.11.1',
+        autoService        : 'com.google.auto.service:auto-service:1.0-rc5',
 
         // Common
         appcompatV7        : "com.android.support:appcompat-v7:$supportLibVersion",
         supportV4          : "com.android.support:support-v4:$supportLibVersion",
         recyclerview       : "com.android.support:recyclerview-v7:$supportLibVersion",
         design             : "com.android.support:design:$supportLibVersion",
-        fastjson           : 'com.alibaba:fastjson:1.1.55.android',
+        fastjson           : 'com.alibaba:fastjson:1.1.71.android',
 
         // Bro
         bro              : "me.xx2bab.bro:bro:$broLatestReleaseVersion",

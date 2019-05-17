@@ -9,7 +9,7 @@ dependencies {
     implementation deps.recyclerview
     implementation deps.design
     implementation deps.fastjson
-    implementation deps.bro
+    api deps.bro
     annotationProcessor deps.broCompiler
 
     implementation project(path: ':base.common')

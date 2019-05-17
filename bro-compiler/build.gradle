@@ -6,7 +6,6 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation deps.javapoet
-    implementation deps.autoService
     implementation deps.fastjson
 
     if (project.hasProperty('broPublish')) {

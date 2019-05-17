@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 ./gradlew -PbroPublish=bro-common :bro-common:clean :bro-common:publishToMavenLocal
 ./gradlew -PbroPublish=bro-annotations :bro-annotations:clean :bro-annotations:publishToMavenLocal
 ./gradlew -PbroPublish=bro-compiler :bro-compiler:clean :bro-compiler:publishToMavenLocal

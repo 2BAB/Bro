@@ -4,12 +4,12 @@ A Modularity Solution in Android. Now is on ALPHA.
 
 ## Why Modular
 
-Inspierd From the topic <From.Containerization.To.Modularity> (Author: Oasis Feng)
+Inspired From the topic <From.Containerization.To.Modularity> (Author: Oasis Feng)
 
 - Engineering
-  - Enforceddecouplingforhigh-cohesioncode.
-  - Module-independent(parallel)developmentandtesting
-  - Flexibleintegration,deployment&upgrade
+  - Enforced decoupling for high-cohesion code.
+  - Module-independent(parallel) development and testing
+  - Flexible integration, deployment&upgrade
 
 - Product
   - Selective Installation(light-weight initial install)
@@ -21,7 +21,7 @@ Inspierd From the topic <From.Containerization.To.Modularity> (Author: Oasis Fen
 ## License
 
 >
-> Copyright 2018 2BAB
+> Copyright 2019 2BAB
 >
 >Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

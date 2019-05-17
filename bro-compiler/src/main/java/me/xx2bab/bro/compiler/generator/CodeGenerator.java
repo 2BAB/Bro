@@ -19,11 +19,11 @@ import java.util.TreeMap;
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Modifier;
 
-import me.xx2bab.bro.compiler.util.BroCompileLogger;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.CommonUtils;
 import me.xx2bab.bro.common.Constants;
 import me.xx2bab.bro.common.IBroMap;
+import me.xx2bab.bro.compiler.util.BroCompileLogger;
 import me.xx2bab.bro.compiler.util.FileUtil;
 
 public class CodeGenerator {

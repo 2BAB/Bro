@@ -6,8 +6,8 @@ import com.alibaba.fastjson.JSONObject;
 /**
  * Extra properties description for Bro annotations.
  * <p>
- * @NeedLogin
- * @BroActivty("Main") 
+ * // @NeedLogin
+ * // @BroActivty("Main")
  * class MainActivity {}
  * <p>
  * 1. clazz : is the full class name of MainActivity like com.example.MainActivity;
