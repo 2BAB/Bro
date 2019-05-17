@@ -1,32 +1,29 @@
 package me.xx2bab.bro.gradle.utils
 
 import org.gradle.api.Project
+import org.gradle.api.logging.Logger
 
-class BroGradleLogger(project : org.gradle.api.Project) {
+object BroGradleLogger {
 
-    static final String TAG = "== Bro == : "
-    static logger
+    private val TAG = "[Bro]: "
+    private lateinit var logger: Logger
 
-    static setLogger(Project project) {
+    fun setProject(project: Project) {
         logger = project.logger
     }
 
-    static l(String msg) {
-        String msgWithPrefix = TAG + "Info : " + msg
-        if (logger != null) {
-            logger.lifecycle(msgWithPrefix)
-        } else {
-            System.out.println(msgWithPrefix);
-        }
+    fun d(message: String) {
+        logger.debug(TAG + message)
     }
 
-    static e(String msg) {
-        String msgWithPrefix = TAG + "Error : " + msg
-        if (logger != null) {
-            logger.error(msgWithPrefix)
-        } else {
-            System.err.println(msgWithPrefix)
-        }
+    fun l(message: String) {
+        logger.lifecycle(TAG + message)
     }
+
+    fun e(message: String) {
+        logger.error(TAG + message)
+    }
+
 
 }
+
