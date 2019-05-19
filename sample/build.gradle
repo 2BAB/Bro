@@ -3,12 +3,11 @@ buildscript {
         mavenLocal()
         google()
         jcenter()
-        mavenCentral()
     }
 
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.1'
-        classpath 'me.xx2bab.bro:bro-gradle-plugin:0.10.12'
+        classpath 'me.2bab:bro-gradle-plugin:0.10.13'
     }
 }
 
@@ -17,6 +16,5 @@ allprojects {
         mavenLocal()
         google()
         jcenter()
-        mavenCentral()
     }
 }

@@ -1,6 +1,6 @@
 ext {
-    broDevVersion = "0.10.12"
-    broLatestReleaseVersion = "0.10.12"
+    broDevVersion = "0.10.13"
+    broLatestReleaseVersion = "0.10.13"
     broMinSdkVersion = 15
     broTargetSdkVersion = 28
     broCompileSdkVersion = 28
@@ -28,13 +28,13 @@ def deps = [
         fastjson           : 'com.alibaba:fastjson:1.1.71.android',
 
         // Bro
-        bro              : "me.xx2bab.bro:bro:$broLatestReleaseVersion",
-        broCompiler      : "me.xx2bab.bro:bro-compiler:$broLatestReleaseVersion",
-        broAnnotations   : "me.xx2bab.bro:bro-annotations:$broLatestReleaseVersion",
-        broCommon        : "me.xx2bab.bro:bro-common:$broLatestReleaseVersion",
+        bro              : "me.2bab:bro:$broLatestReleaseVersion",
+        broCompiler      : "me.2bab:bro-compiler:$broLatestReleaseVersion",
+        broAnnotations   : "me.2bab:bro-annotations:$broLatestReleaseVersion",
+        broCommon        : "me.2bab:bro-common:$broLatestReleaseVersion",
 
-        broAnnotationsDev: "me.xx2bab.bro:bro-annotations:$broDevVersion",
-        broCommonDev     : "me.xx2bab.bro:bro-common:$broDevVersion",
+        broAnnotationsDev: "me.2bab:bro-annotations:$broDevVersion",
+        broCommonDev     : "me.2bab:bro-common:$broDevVersion",
 
         // Test
         junit              : 'junit:junit:4.12'
