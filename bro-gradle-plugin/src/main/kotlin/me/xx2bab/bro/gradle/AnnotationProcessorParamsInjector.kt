@@ -65,7 +65,7 @@ object AnnotationProcessorParamsInjector {
     private fun getBuildBundlesAssetsPath(variantName: String, project: Project): String {
         var result = ""
 
-        val processResourcesTask = project.tasks.getByPath("merge${variantName}Assets")
+        val processResourcesTask = project.tasks.getByPath("package${variantName}Assets")
         if (processResourcesTask.outputs.files.files.size == 0) {
             throw IllegalStateException("")
         }

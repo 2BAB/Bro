@@ -1,6 +1,6 @@
 ext {
-    broDevVersion = "0.10.11"
-    broLatestReleaseVersion = "0.10.11"
+    broDevVersion = "0.10.12"
+    broLatestReleaseVersion = "0.10.12"
     broMinSdkVersion = 15
     broTargetSdkVersion = 28
     broCompileSdkVersion = 28
