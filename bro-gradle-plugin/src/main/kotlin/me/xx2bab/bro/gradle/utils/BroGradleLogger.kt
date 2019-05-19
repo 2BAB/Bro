@@ -5,7 +5,7 @@ import org.gradle.api.logging.Logger
 
 object BroGradleLogger {
 
-    private val TAG = "[Bro]: "
+    private val TAG = "[Bro]: [bro-gradle-plugin] "
     private lateinit var logger: Logger
 
     fun setProject(project: Project) {

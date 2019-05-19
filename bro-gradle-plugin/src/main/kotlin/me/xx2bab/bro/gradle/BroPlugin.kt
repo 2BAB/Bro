@@ -1,47 +1,53 @@
 package me.xx2bab.bro.gradle
 
+import com.android.build.gradle.AppExtension
+import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.LibraryExtension
+import com.android.build.gradle.api.BaseVariant
 import me.xx2bab.bro.gradle.utils.BroGradleLogger
 import me.xx2bab.bro.gradle.utils.BuildUtils
+import org.gradle.api.DomainObjectSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import com.android.build.gradle.AppPlugin
 
-class BroPlugin implements Plugin<Project> {
+class BroPlugin : Plugin<Project> {
 
-    protected Project project
-    protected BroExtension broExtension
+    private val extensionName = "bro"
 
-    @Override
-    void apply(Project project) {
-        this.project = project
-
-        BroGradleLogger.setLogger(project)
+    override fun apply(project: Project) {
+        // Tools initialization
+        BroGradleLogger.setProject(project)
         BroGradleLogger.l("bro-gradle-plugin begin to process")
 
-        broExtension = project.extensions.create("bro", BroExtension, project)
+        // Create extension
+        val broExtension = project.extensions.create(extensionName, BroExtension::class.java)
 
+        // Register Tasks
         project.afterEvaluate {
             BuildUtils.mkdirBroBuildDir(project)
-            onAfterEvaluate()
+            onAfterEvaluate(project)
         }
     }
 
-    protected void onAfterEvaluate() {
-        BroAnnotationArgumentsInjector.inject(isApplication(), project)
-        getVariants().all { variant ->
-            def task = project.tasks["generate${variant.name.capitalize()}Sources"]
-            if (task != null) {
-                task.outputs.upToDateWhen { false }
-            }
+    private fun onAfterEvaluate(project: Project) {
+        val variants = getVariants(project)
+        AnnotationProcessorParamsInjector.inject(isApplication(project), variants, project)
+        variants.all { variant ->
+            val task = project.tasks.getByPath("generate${variant.name.capitalize()}Sources")
+            task.outputs.upToDateWhen { false }
         }
     }
 
-    private boolean isApplication() {
-        return project.plugins.hasPlugin(AppPlugin)
+    private fun isApplication(project: Project): Boolean {
+        return project.plugins.hasPlugin(AppPlugin::class.java)
     }
 
-    def getVariants() {
-        return isApplication() ? project.android.applicationVariants : project.android.libraryVariants
+    private fun getVariants(project: Project): DomainObjectSet<out BaseVariant> {
+        return if (isApplication(project)) {
+            project.extensions.findByType(AppExtension::class.java)!!.applicationVariants
+        } else {
+            project.extensions.findByType(LibraryExtension::class.java)!!.libraryVariants
+        }
     }
 
 }
