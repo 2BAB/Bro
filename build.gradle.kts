@@ -1,14 +1,12 @@
 buildscript {
-    apply from: rootProject.file('common.gradle')
-
     repositories {
         google()
         jcenter()
         mavenLocal()
     }
     dependencies {
-        classpath deps.androidGradle
-        classpath 'com.novoda:bintray-release:0.9.1'
+        classpath("com.android.tools.build:gradle:3.4.1")
+        classpath("com.novoda:bintray-release:0.9.1")
     }
 }
 
@@ -20,6 +18,6 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+task("clean") {
+    delete(rootProject.buildDir)
 }
