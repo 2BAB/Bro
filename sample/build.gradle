@@ -1,4 +1,16 @@
 buildscript {
+
+    configurations.all {
+        // Check for updates every build
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+
+    ext {
+        broLatestReleaseVersion = "0.10.14-SNAPSHOT"
+        broSourceCompatibilityVersion = JavaVersion.VERSION_1_7
+        broTargetCompatibilityVersion = JavaVersion.VERSION_1_7
+    }
+
     repositories {
         mavenLocal()
         google()
@@ -7,8 +19,9 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.1'
-        classpath 'me.2bab:bro-gradle-plugin:0.10.13'
+        classpath "me.2bab:bro-gradle-plugin:$broLatestReleaseVersion"
     }
+
 }
 
 allprojects {

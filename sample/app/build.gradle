@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'bro'
+apply plugin: 'me.2bab.bro'
 apply from: '../sample_common.gradle'
 
 android {

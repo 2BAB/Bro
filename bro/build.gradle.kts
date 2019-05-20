@@ -1,9 +1,10 @@
+
 import me.xx2bab.bro.build.BuildConfig
 
 plugins {
     id("com.android.library")
 }
-apply(rootProject.file("publish.gradle"))
+apply(rootProject.file("publish.gradle.kts"))
 
 android {
 
@@ -19,7 +20,7 @@ android {
 
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = true
+            //isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android.txt"))
             proguardFiles(file("proguard-rules.pro"))
         }
@@ -33,12 +34,11 @@ android {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
 
-    implementation(BuildConfig.Deps.javapoet)
     implementation(BuildConfig.Deps.fastjson)
 
     if (project.hasProperty("broPublish")) {
-        implementation(BuildConfig.Deps.broAnnotationsDev)
-        implementation(BuildConfig.Deps.broCommonDev)
+        api(BuildConfig.Deps.broAnnotationsDev)
+        api(BuildConfig.Deps.broCommonDev)
     } else {
         implementation(project(":bro-annotations"))
         implementation(project(":bro-common"))
