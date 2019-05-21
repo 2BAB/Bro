@@ -1,7 +1,6 @@
 package me.xx2bab.bro.common;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Extra properties description for Bro annotations.
@@ -28,14 +27,16 @@ public class BroProperties {
     }
 
     public String toJsonString() {
-        return JSON.toJSONString(this);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("clazz", clazz);
+        jsonObject.put("extraParams", extraParams);
+        return jsonObject.toString();
     }
 
     public void fromJsonString(String jsonString) {
-        JSONObject obj = (JSONObject) JSON.parse(jsonString);
+        JSONObject obj = new JSONObject(jsonString);
         clazz = obj.getString("clazz");
         extraParams = obj.getString("extraParams");
-        obj.clear();
     }
 
 }

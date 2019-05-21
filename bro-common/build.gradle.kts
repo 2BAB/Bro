@@ -7,7 +7,7 @@ apply(rootProject.file("publish.gradle.kts"))
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
-    implementation(BuildConfig.Deps.fastjson)
+    compileOnly(BuildConfig.Deps.orgJson)
 }
 
 java {

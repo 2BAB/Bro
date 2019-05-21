@@ -10,6 +10,7 @@ dependencies {
 
     implementation(BuildConfig.Deps.javapoet)
     implementation(BuildConfig.Deps.fastjson)
+    implementation(BuildConfig.Deps.orgJson)
 
     if (project.hasProperty("broPublish")) {
         implementation(BuildConfig.Deps.broAnnotationsDev)
