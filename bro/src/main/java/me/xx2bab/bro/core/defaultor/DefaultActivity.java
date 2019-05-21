@@ -1,4 +1,4 @@
-package me.xx2bab.bro.defaultor;
+package me.xx2bab.bro.core.defaultor;
 
 import android.app.Activity;
 import android.content.Context;

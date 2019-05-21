@@ -1,12 +1,12 @@
-package me.xx2bab.bro.base;
+package me.xx2bab.bro.core.base;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import me.xx2bab.bro.defaultor.DefaultActivity;
-import me.xx2bab.bro.activity.AnnoActivityFinder;
-import me.xx2bab.bro.activity.IActivityFinder;
-import me.xx2bab.bro.activity.PackageManagerActivityFinder;
+import me.xx2bab.bro.core.defaultor.DefaultActivity;
+import me.xx2bab.bro.core.activity.AnnoActivityFinder;
+import me.xx2bab.bro.core.activity.IActivityFinder;
+import me.xx2bab.bro.core.activity.PackageManagerActivityFinder;
 
 public class BroConfig {
 

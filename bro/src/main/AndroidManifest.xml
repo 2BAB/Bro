@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="me.xx2bab.bro" >
+    package="me.xx2bab.bro.core" >
 
     <application>
         <activity android:name=".defaultor.DefaultActivity">

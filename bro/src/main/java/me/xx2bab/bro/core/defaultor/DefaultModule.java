@@ -1,8 +1,8 @@
-package me.xx2bab.bro.defaultor;
+package me.xx2bab.bro.core.defaultor;
 
 import android.content.res.Resources;
 
-import me.xx2bab.bro.Bro;
+import me.xx2bab.bro.core.Bro;
 import me.xx2bab.bro.common.IBroModule;
 
 public abstract class DefaultModule implements IBroModule {

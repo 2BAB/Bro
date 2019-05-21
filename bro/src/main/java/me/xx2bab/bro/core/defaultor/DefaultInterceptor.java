@@ -1,9 +1,9 @@
-package me.xx2bab.bro.defaultor;
+package me.xx2bab.bro.core.defaultor;
 
 import android.content.Context;
 import android.content.Intent;
 
-import me.xx2bab.bro.base.IBroInterceptor;
+import me.xx2bab.bro.core.base.IBroInterceptor;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.common.IBroModule;

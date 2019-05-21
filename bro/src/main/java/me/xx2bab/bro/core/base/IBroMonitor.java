@@ -1,6 +1,6 @@
-package me.xx2bab.bro.base;
+package me.xx2bab.bro.core.base;
 
-import me.xx2bab.bro.activity.ActivityRudder;
+import me.xx2bab.bro.core.activity.ActivityRudder;
 
 public interface IBroMonitor {
 

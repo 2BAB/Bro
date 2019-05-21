@@ -1,4 +1,4 @@
-package me.xx2bab.bro.activity;
+package me.xx2bab.bro.core.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import me.xx2bab.bro.Bro;
+import me.xx2bab.bro.core.Bro;
 
 public class PackageManagerActivityFinder implements IActivityFinder {
 

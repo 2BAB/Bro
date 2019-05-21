@@ -1,16 +1,16 @@
-package me.xx2bab.bro;
+package me.xx2bab.bro.core;
 
 import android.content.Context;
 
 import java.util.List;
 
-import me.xx2bab.bro.activity.ActivityRudder;
-import me.xx2bab.bro.activity.IActivityFinder;
-import me.xx2bab.bro.api.ApiRudder;
+import me.xx2bab.bro.core.activity.ActivityRudder;
+import me.xx2bab.bro.core.activity.IActivityFinder;
+import me.xx2bab.bro.core.api.ApiRudder;
 import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.common.IBroMap;
 import me.xx2bab.bro.common.IBroModule;
-import me.xx2bab.bro.module.ModuleRudder;
+import me.xx2bab.bro.core.module.ModuleRudder;
 
 class BroManager {
 

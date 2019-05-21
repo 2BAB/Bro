@@ -1,16 +1,17 @@
-package me.xx2bab.bro;
+package me.xx2bab.bro.core;
 
 import android.content.Context;
 
-import me.xx2bab.bro.defaultor.DefaultInterceptor;
-import me.xx2bab.bro.defaultor.DefaultMonitor;
-import me.xx2bab.bro.base.IBroInterceptor;
-import me.xx2bab.bro.base.IBroMonitor;
-import me.xx2bab.bro.base.BroConfig;
+import me.xx2bab.bro.common.Constants;
 import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.common.IBroMap;
 import me.xx2bab.bro.common.IBroModule;
-import me.xx2bab.bro.activity.ActivityRudder;
+import me.xx2bab.bro.core.activity.ActivityRudder;
+import me.xx2bab.bro.core.base.BroConfig;
+import me.xx2bab.bro.core.base.IBroInterceptor;
+import me.xx2bab.bro.core.base.IBroMonitor;
+import me.xx2bab.bro.core.defaultor.DefaultInterceptor;
+import me.xx2bab.bro.core.defaultor.DefaultMonitor;
 
 public class Bro {
 
@@ -24,12 +25,11 @@ public class Bro {
     public static Context appContext;
 
     public static void init(Context appContext,
-                            IBroMap broMap,
                             IBroInterceptor interceptor,
                             IBroMonitor monitor,
                             BroConfig config) {
         Bro.appContext = appContext;
-        Bro.broMap = broMap;
+        Bro.broMap = getBroMap();
         Bro.interceptor = interceptor;
         Bro.monitor = monitor;
         Bro.config = config;
@@ -44,7 +44,19 @@ public class Bro {
         broManager = new BroManager(broMap);
     }
 
-    public static IBroMap getBroMap() {
+    public static synchronized IBroMap getBroMap() {
+        if (broMap == null) {
+            try {
+                broMap = (IBroMap) Class.forName(Constants.MERGED_MAP_PACKAGE_NAME + "."
+                        + Constants.MERGED_MAP_FILE_NAME).newInstance();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
         return broMap;
     }
 

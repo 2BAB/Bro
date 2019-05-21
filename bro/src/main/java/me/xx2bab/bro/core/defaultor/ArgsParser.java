@@ -1,11 +1,11 @@
-package me.xx2bab.bro.defaultor;
+package me.xx2bab.bro.core.defaultor;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import me.xx2bab.bro.R;
-import me.xx2bab.bro.util.Constants;
+import me.xx2bab.bro.core.R;
+import me.xx2bab.bro.core.util.Constants;
 
 class ArgsParser {
 

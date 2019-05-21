@@ -1,4 +1,4 @@
-package me.xx2bab.bro.base;
+package me.xx2bab.bro.core.base;
 
 public class BroErrorType {
 

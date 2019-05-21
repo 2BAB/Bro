@@ -7,7 +7,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import me.xx2bab.bro.Bro;
+import me.xx2bab.bro.core.Bro;
 import me.xx2bab.bro.annotations.BroActivity;
 import me.xx2bab.bro.sample.common.api.ISettingsApi;
 import me.xx2bab.bro.sample.common.mine.IMinePresenter;

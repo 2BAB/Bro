@@ -1,4 +1,4 @@
-package me.xx2bab.bro.activity;
+package me.xx2bab.bro.core.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -10,11 +10,11 @@ import android.text.TextUtils;
 import java.util.List;
 import java.util.Set;
 
-import me.xx2bab.bro.Bro;
-import me.xx2bab.bro.base.BroErrorType;
+import me.xx2bab.bro.core.Bro;
+import me.xx2bab.bro.core.base.BroErrorType;
 import me.xx2bab.bro.common.BroProperties;
-import me.xx2bab.bro.util.BroRuntimeLog;
-import me.xx2bab.bro.util.ConvertUtils;
+import me.xx2bab.bro.core.util.BroRuntimeLog;
+import me.xx2bab.bro.core.util.ConvertUtils;
 
 public class ActivityRudder {
 

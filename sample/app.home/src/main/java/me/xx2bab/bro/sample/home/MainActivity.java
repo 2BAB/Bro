@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import me.xx2bab.bro.Bro;
+import me.xx2bab.bro.core.Bro;
 import me.xx2bab.bro.sample.common.api.ISettingsApi;
 
 public class MainActivity extends AppCompatActivity {

@@ -1,4 +1,4 @@
-package me.xx2bab.bro.api;
+package me.xx2bab.bro.core.api;
 
 import me.xx2bab.bro.common.IBroApi;
 

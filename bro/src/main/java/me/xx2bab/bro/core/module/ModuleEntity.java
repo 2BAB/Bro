@@ -1,4 +1,4 @@
-package me.xx2bab.bro.module;
+package me.xx2bab.bro.core.module;
 
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroModule;

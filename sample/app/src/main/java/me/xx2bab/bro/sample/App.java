@@ -3,15 +3,16 @@ package me.xx2bab.bro.sample;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
-import me.xx2bab.bro.Bro;
-import me.xx2bab.bro.base.BroConfig;
-import me.xx2bab.bro.base.IBroInterceptor;
-import me.xx2bab.bro.base.IBroMonitor;
+import me.xx2bab.bro.core.Bro;
+import me.xx2bab.bro.core.base.BroConfig;
+import me.xx2bab.bro.core.base.IBroInterceptor;
+import me.xx2bab.bro.core.base.IBroMonitor;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.common.IBroModule;
-import me.xx2bab.bro.activity.ActivityRudder;
+import me.xx2bab.bro.core.activity.ActivityRudder;
 import me.xx2bab.bro.sample.defaultpage.DefaultActivity;
 
 public class App extends Application {
@@ -43,6 +44,7 @@ public class App extends Application {
 
             @Override
             public boolean onStartActivity(Context context, String target, Intent intent, BroProperties properties) {
+                Log.i("App", properties.toJsonString());
                 return false;
             }
 
@@ -75,7 +77,6 @@ public class App extends Application {
         };
 
         Bro.init(baseContext,
-                new BroInfoMapImpl(),
                 interceptor,
                 monitor,
                 config);

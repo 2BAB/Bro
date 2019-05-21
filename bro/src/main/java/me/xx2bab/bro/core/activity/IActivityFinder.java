@@ -1,4 +1,4 @@
-package me.xx2bab.bro.activity;
+package me.xx2bab.bro.core.activity;
 
 import android.content.Context;
 import android.content.Intent;

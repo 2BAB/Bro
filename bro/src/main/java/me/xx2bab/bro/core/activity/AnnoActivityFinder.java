@@ -1,12 +1,12 @@
-package me.xx2bab.bro.activity;
+package me.xx2bab.bro.core.activity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import me.xx2bab.bro.Bro;
+import me.xx2bab.bro.core.Bro;
 import me.xx2bab.bro.common.BroProperties;
-import me.xx2bab.bro.util.ConvertUtils;
+import me.xx2bab.bro.core.util.ConvertUtils;
 
 
 public class AnnoActivityFinder implements IActivityFinder {

@@ -1,8 +1,8 @@
-package me.xx2bab.bro.util;
+package me.xx2bab.bro.core.util;
 
 import android.util.Log;
 
-import me.xx2bab.bro.Bro;
+import me.xx2bab.bro.core.Bro;
 
 public class BroRuntimeLog {
 

@@ -1,4 +1,4 @@
-package me.xx2bab.bro.util;
+package me.xx2bab.bro.core.util;
 
 public class Constants {
 
