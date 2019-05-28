@@ -9,12 +9,12 @@ import me.xx2bab.bro.common.IBroModule;
 
 public interface IBroInterceptor {
 
-    boolean onFindActivity(Context context, String target, Intent intent, BroProperties properties);
+    boolean beforeFindActivity(Context context, String target, Intent intent, BroProperties properties);
 
-    boolean onStartActivity(Context context, String target, Intent intent, BroProperties properties);
+    boolean beforeStartActivity(Context context, String target, Intent intent, BroProperties properties);
 
-    boolean onGetApi(Context context, String target, IBroApi api, BroProperties properties);
+    boolean beforeGetApi(Context context, String target, IBroApi api, BroProperties properties);
 
-    boolean onGetModule(Context context, String target, IBroModule module, BroProperties properties);
+    boolean beforeGetModule(Context context, String target, IBroModule module, BroProperties properties);
 
 }

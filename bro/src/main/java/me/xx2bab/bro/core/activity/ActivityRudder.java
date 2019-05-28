@@ -42,7 +42,7 @@ public class ActivityRudder {
         intent.setData(builder.targetUri);
 
         try {
-            if (Bro.getBroInterceptor().onFindActivity(builder.context, builder.targetUri.toString(), intent, properties)) {
+            if (Bro.getBroInterceptor().beforeFindActivity(builder.context, builder.targetUri.toString(), intent, properties)) {
                 this.intercepted = true;
                 return;
             }
@@ -73,7 +73,7 @@ public class ActivityRudder {
         injectParamsFromUri(intent, builder.targetUri);
 
         try {
-            if (Bro.getBroInterceptor().onStartActivity(builder.context, builder.targetUri.toString(), intent, properties)) {
+            if (Bro.getBroInterceptor().beforeStartActivity(builder.context, builder.targetUri.toString(), intent, properties)) {
                 this.intercepted = true;
                 return;
             }

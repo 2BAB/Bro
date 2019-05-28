@@ -11,22 +11,22 @@ import me.xx2bab.bro.common.IBroModule;
 public class DefaultInterceptor implements IBroInterceptor {
 
     @Override
-    public boolean onFindActivity(Context context, String target, Intent intent, BroProperties properties) {
+    public boolean beforeFindActivity(Context context, String target, Intent intent, BroProperties properties) {
         return false;
     }
 
     @Override
-    public boolean onStartActivity(Context context, String target, Intent intent, BroProperties properties) {
+    public boolean beforeStartActivity(Context context, String target, Intent intent, BroProperties properties) {
         return false;
     }
 
     @Override
-    public boolean onGetApi(Context context, String target, IBroApi api, BroProperties properties) {
+    public boolean beforeGetApi(Context context, String target, IBroApi api, BroProperties properties) {
         return false;
     }
 
     @Override
-    public boolean onGetModule(Context context, String target, IBroModule module, BroProperties properties) {
+    public boolean beforeGetModule(Context context, String target, IBroModule module, BroProperties properties) {
         return false;
     }
 

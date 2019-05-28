@@ -49,7 +49,7 @@ public class ModuleRudder {
             }
         }
 
-        if (Bro.getBroInterceptor().onGetModule(Bro.appContext,
+        if (Bro.getBroInterceptor().beforeGetModule(Bro.appContext,
                 moduleNick,
                 broModule,
                 properties)) {

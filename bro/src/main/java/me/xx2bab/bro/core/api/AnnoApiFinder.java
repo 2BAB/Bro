@@ -36,7 +36,7 @@ public class AnnoApiFinder implements IApiFinder {
             }
         }
 
-        if (Bro.getBroInterceptor().onGetApi(Bro.appContext,
+        if (Bro.getBroInterceptor().beforeGetApi(Bro.appContext,
                 apiInterface.getCanonicalName(),
                 broApi,
                 properties)) {
@@ -61,7 +61,7 @@ public class AnnoApiFinder implements IApiFinder {
                 break;
             }
         }
-        if (!Bro.getBroInterceptor().onGetApi(Bro.appContext,
+        if (!Bro.getBroInterceptor().beforeGetApi(Bro.appContext,
                 nick,
                 api,
                 properties)) {
