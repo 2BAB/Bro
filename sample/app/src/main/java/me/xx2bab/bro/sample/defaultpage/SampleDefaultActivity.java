@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import me.xx2bab.bro.sample.R;
 
 
-public class DefaultActivity extends AppCompatActivity {
+public class SampleDefaultActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

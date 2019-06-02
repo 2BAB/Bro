@@ -5,6 +5,7 @@ import me.xx2bab.bro.common.IBroModule;
 
 @BroModule("SettingsModule")
 public class SettingsModule implements IBroModule {
+
     @Override
     public void onCreate() {
 

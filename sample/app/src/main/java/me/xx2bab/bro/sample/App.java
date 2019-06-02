@@ -13,7 +13,7 @@ import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.common.IBroModule;
 import me.xx2bab.bro.core.activity.ActivityRudder;
-import me.xx2bab.bro.sample.defaultpage.DefaultActivity;
+import me.xx2bab.bro.sample.defaultpage.SampleDefaultActivity;
 
 public class App extends Application {
 
@@ -32,29 +32,29 @@ public class App extends Application {
 
     private void initBro(Context baseContext) {
         BroConfig config = new BroConfig.Builder()
-                .setDefaultActivity(DefaultActivity.class)
+                .setDefaultActivity(SampleDefaultActivity.class)
                 .setLogEnable(true)
                 .build();
         IBroInterceptor interceptor = new IBroInterceptor() {
 
             @Override
-            public boolean onFindActivity(Context context, String target, Intent intent, BroProperties properties) {
+            public boolean beforeFindActivity(Context context, String target, Intent intent, BroProperties properties) {
                 return false;
             }
 
             @Override
-            public boolean onStartActivity(Context context, String target, Intent intent, BroProperties properties) {
+            public boolean beforeStartActivity(Context context, String target, Intent intent, BroProperties properties) {
                 Log.i("App", properties.toJsonString());
                 return false;
             }
 
             @Override
-            public boolean onGetApi(Context context, String target, IBroApi api, BroProperties properties) {
+            public boolean beforeGetApi(Context context, String target, IBroApi api, BroProperties properties) {
                 return false;
             }
 
             @Override
-            public boolean onGetModule(Context context, String target, IBroModule module, BroProperties properties) {
+            public boolean beforeGetModule(Context context, String target, IBroModule module, BroProperties properties) {
                 return false;
             }
         };

@@ -2,7 +2,7 @@
     package="me.xx2bab.bro.core" >
 
     <application>
-        <activity android:name=".defaultor.DefaultActivity">
+        <activity android:name="me.xx2bab.bro.core.defaultor.DefaultActivity">
         </activity>
     </application>
 
