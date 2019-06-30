@@ -4,8 +4,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import me.xx2bab.bro.sample.settings.PiCalculator;
-
 /**
  * Created on 2019-05-28
  *

@@ -47,7 +47,7 @@ public class HomeActivity extends AppCompatActivity {
                 });
 
         homeFragment = HomeFragment.newInstance(null);
-        mineFragment = Bro.getApi(ISettingsApi.class).getMineFragment();
+        mineFragment = Bro.get().getApi(ISettingsApi.class).getMineFragment();
 
         getFragmentManager().beginTransaction().replace(R.id.home_fragment_container, homeFragment).commitAllowingStateLoss();
     }

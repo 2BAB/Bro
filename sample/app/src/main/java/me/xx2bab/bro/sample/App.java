@@ -5,14 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import me.xx2bab.bro.core.Bro;
-import me.xx2bab.bro.core.base.BroConfig;
-import me.xx2bab.bro.core.base.IBroInterceptor;
-import me.xx2bab.bro.core.base.IBroMonitor;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.common.IBroModule;
-import me.xx2bab.bro.core.activity.ActivityRudder;
+import me.xx2bab.bro.core.Bro;
+import me.xx2bab.bro.core.BroBuilder;
+import me.xx2bab.bro.core.activity.Builder;
+import me.xx2bab.bro.core.base.IBroInterceptor;
+import me.xx2bab.bro.core.base.IBroMonitor;
 import me.xx2bab.bro.sample.defaultpage.SampleDefaultActivity;
 
 public class App extends Application {
@@ -31,10 +31,6 @@ public class App extends Application {
     }
 
     private void initBro(Context baseContext) {
-        BroConfig config = new BroConfig.Builder()
-                .setDefaultActivity(SampleDefaultActivity.class)
-                .setLogEnable(true)
-                .build();
         IBroInterceptor interceptor = new IBroInterceptor() {
 
             @Override
@@ -61,7 +57,7 @@ public class App extends Application {
         IBroMonitor monitor = new IBroMonitor() {
 
             @Override
-            public void onActivityRudderException(int errorCode, ActivityRudder.Builder builder) {
+            public void onActivityRudderException(int errorCode, Builder builder) {
 
             }
 
@@ -76,9 +72,11 @@ public class App extends Application {
             }
         };
 
-        Bro.init(baseContext,
-                interceptor,
-                monitor,
-                config);
+        BroBuilder broBuilder = new BroBuilder()
+                .setDefaultActivity(SampleDefaultActivity.class)
+                .setMonitor(monitor)
+                .setInterceptor(interceptor);
+
+        Bro.initializeBro(this, broBuilder);
     }
 }

@@ -9,8 +9,7 @@ import androidx.test.runner.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import me.xx2bab.bro.sample.settings.R;
-import me.xx2bab.bro.sample.settings.SettingsActivity;
+import me.xx2bab.bro.sample.profile.R;
 
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 

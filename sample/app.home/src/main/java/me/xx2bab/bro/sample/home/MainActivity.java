@@ -20,17 +20,17 @@ public class MainActivity extends AppCompatActivity {
     public void startActivityUsingAnnotation(View view) {
         Bundle bundle = new Bundle();
         bundle.putString("bundleparam", "123");
-        Bro.startActivityFrom(this)
+        Bro.get().startActivityFrom(this)
                 .withExtras(bundle)
                 .toUri(Uri.parse("broapp://home?urlparam=233"));
     }
 
     public void startActivityUsingIntentFilter(View view) {
-        Bro.startActivityFrom(this).toUri(Uri.parse("broapp://settings"));
+        Bro.get().startActivityFrom(this).toUri(Uri.parse("broapp://settings"));
     }
 
     public void getApi(View view) {
-        int pi = Bro.getApi(ISettingsApi.class).getPi();
+        int pi = Bro.get().getApi(ISettingsApi.class).getPi();
         Toast.makeText(this, pi + "", Toast.LENGTH_SHORT).show();
     }
 

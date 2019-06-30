@@ -1,4 +1,4 @@
-package me.xx2bab.bro.sample.settings;
+package me.xx2bab.bro.sample.profile;
 
 import android.util.Log;
 

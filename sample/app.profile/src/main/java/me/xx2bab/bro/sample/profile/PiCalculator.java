@@ -1,4 +1,4 @@
-package me.xx2bab.bro.sample.settings;
+package me.xx2bab.bro.sample.profile;
 
 /**
  * Created on 2019-05-28
