@@ -10,7 +10,7 @@ object BuildConfig {
         const val minSdkVersion = 15
         const val targetSdkVersion = 28
 
-        const val broDevVersion = "0.10.17-SNAPSHOT"
+        const val broDevVersion = "0.10.20-SNAPSHOT"
 
         val broSourceCompatibilityVersion = JavaVersion.VERSION_1_7
         val broTargetCompatibilityVersion = JavaVersion.VERSION_1_7
@@ -22,6 +22,7 @@ object BuildConfig {
         const val javapoet = "com.squareup:javapoet:1.11.1"
         const val fastjson = "com.alibaba:fastjson:1.1.71.android"
         const val orgJson = "org.json:json:20160212"
+        const val supportAnno = "com.android.support:support-annotations:28.0.0"
     }
 
 }

@@ -1,15 +1,15 @@
 package me.xx2bab.bro.core.defaultor;
 
 
+import me.xx2bab.bro.core.activity.Builder;
 import me.xx2bab.bro.core.base.IBroMonitor;
-import me.xx2bab.bro.core.activity.ActivityRudder;
 import me.xx2bab.bro.core.util.BroRuntimeLog;
 
 public class DefaultMonitor implements IBroMonitor {
 
     @Override
-    public void onActivityRudderException(int errorCode, ActivityRudder.Builder builder) {
-        BroRuntimeLog.e("onActivityRudderException: " + errorCode);
+    public void onActivityRudderException(int errorCode, Builder builder) {
+
     }
 
     @Override

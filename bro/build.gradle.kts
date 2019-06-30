@@ -35,6 +35,7 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
 
     implementation(BuildConfig.Deps.fastjson)
+    implementation(BuildConfig.Deps.supportAnno)
 
     if (project.hasProperty("broPublish")) {
         api(BuildConfig.Deps.broAnnotationsDev)

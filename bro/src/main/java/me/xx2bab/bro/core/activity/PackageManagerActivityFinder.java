@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import me.xx2bab.bro.core.Bro;
+import me.xx2bab.bro.core.BroContext;
 
 public class PackageManagerActivityFinder implements IActivityFinder {
 
@@ -19,12 +19,12 @@ public class PackageManagerActivityFinder implements IActivityFinder {
     }
 
     @Override
-    public Intent find(Context context, Intent intent) {
+    public Intent find(Context context, Intent intent, BroContext broContext) {
         intent.setPackage(context.getPackageName());
         ResolveInfo resolveInfo = context.getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
         if (resolveInfo == null) { // support
             List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-            resolveInfo = optimum(list);
+            resolveInfo = optimum(context, list);
         }
 
         if (resolveInfo != null) {
@@ -38,7 +38,7 @@ public class PackageManagerActivityFinder implements IActivityFinder {
         return null;
     }
 
-    protected ResolveInfo optimum(final List<ResolveInfo> list) {
+    protected ResolveInfo optimum(Context context, final List<ResolveInfo> list) {
 
         if (list == null)
             return null;
@@ -51,11 +51,11 @@ public class PackageManagerActivityFinder implements IActivityFinder {
         for (final ResolveInfo info : list) {
 
             if (!TextUtils.isEmpty(info.activityInfo.packageName)) {
-                if (info.activityInfo.packageName.endsWith(Bro.appContext.getPackageName())) {
+                if (info.activityInfo.packageName.endsWith(context.getPackageName())) {
                     resolveInfo.add(new SortedResolveInfo(info, info.priority, 1));
                 } else {
                     final String p1 = info.activityInfo.packageName;
-                    final String p2 = Bro.appContext.getPackageName();
+                    final String p2 = context.getPackageName();
                     final String[] l1 = p1.split("\\.");
                     final String[] l2 = p2.split("\\.");
                     if (l1.length >= 2 && l2.length >= 2) {

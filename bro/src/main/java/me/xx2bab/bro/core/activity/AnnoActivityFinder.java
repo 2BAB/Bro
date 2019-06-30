@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import me.xx2bab.bro.core.Bro;
 import me.xx2bab.bro.common.BroProperties;
+import me.xx2bab.bro.core.BroContext;
 import me.xx2bab.bro.core.util.ConvertUtils;
 
 
@@ -15,9 +15,9 @@ public class AnnoActivityFinder implements IActivityFinder {
     }
 
     @Override
-    public Intent find(Context context, Intent intent) {
+    public Intent find(Context context, Intent intent, BroContext broContext) {
         String name = ConvertUtils.convertUriToStringWithoutParams(intent.getData());
-        BroProperties properties = Bro.getBroMap().getBroActivityMap().get(name);
+        BroProperties properties = broContext.routingTable.getBroActivityMap().get(name);
 
         if (properties == null) {
             return null;
@@ -35,6 +35,5 @@ public class AnnoActivityFinder implements IActivityFinder {
             return null;
         }
     }
-
 
 }

@@ -2,21 +2,20 @@ package me.xx2bab.bro.core.util;
 
 import android.util.Log;
 
-import me.xx2bab.bro.core.Bro;
-
 public class BroRuntimeLog {
 
-    private static final String TAG = "== Bro ==";
+    private static final String TAG = "[Bro] ";
+    public static boolean logEnabled = true;
 
     public static void i(String msg) {
-        if (!Bro.getConfig().isLogEnabled()) {
+        if (logEnabled) {
             return;
         }
         Log.i(TAG, msg);
     }
 
     public static void e(String msg) {
-        if (!Bro.getConfig().isLogEnabled()) {
+        if (logEnabled) {
             return;
         }
         Log.e(TAG, msg);

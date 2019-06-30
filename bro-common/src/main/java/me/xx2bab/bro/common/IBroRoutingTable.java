@@ -2,7 +2,7 @@ package me.xx2bab.bro.common;
 
 import java.util.HashMap;
 
-public interface IBroMap {
+public interface IBroRoutingTable {
 
     HashMap<String, BroProperties> getBroActivityMap();
 

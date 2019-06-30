@@ -1,92 +1,65 @@
 package me.xx2bab.bro.core;
 
 import android.content.Context;
+import android.support.annotation.VisibleForTesting;
 
-import me.xx2bab.bro.common.Constants;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import me.xx2bab.bro.common.IBroApi;
-import me.xx2bab.bro.common.IBroMap;
 import me.xx2bab.bro.common.IBroModule;
 import me.xx2bab.bro.core.activity.ActivityRudder;
-import me.xx2bab.bro.core.base.BroConfig;
-import me.xx2bab.bro.core.base.IBroInterceptor;
-import me.xx2bab.bro.core.base.IBroMonitor;
-import me.xx2bab.bro.core.defaultor.DefaultInterceptor;
-import me.xx2bab.bro.core.defaultor.DefaultMonitor;
+import me.xx2bab.bro.core.activity.Builder;
+import me.xx2bab.bro.core.api.ApiRudder;
+import me.xx2bab.bro.core.module.ModuleRudder;
 
 public class Bro {
 
-    private static IBroMap broMap;
-    private static IBroInterceptor interceptor;
-    private static IBroMonitor monitor;
-    private static BroConfig config;
+    private static AtomicBoolean initialized = new AtomicBoolean();
+    private static volatile Bro bro;
 
-    private static BroManager broManager;
+    private ActivityRudder activityRudder;
+    private ApiRudder apiRudder;
+    private ModuleRudder moduleRudder;
+    private BroContext broContext;
 
-    public static Context appContext;
+    Bro(BroContext broContext) {
+        this.broContext = broContext;
+        activityRudder = new ActivityRudder(broContext);
+        apiRudder = new ApiRudder(broContext);
+        moduleRudder = new ModuleRudder(broContext);
+    }
 
-    public static void init(Context appContext,
-                            IBroInterceptor interceptor,
-                            IBroMonitor monitor,
-                            BroConfig config) {
-        Bro.appContext = appContext;
-        Bro.broMap = getBroMap();
-        Bro.interceptor = interceptor;
-        Bro.monitor = monitor;
-        Bro.config = config;
-
-        if (interceptor == null) {
-            Bro.interceptor = new DefaultInterceptor();
+    public static void initializeBro(Context context, BroBuilder builder) {
+        if (initialized.get()) {
+            return;
         }
-
-        if (monitor == null) {
-            Bro.monitor = new DefaultMonitor();
-        }
-        broManager = new BroManager(broMap);
+        initialized.set(true);
+        bro = builder.build(context.getApplicationContext());
     }
 
-    public static synchronized IBroMap getBroMap() {
-        if (broMap == null) {
-            try {
-                broMap = (IBroMap) Class.forName(Constants.MERGED_MAP_PACKAGE_NAME + "."
-                        + Constants.MERGED_MAP_FILE_NAME).newInstance();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        return broMap;
+    public static Bro get() {
+        return bro;
     }
 
-    public static IBroInterceptor getBroInterceptor() {
-        return interceptor;
+    @VisibleForTesting
+    public static void set(Context context, BroBuilder builder) {
+        bro = builder.build(context.getApplicationContext());
     }
 
-    public static IBroMonitor getBroMonitor() {
-        return monitor;
+    public Builder startActivityFrom(Context context) {
+        return activityRudder.startActivity(context);
     }
 
-    public static BroConfig getConfig() {
-        return config;
+    public <T extends IBroApi> T getApi(Class<T> apiInterface) {
+        return apiRudder.getApi(apiInterface);
     }
 
-    public static ActivityRudder.Builder startActivityFrom(Context context) {
-        return broManager.startPageFrom(context);
+    public IBroApi getApi(String apiInterface) {
+        return apiRudder.getApi(apiInterface);
     }
 
-    public static <T extends IBroApi> T getApi(Class<T> apiInterface) {
-        return broManager.getApi(apiInterface);
+    public IBroModule getModule(String moduleNick) {
+        return moduleRudder.getModule(moduleNick);
     }
-
-    public static IBroApi getApi(String apiInterface) {
-        return broManager.getApi(apiInterface);
-    }
-
-    public static IBroModule getModule(String moduleNick) {
-        return broManager.getModule(moduleNick);
-    }
-
 
 }

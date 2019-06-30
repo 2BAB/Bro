@@ -3,25 +3,32 @@ package me.xx2bab.bro.core.module;
 import java.util.HashMap;
 import java.util.Map;
 
-import me.xx2bab.bro.core.Bro;
-import me.xx2bab.bro.core.base.BroErrorType;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroModule;
+import me.xx2bab.bro.core.BroContext;
+import me.xx2bab.bro.core.base.BroErrorType;
+import me.xx2bab.bro.core.base.IBroInterceptor;
+import me.xx2bab.bro.core.base.IBroMonitor;
 import me.xx2bab.bro.core.util.BroRuntimeLog;
 
 public class ModuleRudder {
 
-    private HashMap<String, BroProperties> moduleMap;
     private Map<String, ModuleEntity> moduleInstanceMap;
+    private BroContext broContext;
+    private IBroInterceptor interceptor;
+    private IBroMonitor monitor;
 
-    public ModuleRudder(HashMap<String, BroProperties> moduleMap) {
-        this.moduleMap = moduleMap;
+    public ModuleRudder(BroContext broContext) {
+        this.broContext = broContext;
+        interceptor = broContext.interceptor;
+        monitor = broContext.monitor;
         initModuleClasses();
     }
 
     public void initModuleClasses() {
         moduleInstanceMap = new HashMap<>();
-        for (Map.Entry<String, BroProperties> entry : moduleMap.entrySet()) {
+        for (Map.Entry<String, BroProperties> entry : broContext.routingTable.getBroModuleMap()
+                .entrySet()) {
             String name = entry.getValue().clazz;
             try {
                 IBroModule instance = (IBroModule) Class.forName(name).newInstance();
@@ -33,7 +40,7 @@ public class ModuleRudder {
                 moduleInstanceMap.put(entry.getKey(), bean);
             } catch (Exception e) {
                 BroRuntimeLog.e("Bro Module named " + name + " init failed : " + e.getMessage());
-                Bro.getBroMonitor().onModuleException(BroErrorType.MODULE_INIT_ERROR);
+                monitor.onModuleException(BroErrorType.MODULE_INIT_ERROR);
             }
         }
     }
@@ -49,7 +56,7 @@ public class ModuleRudder {
             }
         }
 
-        if (Bro.getBroInterceptor().beforeGetModule(Bro.appContext,
+        if (interceptor.beforeGetModule(broContext.context.get(),
                 moduleNick,
                 broModule,
                 properties)) {
@@ -57,7 +64,7 @@ public class ModuleRudder {
         }
         if (broModule == null) {
             BroRuntimeLog.e("The Module Nick \"" + moduleNick + "\" is not found by Bro!");
-            Bro.getBroMonitor().onModuleException(BroErrorType.MODULE_CANT_FIND_TARGET);
+            monitor.onModuleException(BroErrorType.MODULE_CANT_FIND_TARGET);
             return null;
         }
         return broModule;

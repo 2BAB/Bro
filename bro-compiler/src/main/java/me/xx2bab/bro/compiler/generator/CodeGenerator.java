@@ -22,7 +22,7 @@ import javax.lang.model.element.Modifier;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.CommonUtils;
 import me.xx2bab.bro.common.Constants;
-import me.xx2bab.bro.common.IBroMap;
+import me.xx2bab.bro.common.IBroRoutingTable;
 import me.xx2bab.bro.compiler.util.BroCompileLogger;
 import me.xx2bab.bro.compiler.util.FileUtil;
 
@@ -111,7 +111,7 @@ public class CodeGenerator {
         try {
             TypeSpec.Builder builder = TypeSpec.classBuilder(Constants.MERGED_MAP_FILE_NAME)
                     .addModifiers(Modifier.PUBLIC)
-                    .addSuperinterface(IBroMap.class);
+                    .addSuperinterface(IBroRoutingTable.class);
 
             for (Map.Entry<String, Map<String, BroProperties>> entry : exposeMaps.entrySet()) {
                 builder.addMethod(generateMapMethod("get" + entry.getKey() + "Map", entry.getValue()));
