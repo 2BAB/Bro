@@ -1,8 +1,8 @@
 buildscript {
 
-    // Set project ext values as the workaround to uniform all values that can not set in BuildConfig,
-    // because buildscript can not read BuildConfig fields from the script that will be compiled
-    // based on buildscript
+    // Set project ext values as the workaround to collect all values that can't be set in buildSrc,
+    // because buildscript can not read anything from the scripts(buildSrc) that will be compiled
+    // based on this buildscript
     project.extra["kotlinVersion"] = "1.3.31"
     project.extra["agpVersion"] = "3.4.1"
     project.extra["brpVersion"] = "0.9.1"

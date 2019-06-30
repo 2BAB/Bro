@@ -13,8 +13,19 @@ Inspired From the topic <From.Containerization.To.Modularity> (Author: Oasis Fen
 
 - Product
   - Selective Installation(light-weight initial install)
-  - Hybrid-friendly(web&native,mixandmatch)
+  - Hybrid-friendly(web&native, mixandmatch)
   - Open to (3rd-party) extensions
+  
+
+## Git Commit Check
+
+Check this [link](https://medium.com/walmartlabs/check-out-these-5-git-tips-before-your-next-commit-c1c7a5ae34d1) to make a meaningful commit message.
+
+So far we haven't added any hook tool, but follow the regex below:
+
+```
+(chore|feat|docs|fix|refactor|style|test|sonar|hack|release)(:)( )(.{0,80})
+```
   
 ## To be continued..
 
