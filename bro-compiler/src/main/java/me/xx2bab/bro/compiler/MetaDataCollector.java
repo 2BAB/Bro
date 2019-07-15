@@ -1,4 +1,4 @@
-package me.xx2bab.bro.compiler.generator;
+package me.xx2bab.bro.compiler;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -23,10 +23,11 @@ import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.CommonUtils;
 import me.xx2bab.bro.common.Constants;
 import me.xx2bab.bro.common.IBroRoutingTable;
+import me.xx2bab.bro.compiler.generator.DocGenerator;
 import me.xx2bab.bro.compiler.util.BroCompileLogger;
 import me.xx2bab.bro.compiler.util.FileUtil;
 
-public class CodeGenerator {
+public class MetaDataCollector {
 
     /**
      * Step 1 :

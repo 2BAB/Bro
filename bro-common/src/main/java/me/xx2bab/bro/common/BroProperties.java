@@ -6,11 +6,11 @@ import org.json.JSONObject;
  * Extra properties description for Bro annotations.
  * <p>
  * // @NeedLogin
- * // @BroActivty("Main")
+ * // @BroActivity("Main")
  * class MainActivity {}
  * <p>
  * 1. clazz : is the full class name of MainActivity like com.example.MainActivity;
- * 2. extraParam : NeedLogin will be an extraParam,formatted by JSON, value is set only by value(),
+ * 2. extraParam : NeedLogin will be an extraParam, formatted by JSON, value is set only by value(),
  * a example maybe like {"com.company.NeedLogin":"blahblah"};
  */
 public class BroProperties {

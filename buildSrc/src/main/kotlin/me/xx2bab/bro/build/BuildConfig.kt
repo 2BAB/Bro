@@ -10,7 +10,7 @@ object BuildConfig {
         const val minSdkVersion = 15
         const val targetSdkVersion = 28
 
-        const val broDevVersion = "0.10.20-SNAPSHOT"
+        const val broDevVersion = "0.10.21-SNAPSHOT"
 
         val broSourceCompatibilityVersion = JavaVersion.VERSION_1_7
         val broTargetCompatibilityVersion = JavaVersion.VERSION_1_7

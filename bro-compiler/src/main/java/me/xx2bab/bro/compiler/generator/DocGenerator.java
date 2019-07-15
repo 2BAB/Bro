@@ -6,7 +6,7 @@ import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.compiler.util.FileUtil;
 import me.xx2bab.bro.compiler.util.MarkdownUtil;
 
-public class DocGenerator {
+public class DocGenerator implements IBroGenerator{
 
     public static void generateDoc(String rootProjectPath,
                                    Map<String, Map<String, BroProperties>> exposeMaps) {
@@ -30,6 +30,11 @@ public class DocGenerator {
             builder.append(MarkdownUtil.makeTableForTwo(entry.getValue(), "Nick", "PackageName"));
             builder.append("\n");
         }
+    }
+
+    @Override
+    public void onGenerate(String broBuildDirectory, Map<String, Map<String, BroProperties>> exposeMaps) {
+
     }
 
 }

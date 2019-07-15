@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Completion;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -31,11 +32,9 @@ import me.xx2bab.bro.annotations.BroModule;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.Constants;
 import me.xx2bab.bro.common.IBroApi;
-import me.xx2bab.bro.compiler.generator.CodeGenerator;
 import me.xx2bab.bro.compiler.util.BroCompileLogger;
 
-//@AutoService(Processor.class)
-public class BroCompilerProcessor extends AbstractProcessor {
+public class BroAnnotationProcessor extends AbstractProcessor {
 
     private static List<Class<? extends Annotation>> supportedAnnotations;
 
@@ -97,21 +96,21 @@ public class BroCompilerProcessor extends AbstractProcessor {
             }
 
             jsonFiles = new ArrayList<>();
-            CodeGenerator.findModuleJsonFiles(jsonFiles, hostAllAssetsSourcePaths);
+            MetaDataCollector.findModuleJsonFiles(jsonFiles, hostAllAssetsSourcePaths);
 
             // If the host expose nothing, the processor will not process the file-generation,
             // so hack this situation here.
             Map<String, Map<String, BroProperties>> exposeMaps = createEmptyExposeMaps();
-            CodeGenerator.collectOtherModulesMapFile(jsonFiles, exposeMaps);
-            CodeGenerator.generateMergeMapFile(hostPackageName, exposeMaps, filer, null, moduleBroBuildDir);
+            MetaDataCollector.collectOtherModulesMapFile(jsonFiles, exposeMaps);
+            MetaDataCollector.generateMergeMapFile(hostPackageName, exposeMaps, filer, null, moduleBroBuildDir);
         }
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
-        if (moduleBuildType.equals("Plugadget")) {
-            return true;
-        }
+//        if (moduleBuildType.equals("Plugadget")) {
+//            return true;
+//        }
 
         BroCompileLogger.i("bro-compiler processor is processing");
 
@@ -139,11 +138,11 @@ public class BroCompilerProcessor extends AbstractProcessor {
 
         if (sthHasBeenExposed) {
             if (moduleBuildType.equals("Application")) { // merge all modules map file (json)
-                File existFile = CodeGenerator.findCurrentAptGenFolder(Constants.MERGED_MAP_FILE_NAME + ".java", new File(hostAptPath));
-                CodeGenerator.collectOtherModulesMapFile(jsonFiles, exposeMaps);
-                CodeGenerator.generateMergeMapFile(hostPackageName, exposeMaps, filer, existFile, moduleBroBuildDir);
+                File existFile = MetaDataCollector.findCurrentAptGenFolder(Constants.MERGED_MAP_FILE_NAME + ".java", new File(hostAptPath));
+                MetaDataCollector.collectOtherModulesMapFile(jsonFiles, exposeMaps);
+                MetaDataCollector.generateMergeMapFile(hostPackageName, exposeMaps, filer, existFile, moduleBroBuildDir);
             } else {
-                CodeGenerator.generateModuleMapToJson(moduleName, libBundlesAssetsPath, exposeMaps);
+                MetaDataCollector.generateModuleMapToJson(moduleName, libBundlesAssetsPath, exposeMaps);
             }
         }
 
@@ -245,7 +244,6 @@ public class BroCompilerProcessor extends AbstractProcessor {
         for (Class<? extends Annotation> clazz : supportedAnnotations) {
             types.add(clazz.getCanonicalName());
         }
-
         return types;
     }
 
