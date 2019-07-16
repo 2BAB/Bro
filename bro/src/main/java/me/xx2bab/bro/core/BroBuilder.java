@@ -169,8 +169,8 @@ public class BroBuilder {
     private IBroRoutingTable getDefaultRoutingTable() {
         IBroRoutingTable defaultRoutingTable = null;
         try {
-            defaultRoutingTable = (IBroRoutingTable) Class.forName(Constants.MERGED_MAP_PACKAGE_NAME
-                    + "." + Constants.MERGED_MAP_FILE_NAME).newInstance();
+            defaultRoutingTable = (IBroRoutingTable) Class.forName(Constants.ROUTING_TABLE_PACKAGE_NAME
+                    + "." + Constants.ROUTING_TABLE_FILE_NAME).newInstance();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {

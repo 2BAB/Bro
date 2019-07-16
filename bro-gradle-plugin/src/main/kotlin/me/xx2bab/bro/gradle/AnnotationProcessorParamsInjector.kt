@@ -16,9 +16,9 @@ object AnnotationProcessorParamsInjector {
             val buildDir = BuildUtils.getBroBuildPath(project)
 
             // common args
-            args[Constants.KEY_MODULE_NAME] = moduleName
-            args[Constants.KEY_MODULE_BUILD_TYPE] = if (isApplication) "Application" else "Library"
-            args[Constants.KEY_MODULE_BUILD_DIR] = buildDir
+            args[Constants.ANNO_PROC_ARG_MODULE_NAME] = moduleName
+            args[Constants.ANNO_PROC_ARG_MODULE_BUILD_TYPE] = if (isApplication) "Application" else "Library"
+            args[Constants.ANNO_PROC_ARG_MODULE_BUILD_DIR] = buildDir
 
             // different arg(s) in each condition
             if (isApplication) {
@@ -28,11 +28,11 @@ object AnnotationProcessorParamsInjector {
                 val allMergedAssetsPaths = getAllMergedAssets(variant.name.capitalize(), project)
                 val aptPath = (project.buildDir.absolutePath + File.separator + "generated"
                         + File.separator + "source" + File.separator + "apt")
-                args[Constants.KEY_HOST_PACKAGE_NAME] = applicationId
-                args[Constants.KEY_HOST_ALL_ASSETS_SOURCE] = allMergedAssetsPaths
-                args[Constants.KEY_HOST_APT_PATH] = aptPath
+                args[Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME] = applicationId
+                args[Constants.ANNO_PROC_ARG_APP_ALL_ASSETS_SOURCE] = allMergedAssetsPaths
+                args[Constants.ANNO_PROC_ARG_APP_APT_PATH] = aptPath
             } else {
-                args[Constants.KEY_LIB_BUNDLES_ASSETS_PATH] = getBuildBundlesAssetsPath(
+                args[Constants.ANNO_PROC_ARG_LIB_BUNDLES_ASSETS_PATH] = getBuildBundlesAssetsPath(
                         variant.name.capitalize(), project)
             }
         }

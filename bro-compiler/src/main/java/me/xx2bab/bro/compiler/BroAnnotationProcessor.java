@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Completion;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -71,19 +70,19 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         Map<String, String> map = processingEnv.getOptions();
         Set<String> keys = map.keySet();
         for (String key : keys) {
-            if (Constants.KEY_MODULE_NAME.equals(key)) {
+            if (Constants.ANNO_PROC_ARG_MODULE_NAME.equals(key)) {
                 this.moduleName = map.get(key);
-            } else if (Constants.KEY_MODULE_BUILD_TYPE.equals(key)) {
+            } else if (Constants.ANNO_PROC_ARG_MODULE_BUILD_TYPE.equals(key)) {
                 this.moduleBuildType = map.get(key);
-            } else if (Constants.KEY_MODULE_BUILD_DIR.equals(key)) {
+            } else if (Constants.ANNO_PROC_ARG_MODULE_BUILD_DIR.equals(key)) {
                 this.moduleBroBuildDir = map.get(key);
-            } else if (Constants.KEY_HOST_PACKAGE_NAME.equals(key)) {
+            } else if (Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME.equals(key)) {
                 this.hostPackageName = map.get(key);
-            } else if (Constants.KEY_HOST_ALL_ASSETS_SOURCE.equals(key)) {
+            } else if (Constants.ANNO_PROC_ARG_APP_ALL_ASSETS_SOURCE.equals(key)) {
                 this.hostAllAssetsSourcePaths = map.get(key);
-            } else if (Constants.KEY_HOST_APT_PATH.equals(key)) {
+            } else if (Constants.ANNO_PROC_ARG_APP_APT_PATH.equals(key)) {
                 this.hostAptPath = map.get(key);
-            } else if (Constants.KEY_LIB_BUNDLES_ASSETS_PATH.equals(key)) {
+            } else if (Constants.ANNO_PROC_ARG_LIB_BUNDLES_ASSETS_PATH.equals(key)) {
                 this.libBundlesAssetsPath = map.get(key);
             }
 
@@ -138,7 +137,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
 
         if (sthHasBeenExposed) {
             if (moduleBuildType.equals("Application")) { // merge all modules map file (json)
-                File existFile = MetaDataCollector.findCurrentAptGenFolder(Constants.MERGED_MAP_FILE_NAME + ".java", new File(hostAptPath));
+                File existFile = MetaDataCollector.findCurrentAptGenFolder(Constants.ROUTING_TABLE_FILE_NAME + ".java", new File(hostAptPath));
                 MetaDataCollector.collectOtherModulesMapFile(jsonFiles, exposeMaps);
                 MetaDataCollector.generateMergeMapFile(hostPackageName, exposeMaps, filer, existFile, moduleBroBuildDir);
             } else {
@@ -250,13 +249,13 @@ public class BroAnnotationProcessor extends AbstractProcessor {
     @Override
     public Set<String> getSupportedOptions() {
         Set<String> compileArgs = new LinkedHashSet<>();
-        compileArgs.add(Constants.KEY_MODULE_NAME);
-        compileArgs.add(Constants.KEY_MODULE_BUILD_TYPE);
-        compileArgs.add(Constants.KEY_MODULE_BUILD_DIR);
-        compileArgs.add(Constants.KEY_HOST_PACKAGE_NAME);
-        compileArgs.add(Constants.KEY_HOST_ALL_ASSETS_SOURCE);
-        compileArgs.add(Constants.KEY_HOST_APT_PATH);
-        compileArgs.add(Constants.KEY_LIB_BUNDLES_ASSETS_PATH);
+        compileArgs.add(Constants.ANNO_PROC_ARG_MODULE_NAME);
+        compileArgs.add(Constants.ANNO_PROC_ARG_MODULE_BUILD_TYPE);
+        compileArgs.add(Constants.ANNO_PROC_ARG_MODULE_BUILD_DIR);
+        compileArgs.add(Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME);
+        compileArgs.add(Constants.ANNO_PROC_ARG_APP_ALL_ASSETS_SOURCE);
+        compileArgs.add(Constants.ANNO_PROC_ARG_APP_APT_PATH);
+        compileArgs.add(Constants.ANNO_PROC_ARG_LIB_BUNDLES_ASSETS_PATH);
         return compileArgs;
     }
 
