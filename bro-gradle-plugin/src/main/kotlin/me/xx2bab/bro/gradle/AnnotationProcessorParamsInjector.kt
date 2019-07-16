@@ -2,6 +2,7 @@ package me.xx2bab.bro.gradle
 
 import com.android.build.gradle.api.BaseVariant
 import me.xx2bab.bro.common.Constants
+import me.xx2bab.bro.common.ModuleType
 import me.xx2bab.bro.gradle.utils.BuildUtils
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
@@ -17,7 +18,8 @@ object AnnotationProcessorParamsInjector {
 
             // common args
             args[Constants.ANNO_PROC_ARG_MODULE_NAME] = moduleName
-            args[Constants.ANNO_PROC_ARG_MODULE_BUILD_TYPE] = if (isApplication) "Application" else "Library"
+            args[Constants.ANNO_PROC_ARG_MODULE_BUILD_TYPE] =
+                    if (isApplication) ModuleType.APPLICATION.name else ModuleType.LIBRARY.name
             args[Constants.ANNO_PROC_ARG_MODULE_BUILD_DIR] = buildDir
 
             // different arg(s) in each condition

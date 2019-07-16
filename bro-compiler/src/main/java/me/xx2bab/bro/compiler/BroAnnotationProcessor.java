@@ -31,6 +31,7 @@ import me.xx2bab.bro.annotations.BroModule;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.Constants;
 import me.xx2bab.bro.common.IBroApi;
+import me.xx2bab.bro.common.ModuleType;
 import me.xx2bab.bro.compiler.util.BroCompileLogger;
 
 public class BroAnnotationProcessor extends AbstractProcessor {
@@ -54,7 +55,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
     private String libBundlesAssetsPath;
     private String hostAptPath;
     private ArrayList<String> jsonFiles;
-    private String moduleBuildType;
+    private ModuleType moduleBuildType;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -73,7 +74,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
             if (Constants.ANNO_PROC_ARG_MODULE_NAME.equals(key)) {
                 this.moduleName = map.get(key);
             } else if (Constants.ANNO_PROC_ARG_MODULE_BUILD_TYPE.equals(key)) {
-                this.moduleBuildType = map.get(key);
+                this.moduleBuildType = ModuleType.valueOf(map.get(key));
             } else if (Constants.ANNO_PROC_ARG_MODULE_BUILD_DIR.equals(key)) {
                 this.moduleBroBuildDir = map.get(key);
             } else if (Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME.equals(key)) {
@@ -89,7 +90,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
             BroCompileLogger.i("EnvOption - " + key + " = " + map.get(key));
         }
 
-        if (moduleBuildType.equals("Application")) {
+        if (moduleBuildType == ModuleType.APPLICATION) {
             if (hostAllAssetsSourcePaths == null) {
                 throw new NullPointerException("Folder of assets not found, please check bro-gradle-plugin is applied correctly.");
             }
@@ -136,7 +137,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         }
 
         if (sthHasBeenExposed) {
-            if (moduleBuildType.equals("Application")) { // merge all modules map file (json)
+            if (moduleBuildType == ModuleType.APPLICATION) { // merge all modules map file (json)
                 File existFile = MetaDataCollector.findCurrentAptGenFolder(Constants.ROUTING_TABLE_FILE_NAME + ".java", new File(hostAptPath));
                 MetaDataCollector.collectOtherModulesMapFile(jsonFiles, exposeMaps);
                 MetaDataCollector.generateMergeMapFile(hostPackageName, exposeMaps, filer, existFile, moduleBroBuildDir);
