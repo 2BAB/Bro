@@ -1,74 +1,152 @@
 package me.xx2bab.bro.compiler;
 
-import com.alibaba.fastjson.JSONObject;
-
-import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 
 import me.xx2bab.bro.annotations.BroActivity;
 import me.xx2bab.bro.annotations.BroApi;
 import me.xx2bab.bro.annotations.BroModule;
-import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.Constants;
-import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.common.ModuleType;
+import me.xx2bab.bro.compiler.collector.DefaultMultiModuleMetaDataCollector;
+import me.xx2bab.bro.compiler.collector.DefaultSingleModuleMetaDataCollector;
+import me.xx2bab.bro.compiler.collector.IMultiModuleMetaDataCollector;
+import me.xx2bab.bro.compiler.collector.ISingleModuleMetaDataCollector;
 import me.xx2bab.bro.compiler.util.BroCompileLogger;
 
+/**
+ * An "abstract" annotation processor, which won't be used to generate the final routing table
+ * or any specific artifacts. Instead, it collects and generates some intermediates like:
+ * <p>
+ * 1. A json file that listing all annotating elements for each module as exposed meta data
+ * 2. A collection json file for entire app that gathers meta data from all json files above
+ * <p>
+ * It focuses on working with input arguments like compiler options, supported annotations.
+ * For collection tasks, check these two collectors below:
+ *
+ * @see DefaultSingleModuleMetaDataCollector
+ * @see DefaultMultiModuleMetaDataCollector
+ */
 public class BroAnnotationProcessor extends AbstractProcessor {
 
     private static List<Class<? extends Annotation>> supportedAnnotations;
+
+    // Meta info of each module including app and libs
+    private static List<String> compilerArgumentForModule;
+    // Meta info of the app module
+    private static List<String> compilerArgumentForApp;
+    // Meta info of lib modules
+    private static List<String> compilerArgumentForLib;
+
+    private static Set<String> compileArgs;
 
     static {
         supportedAnnotations = new ArrayList<>();
         supportedAnnotations.add(BroActivity.class);
         supportedAnnotations.add(BroApi.class);
         supportedAnnotations.add(BroModule.class);
+
+        compilerArgumentForModule = new ArrayList<>();
+        compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_NAME);
+        compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_BUILD_TYPE);
+        compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_BUILD_DIR);
+
+        compilerArgumentForApp = new ArrayList<>();
+        compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME);
+        compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_ALL_ASSETS_SOURCE);
+        compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_APT_PATH);
+
+        compilerArgumentForLib = new ArrayList<>();
+        compilerArgumentForLib.add(Constants.ANNO_PROC_ARG_LIB_BUNDLES_ASSETS_PATH);
+
+        compileArgs = new LinkedHashSet<>();
+        compileArgs.addAll(compilerArgumentForModule);
+        compileArgs.addAll(compilerArgumentForApp);
+        compileArgs.addAll(compilerArgumentForLib);
     }
 
-    private Types typeUtils;
-    private Elements elementUtils;
-    private Filer filer;
     private String moduleName;
-    private String moduleBroBuildDir;
-    private String hostPackageName;
-    private String hostAllAssetsSourcePaths;
-    private String libBundlesAssetsPath;
-    private String hostAptPath;
-    private ArrayList<String> jsonFiles;
     private ModuleType moduleBuildType;
+    private String moduleBroBuildDir;
+    private String appPackageName;
+    private String appAssetsSourcePaths;
+    private String appAptGenPath;
+    private String libBundlesAssetsPath;
+
+    private ISingleModuleMetaDataCollector singleModuleMetaDataCollector;
+    private IMultiModuleMetaDataCollector multiModuleMetaDataCollector;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
 
-        typeUtils = processingEnv.getTypeUtils();
-        elementUtils = processingEnv.getElementUtils();
-        filer = processingEnv.getFiler();
         BroCompileLogger.setMessager(processingEnv.getMessager());
-
         BroCompileLogger.i("bro-compiler processor init");
 
-        Map<String, String> map = processingEnv.getOptions();
+        parseCompilerArguments();
+
+        singleModuleMetaDataCollector = new DefaultSingleModuleMetaDataCollector(
+                processingEnv.getTypeUtils(),
+                processingEnv.getElementUtils(),
+                processingEnv.getFiler(),
+                moduleName,
+                libBundlesAssetsPath);
+        multiModuleMetaDataCollector = new DefaultMultiModuleMetaDataCollector(
+                appPackageName,
+                appAssetsSourcePaths,
+                appAptGenPath
+        );
+
+        // If the application module doesn't expose anything,
+        // the annotation processor will skip process(...) method below,
+        // so we hack this situation here.
+        if (moduleBuildType == ModuleType.APPLICATION) {
+//            jsonFiles = new ArrayList<>();
+//            MetaDataCollector.findModuleJsonFiles(jsonFiles, appAssetsSourcePaths);
+//            Map<String, Map<String, BroProperties>> exposeMaps = createEmptyExposeMaps();
+//            MetaDataCollector.collectOtherModulesMapFile(jsonFiles, exposeMaps);
+//            MetaDataCollector.generateMergeMapFile(appPackageName, exposeMaps, filer, null, moduleBroBuildDir);
+            multiModuleMetaDataCollector.generateEntireMetaDataTable();
+        }
+    }
+
+    @Override
+    public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
+        BroCompileLogger.i("bro-compiler processor is processing");
+
+        for (int i = 0; i < supportedAnnotations.size(); i++) {
+            for (Element element : roundEnvironment.getElementsAnnotatedWith(supportedAnnotations.get(i))) {
+                singleModuleMetaDataCollector.addMetaRecord(element);
+            }
+        }
+
+        if (moduleBuildType == ModuleType.APPLICATION) {
+//                File existFile = MetaDataCollector.findCurrentAptGenFolder(Constants.ROUTING_TABLE_FILE_NAME + ".java", new File(appAptGenPath));
+//                MetaDataCollector.collectOtherModulesMapFile(jsonFiles, exposeMaps);
+//                MetaDataCollector.generateMergeMapFile(appPackageName, exposeMaps, filer, existFile, moduleBroBuildDir);
+            multiModuleMetaDataCollector.generateEntireMetaDataTable();
+        } else {
+            singleModuleMetaDataCollector.generateMetaDataFile();
+        }
+
+        return true;
+    }
+
+
+    private void parseCompilerArguments() {
+        final Map<String, String> map = processingEnv.getOptions();
         Set<String> keys = map.keySet();
         for (String key : keys) {
             if (Constants.ANNO_PROC_ARG_MODULE_NAME.equals(key)) {
@@ -78,164 +156,46 @@ public class BroAnnotationProcessor extends AbstractProcessor {
             } else if (Constants.ANNO_PROC_ARG_MODULE_BUILD_DIR.equals(key)) {
                 this.moduleBroBuildDir = map.get(key);
             } else if (Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME.equals(key)) {
-                this.hostPackageName = map.get(key);
+                this.appPackageName = map.get(key);
             } else if (Constants.ANNO_PROC_ARG_APP_ALL_ASSETS_SOURCE.equals(key)) {
-                this.hostAllAssetsSourcePaths = map.get(key);
+                this.appAssetsSourcePaths = map.get(key);
             } else if (Constants.ANNO_PROC_ARG_APP_APT_PATH.equals(key)) {
-                this.hostAptPath = map.get(key);
+                this.appAptGenPath = map.get(key);
             } else if (Constants.ANNO_PROC_ARG_LIB_BUNDLES_ASSETS_PATH.equals(key)) {
                 this.libBundlesAssetsPath = map.get(key);
             }
-
-            BroCompileLogger.i("EnvOption - " + key + " = " + map.get(key));
+            BroCompileLogger.i("CompilerArguments: " + key + " = " + map.get(key));
         }
 
+        // Empty check to ensure we can use them safely
+        compilerArgumentForModule.forEach(new Consumer<String>() {
+            @Override
+            public void accept(String s) {
+                checkNotEmpty(map, s);
+            }
+        });
         if (moduleBuildType == ModuleType.APPLICATION) {
-            if (hostAllAssetsSourcePaths == null) {
-                throw new NullPointerException("Folder of assets not found, please check bro-gradle-plugin is applied correctly.");
-            }
-
-            jsonFiles = new ArrayList<>();
-            MetaDataCollector.findModuleJsonFiles(jsonFiles, hostAllAssetsSourcePaths);
-
-            // If the host expose nothing, the processor will not process the file-generation,
-            // so hack this situation here.
-            Map<String, Map<String, BroProperties>> exposeMaps = createEmptyExposeMaps();
-            MetaDataCollector.collectOtherModulesMapFile(jsonFiles, exposeMaps);
-            MetaDataCollector.generateMergeMapFile(hostPackageName, exposeMaps, filer, null, moduleBroBuildDir);
-        }
-    }
-
-    @Override
-    public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
-//        if (moduleBuildType.equals("Plugadget")) {
-//            return true;
-//        }
-
-        BroCompileLogger.i("bro-compiler processor is processing");
-
-        Map<String, Map<String, BroProperties>> exposeMaps = createEmptyExposeMaps();
-
-        for (int i = 0; i < supportedAnnotations.size(); i++) {
-            Map<String, BroProperties> exposeMap = new HashMap<>();
-            for (Element element : roundEnvironment.getElementsAnnotatedWith(supportedAnnotations.get(i))) {
-                TypeElement typeElement = (TypeElement) element;
-                String packageName = typeElement.getQualifiedName().toString();
-                String nick = parseNick(element);
-                String extraParams = parseExtraParams(element, nick, supportedAnnotations.get(i).getSimpleName());
-                exposeMap.put(nick, new BroProperties(packageName, extraParams));
-            }
-            exposeMaps.put(supportedAnnotations.get(i).getSimpleName(), exposeMap);
-        }
-
-        boolean sthHasBeenExposed = false;
-        for (Map.Entry<String, Map<String, BroProperties>> entry : exposeMaps.entrySet()) {
-            if (entry.getValue().size() > 0) {
-                sthHasBeenExposed = true;
-                break;
-            }
-        }
-
-        if (sthHasBeenExposed) {
-            if (moduleBuildType == ModuleType.APPLICATION) { // merge all modules map file (json)
-                File existFile = MetaDataCollector.findCurrentAptGenFolder(Constants.ROUTING_TABLE_FILE_NAME + ".java", new File(hostAptPath));
-                MetaDataCollector.collectOtherModulesMapFile(jsonFiles, exposeMaps);
-                MetaDataCollector.generateMergeMapFile(hostPackageName, exposeMaps, filer, existFile, moduleBroBuildDir);
-            } else {
-                MetaDataCollector.generateModuleMapToJson(moduleName, libBundlesAssetsPath, exposeMaps);
-            }
-        }
-
-        return true;
-    }
-
-    private String parseNick(Element element) {
-        List<? extends AnnotationMirror> list = element.getAnnotationMirrors();
-        for (int i = 0; i < list.size(); i++) {
-            String annotationType = list.get(i).getAnnotationType().toString();
-            if (annotationType.contains("me.xx2bab.bro.annotations")) {
-                Map<? extends ExecutableElement, ? extends AnnotationValue> map = list.get(i).getElementValues();
-                for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : map.entrySet()) {
-                    if (entry.getKey().toString().equals("value()")) {
-                        return entry.getValue().toString().replace("\"", "");
-                    }
+            compilerArgumentForApp.forEach(new Consumer<String>() {
+                @Override
+                public void accept(String s) {
+                    checkNotEmpty(map, s);
                 }
-            }
-        }
-        return null;
-    }
-
-    private String parseExtraParams(Element element, String nick, String type) {
-        JSONObject jsonObject = new JSONObject();
-        List<? extends AnnotationMirror> list = element.getAnnotationMirrors();
-
-        for (int i = 0; i < list.size(); i++) {
-            String annotationType = list.get(i).getAnnotationType().toString();
-            if (annotationType.contains("me.xx2bab.bro.annotations")) {
-                continue;
-            }
-
-            String value = "";
-            Map<? extends ExecutableElement, ? extends AnnotationValue> map = list.get(i).getElementValues();
-            for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : map.entrySet()) {
-                if (entry.getKey().toString().equals("value()")) {
-                    value = entry.getValue().toString().replace("\"", "");
+            });
+        } else { // branch for library
+            compilerArgumentForLib.forEach(new Consumer<String>() {
+                @Override
+                public void accept(String s) {
+                    checkNotEmpty(map, s);
                 }
-            }
-
-            jsonObject.put(annotationType, value);
-        }
-
-        if (type.equals(BroApi.class.getSimpleName())) {
-            String ApiInterface = parseApiInterface(element);
-            if (ApiInterface == null) {
-                throw new IllegalStateException(nick + ": Bro Api Must implements the interface which extends from IBroApi!");
-            }
-            jsonObject.put("ApiInterface", ApiInterface);
-        }
-
-        return jsonObject.toString();
-    }
-
-    private String parseApiInterface(Element element) {
-        try {
-            TypeElement typeElement = (TypeElement) element;
-            for (TypeMirror mirror : typeElement.getInterfaces()) {
-                String result = parseApiInterfaceInternal(mirror.toString());
-                if (result != null) {
-                    return mirror.toString();
-                }
-            }
-            return null;
-        } catch (Exception e) {
-            BroCompileLogger.e(e.getMessage());
-            return null;
+            });
         }
     }
 
-    private String parseApiInterfaceInternal(String interfaceCanonicalName) {
-        TypeElement typeElement = elementUtils.getTypeElement(interfaceCanonicalName);
-        if (typeElement != null && typeElement.getInterfaces().size() > 0) {
-            List<? extends TypeMirror> interfaces = typeElement.getInterfaces();
-            for (TypeMirror childInterface : interfaces) {
-                if (childInterface.toString().equals(IBroApi.class.getCanonicalName())) {
-                    return typeElement.toString();
-                }
-                String childResult = parseApiInterfaceInternal(childInterface.toString());
-                if (childResult != null) {
-                    return childResult;
-                }
-            }
+    private void checkNotEmpty(Map<String, String> map, String key) {
+        if (!map.containsKey(key) || processingEnv.getOptions().get(key).isEmpty()) {
+            throw new IllegalArgumentException("Compiler argument " + key + "is empty! " +
+                    "Please check bro-gradle-plugin is applied correctly");
         }
-        return null;
-    }
-
-    private Map<String, Map<String, BroProperties>> createEmptyExposeMaps() {
-        Map<String, Map<String, BroProperties>> exposeMaps = new HashMap<>();
-        for (Class<? extends Annotation> clazz : supportedAnnotations) {
-            exposeMaps.put(clazz.getSimpleName(), new HashMap<String, BroProperties>());
-        }
-        return exposeMaps;
     }
 
     @Override
@@ -249,14 +209,6 @@ public class BroAnnotationProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedOptions() {
-        Set<String> compileArgs = new LinkedHashSet<>();
-        compileArgs.add(Constants.ANNO_PROC_ARG_MODULE_NAME);
-        compileArgs.add(Constants.ANNO_PROC_ARG_MODULE_BUILD_TYPE);
-        compileArgs.add(Constants.ANNO_PROC_ARG_MODULE_BUILD_DIR);
-        compileArgs.add(Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME);
-        compileArgs.add(Constants.ANNO_PROC_ARG_APP_ALL_ASSETS_SOURCE);
-        compileArgs.add(Constants.ANNO_PROC_ARG_APP_APT_PATH);
-        compileArgs.add(Constants.ANNO_PROC_ARG_LIB_BUNDLES_ASSETS_PATH);
         return compileArgs;
     }
 

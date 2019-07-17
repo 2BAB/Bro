@@ -11,9 +11,9 @@ import me.xx2bab.bro.core.Bro;
 import me.xx2bab.bro.annotations.BroActivity;
 import me.xx2bab.bro.sample.common.api.ISettingsApi;
 import me.xx2bab.bro.sample.common.mine.IMinePresenter;
-import me.xx2bab.bro.sample.common.annotation.NeedLogin;
+import me.xx2bab.bro.sample.common.annotation.RequireLogin;
 
-@NeedLogin(23333)
+@RequireLogin(23333)
 @BroActivity("broapp://home")
 public class HomeActivity extends AppCompatActivity {
 
