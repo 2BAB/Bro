@@ -31,10 +31,10 @@ object AnnotationProcessorParamsInjector {
                 val aptPath = (project.buildDir.absolutePath + File.separator + "generated"
                         + File.separator + "source" + File.separator + "apt")
                 args[Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME] = applicationId
-                args[Constants.ANNO_PROC_ARG_APP_META_DATA_FILES] = allMergedAssetsPaths
+                args[Constants.ANNO_PROC_ARG_APP_META_DATA_INPUT_PATH] = allMergedAssetsPaths
                 args[Constants.ANNO_PROC_ARG_APP_APT_PATH] = aptPath
             } else {
-                args[Constants.ANNO_PROC_ARG_LIB_BUNDLES_ASSETS_PATH] = getBuildBundlesAssetsPath(
+                args[Constants.ANNO_PROC_ARG_LIB_META_DATA_OUTPUT_PATH] = getBuildBundlesAssetsPath(
                         variant.name.capitalize(), project)
             }
         }

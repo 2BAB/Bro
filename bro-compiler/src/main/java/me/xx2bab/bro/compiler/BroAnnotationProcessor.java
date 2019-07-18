@@ -65,11 +65,11 @@ public class BroAnnotationProcessor extends AbstractProcessor {
 
         compilerArgumentForApp = new ArrayList<>();
         compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME);
-        compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_META_DATA_FILES);
+        compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_META_DATA_INPUT_PATH);
         compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_APT_PATH);
 
         compilerArgumentForLib = new ArrayList<>();
-        compilerArgumentForLib.add(Constants.ANNO_PROC_ARG_LIB_BUNDLES_ASSETS_PATH);
+        compilerArgumentForLib.add(Constants.ANNO_PROC_ARG_LIB_META_DATA_OUTPUT_PATH);
 
         compileArgs = new LinkedHashSet<>();
         compileArgs.addAll(compilerArgumentForModule);
@@ -81,9 +81,9 @@ public class BroAnnotationProcessor extends AbstractProcessor {
     private ModuleType moduleBuildType;
     private String moduleBroBuildDir;
     private String appPackageName;
-    private String appAssetsSourcePaths;
+    private String appMetaDataInputPath;
     private String appAptGenPath;
-    private String libBundlesAssetsPath;
+    private String libMetaDataOutputPath;
 
     private ISingleModuleMetaDataCollector singleModuleMetaDataCollector;
     private IMultiModuleMetaDataCollector multiModuleMetaDataCollector;
@@ -102,10 +102,10 @@ public class BroAnnotationProcessor extends AbstractProcessor {
                 processingEnv.getElementUtils(),
                 processingEnv.getFiler(),
                 moduleName,
-                libBundlesAssetsPath);
+                libMetaDataOutputPath);
         multiModuleMetaDataCollector = new DefaultMultiModuleMetaDataCollector(
                 appPackageName,
-                appAssetsSourcePaths,
+                appMetaDataInputPath,
                 appAptGenPath
         );
 
@@ -114,7 +114,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         // so we hack this situation here.
         if (moduleBuildType == ModuleType.APPLICATION) {
 //            jsonFiles = new ArrayList<>();
-//            MetaDataCollector.findModuleJsonFiles(jsonFiles, appAssetsSourcePaths);
+//            MetaDataCollector.findModuleJsonFiles(jsonFiles, appMetaDataInputPath);
 //            Map<String, Map<String, BroProperties>> exposeMaps = createEmptyExposeMaps();
 //            MetaDataCollector.collectOtherModulesMapFile(jsonFiles, exposeMaps);
 //            MetaDataCollector.generateMergeMapFile(appPackageName, exposeMaps, filer, null, moduleBroBuildDir);
@@ -157,12 +157,12 @@ public class BroAnnotationProcessor extends AbstractProcessor {
                 this.moduleBroBuildDir = map.get(key);
             } else if (Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME.equals(key)) {
                 this.appPackageName = map.get(key);
-            } else if (Constants.ANNO_PROC_ARG_APP_META_DATA_FILES.equals(key)) {
-                this.appAssetsSourcePaths = map.get(key);
+            } else if (Constants.ANNO_PROC_ARG_APP_META_DATA_INPUT_PATH.equals(key)) {
+                this.appMetaDataInputPath = map.get(key);
             } else if (Constants.ANNO_PROC_ARG_APP_APT_PATH.equals(key)) {
                 this.appAptGenPath = map.get(key);
-            } else if (Constants.ANNO_PROC_ARG_LIB_BUNDLES_ASSETS_PATH.equals(key)) {
-                this.libBundlesAssetsPath = map.get(key);
+            } else if (Constants.ANNO_PROC_ARG_LIB_META_DATA_OUTPUT_PATH.equals(key)) {
+                this.libMetaDataOutputPath = map.get(key);
             }
             BroCompileLogger.i("CompilerArguments: " + key + " = " + map.get(key));
         }
