@@ -10,6 +10,7 @@ public class AnnotatedElement {
 
     public String name;
     public ElementType type;
+    public String clazz;
     public List<Annotation> annotations;
 
 }

@@ -79,6 +79,7 @@ public class SingleModuleCollector implements IAnnotationMetaDataCollector<Eleme
         // Parse interface info for class
         if (element instanceof TypeElement) {
             annotatedElement.type = ElementType.TYPE;
+            annotatedElement.clazz = annotatedElement.name;
 //            TypeElement typeElement = (TypeElement) element;
 //            String packageName = typeElement.getQualifiedName().toString();
         }
@@ -141,38 +142,4 @@ public class SingleModuleCollector implements IAnnotationMetaDataCollector<Eleme
 //
 //        return jsonObject.toString();
 //    }
-//
-//    private String parseApiInterface(Element element) {
-//        try {
-//            TypeElement typeElement = (TypeElement) element;
-//            for (TypeMirror mirror : typeElement.getInterfaces()) {
-//                String result = parseApiInterfaceInternal(mirror.toString());
-//                if (result != null) {
-//                    return mirror.toString();
-//                }
-//            }
-//            return null;
-//        } catch (Exception e) {
-//            BroCompileLogger.e(e.getMessage());
-//            return null;
-//        }
-//    }
-//
-//    private String parseApiInterfaceInternal(String interfaceCanonicalName) {
-//        TypeElement typeElement = elementUtils.getTypeElement(interfaceCanonicalName);
-//        if (typeElement != null && typeElement.getInterfaces().size() > 0) {
-//            List<? extends TypeMirror> interfaces = typeElement.getInterfaces();
-//            for (TypeMirror childInterface : interfaces) {
-//                if (childInterface.toString().equals(IBroApi.class.getCanonicalName())) {
-//                    return typeElement.toString();
-//                }
-//                String childResult = parseApiInterfaceInternal(childInterface.toString());
-//                if (childResult != null) {
-//                    return childResult;
-//                }
-//            }
-//        }
-//        return null;
-//    }
-
 }
