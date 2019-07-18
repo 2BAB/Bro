@@ -113,6 +113,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         // so we hack this kind of case here.
         if (moduleBuildType == ModuleType.APPLICATION) {
             multiModuleCollector = new MultiModuleCollector(
+                    appPackageName,
                     appAptGenPath,
                     moduleBroBuildDir,
                     null

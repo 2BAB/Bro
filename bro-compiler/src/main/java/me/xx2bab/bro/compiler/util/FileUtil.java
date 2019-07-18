@@ -11,7 +11,6 @@ import java.io.InputStreamReader;
 /**
  * Created by 2bab on 2017/2/4.
  */
-
 public class FileUtil {
 
     public static String readFile(File file) {

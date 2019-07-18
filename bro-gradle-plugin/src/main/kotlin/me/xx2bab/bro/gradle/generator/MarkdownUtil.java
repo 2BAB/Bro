@@ -1,4 +1,4 @@
-package me.xx2bab.bro.compiler.util;
+package me.xx2bab.bro.gradle.generator;
 
 
 import java.util.List;

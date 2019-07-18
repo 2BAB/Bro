@@ -89,7 +89,7 @@ public class SingleModuleCollector implements IAnnotationMetaDataCollector<Eleme
 
     @Override
     public void generate() {
-        String fileName = CommonUtils.filterIllegalCharsForRawFileName(moduleName)
+        String fileName = CommonUtils.filterIllegalCharsForResFileName(moduleName)
                 + Constants.MODULE_META_INFO_FILE_SUFFIX;
         FileUtil.writeFile(JSON.toJSONString(elements), libMetaDataOutputPath, fileName);
     }

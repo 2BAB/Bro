@@ -1,14 +1,11 @@
-package me.xx2bab.bro.compiler;
+package me.xx2bab.bro.gradle.generator;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -20,80 +17,16 @@ import javax.annotation.processing.Filer;
 import javax.lang.model.element.Modifier;
 
 import me.xx2bab.bro.common.BroProperties;
-import me.xx2bab.bro.common.CommonUtils;
 import me.xx2bab.bro.common.Constants;
+import me.xx2bab.bro.common.IBroGenerator;
 import me.xx2bab.bro.common.IBroRoutingTable;
-import me.xx2bab.bro.compiler.generator.DocGenerator;
-import me.xx2bab.bro.compiler.util.BroCompileLogger;
-import me.xx2bab.bro.compiler.util.FileUtil;
 
-@Deprecated
-public class MetaDataCollector {
+public class BroRoutingTableGenerator implements IBroGenerator {
 
-    /**
-     * Step 1 :
-     * <p>
-     * Generate map to json (temp) in each module's raw folder
-     *
-     * @param moduleName        module name for generated-file name
-     * @param moduleBroBuildDir build path for generate file
-     * @param exposeMaps        exposeMaps
-     */
-    public static void generateModuleMapToJson(String moduleName, String moduleBroBuildDir,
-                                               Map<String, Map<String, BroProperties>> exposeMaps) {
-        String fileName = CommonUtils.filterIllegalCharsForRawFileName(moduleName) + Constants.MODULE_META_INFO_FILE_SUFFIX;
+    @Override
+    public void onGenerate(Object metaDataList, String appPackageName, File appAptGenDirectory,
+                           File broBuildDirectory) {
 
-        JSONObject mapObj = new JSONObject();
-
-        for (Map.Entry<String, Map<String, BroProperties>> entry : exposeMaps.entrySet()) {
-            JSONObject childJsonObj = new JSONObject();
-            for (Map.Entry<String, BroProperties> childEntry : entry.getValue().entrySet()) {
-                childJsonObj.put(childEntry.getKey(), childEntry.getValue().toJsonString());
-            }
-            mapObj.put(entry.getKey(), childJsonObj);
-        }
-
-        //CommonUtils.clean(new File(moduleRawPath));
-        FileUtil.writeFile(mapObj.toJSONString(), moduleBroBuildDir, fileName);
-    }
-
-    /**
-     * Step 2 :
-     * <p>
-     * Gather all modules' map file
-     *
-     * @param jsonFileList map files of all modules expect host
-     * @param exposeMaps   maintain all map relation
-     */
-    public static void collectOtherModulesMapFile(ArrayList<String> jsonFileList,
-                                                  Map<String, Map<String, BroProperties>> exposeMaps) {
-        try {
-            for (String filePath : jsonFileList) {
-                File file = new File(filePath);
-                if (!file.exists()) {
-                    continue;
-                }
-                String jsonString = FileUtil.readFile(file);
-                JSONObject moduleJson = JSON.parseObject(jsonString);
-                if (moduleJson == null) {
-                    continue;
-                }
-                for (Map.Entry<String, Object> entry : moduleJson.entrySet()) {
-                    JSONObject childObj = (JSONObject) entry.getValue();
-                    Map<String, BroProperties> exposeMap = exposeMaps.get(entry.getKey());
-                    if (exposeMap != null) {
-                        for (Map.Entry<String, Object> childEntry : childObj.entrySet()) {
-                            preCheckBeforeCollect(exposeMap, childEntry.getKey(), entry.getKey());
-                            BroProperties broProperties = new BroProperties();
-                            broProperties.fromJsonString(childEntry.getValue().toString());
-                            exposeMap.put(childEntry.getKey(), broProperties);
-                        }
-                    }
-                }
-            }
-        } catch (DuplicatedNickException e) {
-            BroCompileLogger.e(e.getMessage());
-        }
     }
 
 
@@ -134,9 +67,8 @@ public class MetaDataCollector {
                 file.writeTo(folder);
             }
 
-            DocGenerator.generateDoc(rootProjectPath, exposeMaps);
         } catch (Exception e) {
-            BroCompileLogger.e(e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
@@ -201,33 +133,11 @@ public class MetaDataCollector {
         return null;
     }
 
-    public static void findModuleJsonFiles(List<String> jsonFiles, String assetsPaths) {
-        String[] splitPaths = assetsPaths.split(";");
-
-        for (String path : splitPaths) {
-            File file = new File(path);
-
-            if (file.exists() && file.isDirectory()) {
-
-                File[] childFiles = file.listFiles();
-
-                if (childFiles == null || childFiles.length == 0) {
-                    continue;
-                }
-
-                for (File child : childFiles) {
-                    BroCompileLogger.i(child.getName());
-                    if (child.getName().endsWith(Constants.MODULE_META_INFO_FILE_SUFFIX)) {
-                        jsonFiles.add(child.getAbsolutePath());
-                    }
-                }
-            }
-        }
-    }
 
     private static class DuplicatedNickException extends Exception {
         private DuplicatedNickException(String s) {
             super(s);
         }
     }
+
 }

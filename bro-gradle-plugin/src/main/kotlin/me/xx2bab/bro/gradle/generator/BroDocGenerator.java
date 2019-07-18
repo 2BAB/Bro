@@ -1,15 +1,18 @@
-package me.xx2bab.bro.compiler.generator;
+package me.xx2bab.bro.gradle.generator;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 import me.xx2bab.bro.common.BroProperties;
-import me.xx2bab.bro.common.anno.AnnotatedElement;
-import me.xx2bab.bro.compiler.util.FileUtil;
-import me.xx2bab.bro.compiler.util.MarkdownUtil;
+import me.xx2bab.bro.common.IBroGenerator;
 
-public class DocGenerator implements IBroGenerator{
+public class BroDocGenerator implements IBroGenerator {
+
+    @Override
+    public void onGenerate(Object metaDataList, String appPackageName, File appAptGenDirectory,
+                           File broBuildDirectory) {
+
+    }
 
     public static void generateDoc(String rootProjectPath,
                                    Map<String, Map<String, BroProperties>> exposeMaps) {
@@ -19,7 +22,7 @@ public class DocGenerator implements IBroGenerator{
 
         generate(builder, exposeMaps);
 
-        FileUtil.writeFile(builder.toString(), rootProjectPath, "Bro-Doc.md");
+        // FileUtil.writeFile(builder.toString(), rootProjectPath, "Bro-Doc.md");
     }
 
     private static void generate(StringBuilder builder,
@@ -35,8 +38,5 @@ public class DocGenerator implements IBroGenerator{
         }
     }
 
-    @Override
-    public void onGenerate(List<AnnotatedElement> metaDataList, File appAptGenDirectory, File broBuildDirectory) {
 
-    }
 }
