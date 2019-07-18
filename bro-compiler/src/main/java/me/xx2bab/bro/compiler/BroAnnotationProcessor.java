@@ -41,16 +41,16 @@ import me.xx2bab.bro.compiler.util.BroCompileLogger;
  */
 public class BroAnnotationProcessor extends AbstractProcessor {
 
-    private static List<Class<? extends Annotation>> supportedAnnotations;
+    private final static List<Class<? extends Annotation>> supportedAnnotations;
 
     // Meta info of each module including app and libs
-    private static List<String> compilerArgumentForModule;
+    private static final List<String> compilerArgumentForModule;
     // Meta info of the app module
-    private static List<String> compilerArgumentForApp;
+    private static final List<String> compilerArgumentForApp;
     // Meta info of lib modules
-    private static List<String> compilerArgumentForLib;
+    private static final List<String> compilerArgumentForLib;
 
-    private static Set<String> compileArgs;
+    private static final Set<String> compileArgs;
 
     static {
         supportedAnnotations = new ArrayList<>();
