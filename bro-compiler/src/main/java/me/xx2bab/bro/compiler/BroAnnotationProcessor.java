@@ -1,5 +1,8 @@
 package me.xx2bab.bro.compiler;
 
+import com.alibaba.fastjson.JSON;
+
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -20,11 +23,12 @@ import me.xx2bab.bro.annotations.BroApi;
 import me.xx2bab.bro.annotations.BroModule;
 import me.xx2bab.bro.common.Constants;
 import me.xx2bab.bro.common.ModuleType;
-import me.xx2bab.bro.compiler.collector.DefaultMultiModuleMetaDataCollector;
-import me.xx2bab.bro.compiler.collector.DefaultSingleModuleMetaDataCollector;
-import me.xx2bab.bro.compiler.collector.IMultiModuleMetaDataCollector;
-import me.xx2bab.bro.compiler.collector.ISingleModuleMetaDataCollector;
+import me.xx2bab.bro.common.anno.AnnotatedElement;
+import me.xx2bab.bro.compiler.collector.IAnnotationMetaDataCollector;
+import me.xx2bab.bro.compiler.collector.MultiModuleCollector;
+import me.xx2bab.bro.compiler.collector.SingleModuleCollector;
 import me.xx2bab.bro.compiler.util.BroCompileLogger;
+import me.xx2bab.bro.compiler.util.FileUtil;
 
 /**
  * An "abstract" annotation processor, which won't be used to generate the final routing table
@@ -36,20 +40,20 @@ import me.xx2bab.bro.compiler.util.BroCompileLogger;
  * It focuses on working with input arguments like compiler options, supported annotations.
  * For collection tasks, check these two collectors below:
  *
- * @see DefaultSingleModuleMetaDataCollector
- * @see DefaultMultiModuleMetaDataCollector
+ * @see SingleModuleCollector
+ * @see MultiModuleCollector
  */
 public class BroAnnotationProcessor extends AbstractProcessor {
 
     private final static List<Class<? extends Annotation>> supportedAnnotations;
 
-    // Meta info of each module including app and libs
+    // Compiler arguments for each module including Application and Library
     private static final List<String> compilerArgumentForModule;
-    // Meta info of the app module
+    // Compiler arguments for the Application module only
     private static final List<String> compilerArgumentForApp;
-    // Meta info of lib modules
+    // Compiler arguments for the Library module only
     private static final List<String> compilerArgumentForLib;
-
+    // Combination of Compiler Arguments
     private static final Set<String> compileArgs;
 
     static {
@@ -85,8 +89,8 @@ public class BroAnnotationProcessor extends AbstractProcessor {
     private String appAptGenPath;
     private String libMetaDataOutputPath;
 
-    private ISingleModuleMetaDataCollector singleModuleMetaDataCollector;
-    private IMultiModuleMetaDataCollector multiModuleMetaDataCollector;
+    private IAnnotationMetaDataCollector<Element> singleModuleCollector;
+    private IAnnotationMetaDataCollector<List<AnnotatedElement>> multiModuleCollector;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -97,48 +101,43 @@ public class BroAnnotationProcessor extends AbstractProcessor {
 
         parseCompilerArguments();
 
-        singleModuleMetaDataCollector = new DefaultSingleModuleMetaDataCollector(
+        singleModuleCollector = new SingleModuleCollector(
                 processingEnv.getTypeUtils(),
                 processingEnv.getElementUtils(),
                 processingEnv.getFiler(),
                 moduleName,
                 libMetaDataOutputPath);
-        multiModuleMetaDataCollector = new DefaultMultiModuleMetaDataCollector(
-                appPackageName,
-                appMetaDataInputPath,
-                appAptGenPath
-        );
 
-        // If the application module doesn't expose anything,
+        // If the application module doesn't have any annotations that we support
         // the annotation processor will skip process(...) method below,
-        // so we hack this situation here.
+        // so we hack this kind of case here.
         if (moduleBuildType == ModuleType.APPLICATION) {
-//            jsonFiles = new ArrayList<>();
-//            MetaDataCollector.findModuleJsonFiles(jsonFiles, appMetaDataInputPath);
-//            Map<String, Map<String, BroProperties>> exposeMaps = createEmptyExposeMaps();
-//            MetaDataCollector.collectOtherModulesMapFile(jsonFiles, exposeMaps);
-//            MetaDataCollector.generateMergeMapFile(appPackageName, exposeMaps, filer, null, moduleBroBuildDir);
-            multiModuleMetaDataCollector.generateEntireMetaDataTable();
+            multiModuleCollector = new MultiModuleCollector(
+                    appAptGenPath,
+                    moduleBroBuildDir,
+                    null
+            );
+            addMetaDataOfLibs(appMetaDataInputPath);
+            multiModuleCollector.generate();
         }
     }
 
     @Override
-    public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
+    public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnv) {
         BroCompileLogger.i("bro-compiler processor is processing");
 
         for (int i = 0; i < supportedAnnotations.size(); i++) {
-            for (Element element : roundEnvironment.getElementsAnnotatedWith(supportedAnnotations.get(i))) {
-                singleModuleMetaDataCollector.addMetaRecord(element);
+            for (Element element : roundEnv.getElementsAnnotatedWith(supportedAnnotations.get(i))) {
+                singleModuleCollector.addMetaRecord(element);
             }
         }
 
         if (moduleBuildType == ModuleType.APPLICATION) {
-//                File existFile = MetaDataCollector.findCurrentAptGenFolder(Constants.ROUTING_TABLE_FILE_NAME + ".java", new File(appAptGenPath));
-//                MetaDataCollector.collectOtherModulesMapFile(jsonFiles, exposeMaps);
-//                MetaDataCollector.generateMergeMapFile(appPackageName, exposeMaps, filer, existFile, moduleBroBuildDir);
-            multiModuleMetaDataCollector.generateEntireMetaDataTable();
+            addMetaDataOfLibs(appMetaDataInputPath);
+            multiModuleCollector.addMetaRecord(singleModuleCollector.getMetaData());
+            multiModuleCollector.generate();
         } else {
-            singleModuleMetaDataCollector.generateMetaDataFile();
+            singleModuleCollector.generate();
         }
 
         return true;
@@ -188,6 +187,32 @@ public class BroAnnotationProcessor extends AbstractProcessor {
                     checkNotEmpty(map, s);
                 }
             });
+        }
+    }
+
+    private void addMetaDataOfLibs(String inputPaths) {
+        String[] splitPaths = inputPaths.split(";");
+        for (String path : splitPaths) {
+            File file = new File(path);
+            if (!file.exists() || !file.isDirectory()) {
+                continue;
+            }
+            File[] childFiles = file.listFiles();
+            if (childFiles == null || childFiles.length == 0) {
+                continue;
+            }
+
+            for (File child : childFiles) {
+                BroCompileLogger.i("Processing meta data file: " + child.getName());
+                if (child.getName().endsWith(Constants.MODULE_META_INFO_FILE_SUFFIX)) {
+                    String json = FileUtil.readFile(child);
+                    if (json == null) {
+                        continue;
+                    }
+                    List<AnnotatedElement> list = JSON.parseArray(json, AnnotatedElement.class);
+                    multiModuleCollector.addMetaRecord(list);
+                }
+            }
         }
     }
 

@@ -26,28 +26,33 @@ import me.xx2bab.bro.compiler.util.FileUtil;
 /**
  * Created on 2019-07-16
  */
-public class DefaultSingleModuleMetaDataCollector implements ISingleModuleMetaDataCollector {
+public class SingleModuleCollector implements IAnnotationMetaDataCollector<Element> {
 
     private Types typeUtils;
     private Elements elementUtils;
     private Filer filer;
 
     private String moduleName;
-    private String libBundlesAssetsPath;
+    private String libMetaDataOutputPath;
 
     private List<AnnotatedElement> elements;
 
-    public DefaultSingleModuleMetaDataCollector(Types typeUtils,
-                                                Elements elementUtils,
-                                                Filer filer,
-                                                String moduleName,
-                                                String libBundlesAssetsPath) {
+    public SingleModuleCollector(Types typeUtils,
+                                 Elements elementUtils,
+                                 Filer filer,
+                                 String moduleName,
+                                 String libMetaDataOutputPath) {
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
         this.filer = filer;
         this.moduleName = moduleName;
-        this.libBundlesAssetsPath = libBundlesAssetsPath;
+        this.libMetaDataOutputPath = libMetaDataOutputPath;
         elements = new ArrayList<>();
+    }
+
+    @Override
+    public List<AnnotatedElement> getMetaData() {
+        return elements;
     }
 
     @Override
@@ -74,17 +79,18 @@ public class DefaultSingleModuleMetaDataCollector implements ISingleModuleMetaDa
         // Parse interface info for class
         if (element instanceof TypeElement) {
             annotatedElement.type = ElementType.TYPE;
-            TypeElement typeElement = (TypeElement) element;
-            String packageName = typeElement.getQualifiedName().toString();
+//            TypeElement typeElement = (TypeElement) element;
+//            String packageName = typeElement.getQualifiedName().toString();
         }
 
         elements.add(annotatedElement);
     }
 
     @Override
-    public void generateMetaDataFile() {
-        String fileName = CommonUtils.filterIllegalCharsForRawFileName(moduleName) + Constants.MODULE_META_INFO_FILE_SUFFIX;
-        FileUtil.writeFile(JSON.toJSONString(elements), libBundlesAssetsPath, fileName);
+    public void generate() {
+        String fileName = CommonUtils.filterIllegalCharsForRawFileName(moduleName)
+                + Constants.MODULE_META_INFO_FILE_SUFFIX;
+        FileUtil.writeFile(JSON.toJSONString(elements), libMetaDataOutputPath, fileName);
     }
 
 

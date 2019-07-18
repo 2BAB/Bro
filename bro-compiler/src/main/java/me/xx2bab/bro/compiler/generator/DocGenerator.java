@@ -1,8 +1,11 @@
 package me.xx2bab.bro.compiler.generator;
 
+import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import me.xx2bab.bro.common.BroProperties;
+import me.xx2bab.bro.common.anno.AnnotatedElement;
 import me.xx2bab.bro.compiler.util.FileUtil;
 import me.xx2bab.bro.compiler.util.MarkdownUtil;
 
@@ -33,8 +36,7 @@ public class DocGenerator implements IBroGenerator{
     }
 
     @Override
-    public void onGenerate(String broBuildDirectory, Map<String, Map<String, BroProperties>> exposeMaps) {
+    public void onGenerate(List<AnnotatedElement> metaDataList, File appAptGenDirectory, File broBuildDirectory) {
 
     }
-
 }

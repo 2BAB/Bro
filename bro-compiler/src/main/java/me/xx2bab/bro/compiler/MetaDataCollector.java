@@ -27,6 +27,7 @@ import me.xx2bab.bro.compiler.generator.DocGenerator;
 import me.xx2bab.bro.compiler.util.BroCompileLogger;
 import me.xx2bab.bro.compiler.util.FileUtil;
 
+@Deprecated
 public class MetaDataCollector {
 
     /**

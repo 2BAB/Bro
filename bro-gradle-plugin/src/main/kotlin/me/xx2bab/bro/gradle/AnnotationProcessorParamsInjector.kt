@@ -42,7 +42,7 @@ object AnnotationProcessorParamsInjector {
     }
 
     /**
-     * For HOST to gather .bro files together.
+     * For App to gather .bro files together.
      * @param variantName current build type
      * @param project gradle project object
      * @return all module's merged-assets folders
