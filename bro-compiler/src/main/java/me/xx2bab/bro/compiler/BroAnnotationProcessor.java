@@ -65,7 +65,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
 
         compilerArgumentForApp = new ArrayList<>();
         compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME);
-        compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_ALL_ASSETS_SOURCE);
+        compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_META_DATA_FILES);
         compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_APT_PATH);
 
         compilerArgumentForLib = new ArrayList<>();
@@ -157,7 +157,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
                 this.moduleBroBuildDir = map.get(key);
             } else if (Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME.equals(key)) {
                 this.appPackageName = map.get(key);
-            } else if (Constants.ANNO_PROC_ARG_APP_ALL_ASSETS_SOURCE.equals(key)) {
+            } else if (Constants.ANNO_PROC_ARG_APP_META_DATA_FILES.equals(key)) {
                 this.appAssetsSourcePaths = map.get(key);
             } else if (Constants.ANNO_PROC_ARG_APP_APT_PATH.equals(key)) {
                 this.appAptGenPath = map.get(key);
