@@ -3,7 +3,7 @@ package me.xx2bab.bro.gradle
 import com.android.build.gradle.api.BaseVariant
 import me.xx2bab.bro.common.Constants
 import me.xx2bab.bro.common.ModuleType
-import me.xx2bab.bro.gradle.utils.BuildUtils
+import me.xx2bab.bro.gradle.util.BuildUtils
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import java.io.File

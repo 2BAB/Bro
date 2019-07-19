@@ -4,8 +4,8 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.api.BaseVariant
-import me.xx2bab.bro.gradle.utils.BroGradleLogger
-import me.xx2bab.bro.gradle.utils.BuildUtils
+import me.xx2bab.bro.gradle.util.BroGradleLogger
+import me.xx2bab.bro.gradle.util.BuildUtils
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project

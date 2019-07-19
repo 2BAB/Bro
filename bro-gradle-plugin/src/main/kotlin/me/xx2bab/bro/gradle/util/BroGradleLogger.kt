@@ -1,4 +1,4 @@
-package me.xx2bab.bro.gradle.utils
+package me.xx2bab.bro.gradle.util
 
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger

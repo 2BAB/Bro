@@ -17,31 +17,33 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import me.xx2bab.bro.common.CommonUtils;
 import me.xx2bab.bro.common.Constants;
 import me.xx2bab.bro.common.anno.AnnotatedElement;
 import me.xx2bab.bro.common.anno.Annotation;
-import me.xx2bab.bro.compiler.util.FileUtil;
+import me.xx2bab.bro.common.util.CommonUtils;
 
 /**
  * Created on 2019-07-16
  */
 public class SingleModuleCollector implements IAnnotationMetaDataCollector<Element> {
 
+    private CommonUtils commonUtils;
+
     private Types typeUtils;
     private Elements elementUtils;
     private Filer filer;
-
     private String moduleName;
     private String libMetaDataOutputPath;
 
     private List<AnnotatedElement> elements;
 
-    public SingleModuleCollector(Types typeUtils,
+    public SingleModuleCollector(CommonUtils commonUtils,
+                                 Types typeUtils,
                                  Elements elementUtils,
                                  Filer filer,
                                  String moduleName,
                                  String libMetaDataOutputPath) {
+        this.commonUtils = commonUtils;
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
         this.filer = filer;
@@ -89,9 +91,9 @@ public class SingleModuleCollector implements IAnnotationMetaDataCollector<Eleme
 
     @Override
     public void generate() {
-        String fileName = CommonUtils.filterIllegalCharsForResFileName(moduleName)
+        String fileName = commonUtils.filterIllegalCharsForResFileName(moduleName)
                 + Constants.MODULE_META_INFO_FILE_SUFFIX;
-        FileUtil.writeFile(JSON.toJSONString(elements), libMetaDataOutputPath, fileName);
+        commonUtils.writeFile(JSON.toJSONString(elements), libMetaDataOutputPath, fileName);
     }
 
 

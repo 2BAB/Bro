@@ -24,11 +24,11 @@ import me.xx2bab.bro.annotations.BroModule;
 import me.xx2bab.bro.common.Constants;
 import me.xx2bab.bro.common.ModuleType;
 import me.xx2bab.bro.common.anno.AnnotatedElement;
+import me.xx2bab.bro.common.util.CommonUtils;
 import me.xx2bab.bro.compiler.collector.IAnnotationMetaDataCollector;
 import me.xx2bab.bro.compiler.collector.MultiModuleCollector;
 import me.xx2bab.bro.compiler.collector.SingleModuleCollector;
 import me.xx2bab.bro.compiler.util.BroCompileLogger;
-import me.xx2bab.bro.compiler.util.FileUtil;
 
 /**
  * An "abstract" annotation processor, which won't be used to generate the final routing table
@@ -45,6 +45,7 @@ import me.xx2bab.bro.compiler.util.FileUtil;
  */
 public class BroAnnotationProcessor extends AbstractProcessor {
 
+    private CommonUtils commonUtils;
     private final static List<Class<? extends Annotation>> supportedAnnotations;
 
     // Compiler arguments for each module including Application and Library
@@ -98,6 +99,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
 
         BroCompileLogger.setMessager(processingEnv.getMessager());
         BroCompileLogger.i("bro-compiler processor init");
+        commonUtils = CommonUtils.getDefault();
 
         parseCompilerArguments();
 
@@ -206,7 +208,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
             for (File child : childFiles) {
                 BroCompileLogger.i("Processing meta data file: " + child.getName());
                 if (child.getName().endsWith(Constants.MODULE_META_INFO_FILE_SUFFIX)) {
-                    String json = FileUtil.readFile(child);
+                    String json = commonUtils.readFile(child);
                     if (json == null) {
                         continue;
                     }

@@ -1,4 +1,4 @@
-package me.xx2bab.bro.compiler.util;
+package me.xx2bab.bro.common.util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,12 +8,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-/**
- * Created by 2bab on 2017/2/4.
- */
-public class FileUtil {
+public class CommonUtils {
 
-    public static String readFile(File file) {
+    private static final CommonUtils defaultInstance = new CommonUtils();
+
+    public static CommonUtils getDefault() {
+        return defaultInstance;
+    }
+
+    public String filterIllegalCharsForResFileName(String origin) {
+        return origin.replace(":", "_")
+                .replace(".", "_")
+                .replace("-", "_");
+    }
+
+    public String readFile(File file) {
         try {
             InputStream inputStream = new FileInputStream(file);
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -24,21 +33,20 @@ public class FileUtil {
             }
             return builder.toString();
         } catch (Exception e) {
-            BroCompileLogger.e(e.getMessage());
+            System.out.println(e.getMessage());
             return null;
         }
     }
 
-    public static void writeFile(String content, String filePath, String fileName) {
-        try {
-            File folder = new File(filePath);
-            if (!folder.exists()) {
-                boolean result = folder.mkdirs();
-                if (!result) {
-                    return;
-                }
+    public void writeFile(String content, String filePath, String fileName) {
+        File folder = new File(filePath);
+        if (!folder.exists()) {
+            boolean result = folder.mkdirs();
+            if (!result) {
+                return;
             }
-
+        }
+        try {
             File file = new File(filePath + File.separator + fileName);
             if (!file.exists()) {
                 boolean result = file.createNewFile();
@@ -51,7 +59,7 @@ public class FileUtil {
             writer.write(content);
             writer.close();
         } catch (IOException e) {
-            BroCompileLogger.e(e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
