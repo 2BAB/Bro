@@ -2,7 +2,7 @@ import me.xx2bab.bro.build.BuildConfig
 
 plugins {
     id("maven")
-    id("org.jetbrains.kotlin.jvm") version ("1.3.31")
+    id("org.jetbrains.kotlin.jvm") version ("1.3.41")
 }
 
 configurations.all {

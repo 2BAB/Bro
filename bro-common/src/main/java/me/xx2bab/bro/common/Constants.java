@@ -9,6 +9,8 @@ public class Constants {
     public static final String ANNO_PROC_ARG_APP_PACKAGE_NAME = "appPackageName";
     public static final String ANNO_PROC_ARG_APP_META_DATA_INPUT_PATH = "appMetaDataInputPath";
     public static final String ANNO_PROC_ARG_APP_APT_PATH = "appAptPath";
+    public static final String ANNO_PROC_ARG_APP_GENERATOR_CLASSLOADERS = "appGeneratorClassLoaders";
+    public static final String ANNO_PROC_ARG_APP_GENERATOR_CLASSES = "appGeneratorClasses";
     public static final String ANNO_PROC_ARG_LIB_META_DATA_OUTPUT_PATH = "libMetaDataOutputPath";
 
     public static final String MODULE_META_INFO_FILE_SUFFIX = ".bro";

@@ -22,9 +22,11 @@ import me.xx2bab.bro.annotations.BroActivity;
 import me.xx2bab.bro.annotations.BroApi;
 import me.xx2bab.bro.annotations.BroModule;
 import me.xx2bab.bro.common.Constants;
+import me.xx2bab.bro.common.IBroGenerator;
 import me.xx2bab.bro.common.ModuleType;
 import me.xx2bab.bro.common.anno.AnnotatedElement;
 import me.xx2bab.bro.common.util.CommonUtils;
+import me.xx2bab.bro.compiler.classloader.GradleClassLoader;
 import me.xx2bab.bro.compiler.collector.IAnnotationMetaDataCollector;
 import me.xx2bab.bro.compiler.collector.MultiModuleCollector;
 import me.xx2bab.bro.compiler.collector.SingleModuleCollector;
@@ -72,6 +74,8 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME);
         compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_META_DATA_INPUT_PATH);
         compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_APT_PATH);
+        compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_GENERATOR_CLASSES);
+        compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_GENERATOR_CLASSLOADERS);
 
         compilerArgumentForLib = new ArrayList<>();
         compilerArgumentForLib.add(Constants.ANNO_PROC_ARG_LIB_META_DATA_OUTPUT_PATH);
@@ -88,6 +92,8 @@ public class BroAnnotationProcessor extends AbstractProcessor {
     private String appPackageName;
     private String appMetaDataInputPath;
     private String appAptGenPath;
+    private String appGeneratorClassLoaders;
+    private String appGeneratorClasses;
     private String libMetaDataOutputPath;
 
     private IAnnotationMetaDataCollector<Element> singleModuleCollector;
@@ -104,6 +110,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         parseCompilerArguments();
 
         singleModuleCollector = new SingleModuleCollector(
+                commonUtils,
                 processingEnv.getTypeUtils(),
                 processingEnv.getElementUtils(),
                 processingEnv.getFiler(),
@@ -118,7 +125,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
                     appPackageName,
                     appAptGenPath,
                     moduleBroBuildDir,
-                    null
+                    getGenerators()
             );
             addMetaDataOfLibs(appMetaDataInputPath);
             multiModuleCollector.generate();
@@ -163,6 +170,10 @@ public class BroAnnotationProcessor extends AbstractProcessor {
                 this.appMetaDataInputPath = map.get(key);
             } else if (Constants.ANNO_PROC_ARG_APP_APT_PATH.equals(key)) {
                 this.appAptGenPath = map.get(key);
+            } else if (Constants.ANNO_PROC_ARG_APP_GENERATOR_CLASSES.equals(key)) {
+                this.appGeneratorClasses = map.get(key);
+            } else if (Constants.ANNO_PROC_ARG_APP_GENERATOR_CLASSLOADERS.equals(key)) {
+                this.appGeneratorClassLoaders = map.get(key);
             } else if (Constants.ANNO_PROC_ARG_LIB_META_DATA_OUTPUT_PATH.equals(key)) {
                 this.libMetaDataOutputPath = map.get(key);
             }
@@ -219,9 +230,26 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         }
     }
 
+    private List<IBroGenerator<List<AnnotatedElement>>> getGenerators() {
+        List<IBroGenerator<List<AnnotatedElement>>> res = new ArrayList<>();
+        GradleClassLoader gradleClassLoader = new GradleClassLoader(
+                appGeneratorClassLoaders.split(","));
+        String[] generatorClasses = appGeneratorClasses.split(",");
+        for (String clazz : generatorClasses) {
+            try {
+                IBroGenerator<List<AnnotatedElement>> generator =
+                        (IBroGenerator<List<AnnotatedElement>>) (gradleClassLoader.load(clazz).newInstance());
+                res.add(generator);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Bro generator " + clazz + "can not be initialized.");
+            }
+        }
+        return res;
+    }
+
     private void checkNotEmpty(Map<String, String> map, String key) {
         if (!map.containsKey(key) || processingEnv.getOptions().get(key).isEmpty()) {
-            throw new IllegalArgumentException("Compiler argument " + key + "is empty! " +
+            throw new IllegalArgumentException("Compiler argument " + key + " is empty! " +
                     "Please check bro-gradle-plugin is applied correctly");
         }
     }
