@@ -230,18 +230,31 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private List<IBroGenerator<List<AnnotatedElement>>> getGenerators() {
         List<IBroGenerator<List<AnnotatedElement>>> res = new ArrayList<>();
         GradleClassLoader gradleClassLoader = new GradleClassLoader(
                 appGeneratorClassLoaders.split(","));
         String[] generatorClasses = appGeneratorClasses.split(",");
-        for (String clazz : generatorClasses) {
+        for (String clz : generatorClasses) {
             try {
                 IBroGenerator<List<AnnotatedElement>> generator =
-                        (IBroGenerator<List<AnnotatedElement>>) (gradleClassLoader.load(clazz).newInstance());
+                        (IBroGenerator<List<AnnotatedElement>>) gradleClassLoader.load(clz)
+                                .newInstance();
                 res.add(generator);
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Bro generator " + clazz + "can not be initialized.");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+                throw new IllegalArgumentException("Bro generator " + clz + "can not be found.");
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+                throw new IllegalArgumentException("Bro generator " + clz + "can not be initialized.");
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                throw new IllegalArgumentException("Bro generator " + clz + "can not be initialized.");
+            } catch (ClassCastException e) {
+                e.printStackTrace();
+                throw new IllegalArgumentException("Bro generator " + clz + "can not be casted " +
+                        "to IBroGenerator<List<AnnotatedElement>>");
             }
         }
         return res;

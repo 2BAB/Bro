@@ -19,8 +19,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:${rootProject.extra["kotlinVersion"]}")
     implementation("org.javassist:javassist:3.22.0-GA")
     if (project.hasProperty("broPublish")) {
+        implementation(BuildConfig.Deps.broAnnotationsDev)
         implementation(BuildConfig.Deps.broCommonDev)
     } else {
+        implementation(project(":bro-annotations"))
         implementation(project(":bro-common"))
     }
 }
