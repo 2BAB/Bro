@@ -4,9 +4,12 @@ import com.alibaba.fastjson.JSON;
 
 import java.lang.annotation.ElementType;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.AnnotationMirror;
@@ -36,6 +39,12 @@ public class SingleModuleCollector implements IAnnotationMetaDataCollector<Eleme
     private String libMetaDataOutputPath;
 
     private List<AnnotatedElement> elements;
+    private Comparator<Annotation> comparator = new Comparator<Annotation>() {
+        @Override
+        public int compare(Annotation a1, Annotation a2) {
+            return a1.name.compareTo(a2.name);
+        }
+    };
 
     public SingleModuleCollector(CommonUtils commonUtils,
                                  Types typeUtils,
@@ -62,11 +71,11 @@ public class SingleModuleCollector implements IAnnotationMetaDataCollector<Eleme
         List<? extends AnnotationMirror> list = element.getAnnotationMirrors();
         AnnotatedElement annotatedElement = new AnnotatedElement();
         annotatedElement.name = element.asType().toString();
-        annotatedElement.annotations = new ArrayList<>();
+        annotatedElement.annotations = new TreeSet<>(comparator);
         for (int i = 0; i < list.size(); i++) {
             Annotation annotation = new Annotation();
             annotation.name = list.get(i).getAnnotationType().toString();
-            annotation.values = new HashMap<>();
+            annotation.values = new TreeMap<>();
             Map<? extends ExecutableElement, ? extends AnnotationValue> map
                     = list.get(i).getElementValues();
             for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry
@@ -96,52 +105,4 @@ public class SingleModuleCollector implements IAnnotationMetaDataCollector<Eleme
         commonUtils.writeFile(JSON.toJSONString(elements), libMetaDataOutputPath, fileName);
     }
 
-
-//    private String parseNick(Element element) {
-//        List<? extends AnnotationMirror> list = element.getAnnotationMirrors();
-//        for (int i = 0; i < list.size(); i++) {
-//            String annotationType = list.get(i).getAnnotationType().toString();
-//            if (annotationType.contains("me.xx2bab.bro.annotations")) {
-//                Map<? extends ExecutableElement, ? extends AnnotationValue> map = list.get(i).getElementValues();
-//                for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : map.entrySet()) {
-//                    if (entry.getKey().toString().equals("value()")) {
-//                        return entry.getValue().toString().replace("(\"|\')", "");
-//                    }
-//                }
-//            }
-//        }
-//        return null;
-//    }
-//
-//    private String parseExtraParams(Element element, String nick, String type) {
-//        JSONObject jsonObject = new JSONObject();
-//        List<? extends AnnotationMirror> list = element.getAnnotationMirrors();
-//
-//        for (int i = 0; i < list.size(); i++) {
-//            String annotationType = list.get(i).getAnnotationType().toString();
-//            if (annotationType.contains("me.xx2bab.bro.annotations")) {
-//                continue;
-//            }
-//
-//            String value = "";
-//            Map<? extends ExecutableElement, ? extends AnnotationValue> map = list.get(i).getElementValues();
-//            for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : map.entrySet()) {
-//                if (entry.getKey().toString().equals("value()")) {
-//                    value = entry.getValue().toString().replace("\"", "");
-//                }
-//            }
-//
-//            jsonObject.put(annotationType, value);
-//        }
-//
-//        if (type.equals(BroApi.class.getSimpleName())) {
-//            String ApiInterface = parseApiInterface(element);
-//            if (ApiInterface == null) {
-//                throw new IllegalStateException(nick + ": Bro Api Must implements the interface which extends from IBroApi!");
-//            }
-//            jsonObject.put("ApiInterface", ApiInterface);
-//        }
-//
-//        return jsonObject.toString();
-//    }
 }

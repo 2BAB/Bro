@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
@@ -122,6 +123,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         // so we hack this kind of case here.
         if (moduleBuildType == ModuleType.APPLICATION) {
             multiModuleCollector = new MultiModuleCollector(
+                    processingEnv.getFiler(),
                     appPackageName,
                     appAptGenPath,
                     moduleBroBuildDir,
@@ -231,15 +233,15 @@ public class BroAnnotationProcessor extends AbstractProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    private List<IBroGenerator<List<AnnotatedElement>>> getGenerators() {
-        List<IBroGenerator<List<AnnotatedElement>>> res = new ArrayList<>();
+    private List<IBroGenerator<List<AnnotatedElement>, Filer>> getGenerators() {
+        List<IBroGenerator<List<AnnotatedElement>, Filer>> res = new ArrayList<>();
         GradleClassLoader gradleClassLoader = new GradleClassLoader(
                 appGeneratorClassLoaders.split(","));
         String[] generatorClasses = appGeneratorClasses.split(",");
         for (String clz : generatorClasses) {
             try {
-                IBroGenerator<List<AnnotatedElement>> generator =
-                        (IBroGenerator<List<AnnotatedElement>>) gradleClassLoader.load(clz)
+                IBroGenerator<List<AnnotatedElement>, Filer> generator =
+                        (IBroGenerator<List<AnnotatedElement>, Filer>) gradleClassLoader.load(clz)
                                 .newInstance();
                 res.add(generator);
             } catch (ClassNotFoundException e) {

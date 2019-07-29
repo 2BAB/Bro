@@ -40,7 +40,7 @@ public class App extends Application {
 
             @Override
             public boolean beforeStartActivity(Context context, String target, Intent intent, BroProperties properties) {
-                Log.i("App", properties.toJsonString());
+                //Log.i("App", properties.toJsonString());
                 return false;
             }
 

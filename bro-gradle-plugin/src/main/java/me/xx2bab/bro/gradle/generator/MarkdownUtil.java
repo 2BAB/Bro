@@ -81,9 +81,9 @@ public class MarkdownUtil {
         builder.append("|:---:|:---:|").append("\n");
 
         Set<Map.Entry<String, BroProperties>> set = new TreeMap<>(contentMap).entrySet();
-        for (Map.Entry<String, BroProperties> entry : set) {
-            builder.append("|").append(entry.getKey()).append("|").append(entry.getValue().toJsonString()).append("|").append("\n");
-        }
+//        for (Map.Entry<String, BroProperties> entry : set) {
+//            builder.append("|").append(entry.getKey()).append("|").append(entry.getValue().toJsonString()).append("|").append("\n");
+//        }
         return builder.toString();
     }
 

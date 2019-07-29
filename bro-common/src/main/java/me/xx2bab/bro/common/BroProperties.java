@@ -1,6 +1,6 @@
 package me.xx2bab.bro.common;
 
-import org.json.JSONObject;
+import java.util.Map;
 
 /**
  * Extra properties description for Bro annotations.
@@ -16,27 +16,11 @@ import org.json.JSONObject;
 public class BroProperties {
 
     public String clazz;
+    public Map<String, Map<String, String>> extraAnnotations;
     public String extraParams;
 
-    public BroProperties() {
-    }
-
-    public BroProperties(String clazz, String extraParams) {
+    public BroProperties(String clazz, Map<String, Map<String, String>> extraAnnotations) {
         this.clazz = clazz;
-        this.extraParams = extraParams;
+        this.extraAnnotations = extraAnnotations;
     }
-
-    public String toJsonString() {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("clazz", clazz);
-        jsonObject.put("extraParams", extraParams);
-        return jsonObject.toString();
-    }
-
-    public void fromJsonString(String jsonString) {
-        JSONObject obj = new JSONObject(jsonString);
-        clazz = obj.getString("clazz");
-        extraParams = obj.getString("extraParams");
-    }
-
 }

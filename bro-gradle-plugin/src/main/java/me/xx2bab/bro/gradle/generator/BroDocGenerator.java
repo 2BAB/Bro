@@ -4,15 +4,18 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.processing.Filer;
+
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroGenerator;
 import me.xx2bab.bro.common.anno.AnnotatedElement;
 import me.xx2bab.bro.common.util.CommonUtils;
 
-public class BroDocGenerator implements IBroGenerator<List<AnnotatedElement>> {
+public class BroDocGenerator implements IBroGenerator<List<AnnotatedElement>, Filer> {
 
     @Override
-    public void onGenerate(List<AnnotatedElement> metaDataList,
+    public void onGenerate(final List<AnnotatedElement> inputMetaData,
+                           final Filer filer,
                            String appPackageName,
                            File appAptGenDirectory,
                            File broBuildDirectory) {
