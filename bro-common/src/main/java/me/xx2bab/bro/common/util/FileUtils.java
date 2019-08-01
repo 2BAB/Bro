@@ -8,11 +8,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class CommonUtils {
+public class FileUtils {
 
-    private static final CommonUtils defaultInstance = new CommonUtils();
+    private static final FileUtils defaultInstance = new FileUtils();
 
-    public static CommonUtils getDefault() {
+    public static FileUtils getDefault() {
         return defaultInstance;
     }
 

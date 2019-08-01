@@ -1,9 +1,11 @@
-package me.xx2bab.bro.common;
+package me.xx2bab.bro.common.gen;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
-public interface IBroRoutingTable2 {
+import me.xx2bab.bro.common.BroProperties;
+
+public interface IBroAliasRoutingTable {
 
     Map<String, BroProperties> getRoutingMapByAnnotation(
             Class<? extends Annotation> annotation);

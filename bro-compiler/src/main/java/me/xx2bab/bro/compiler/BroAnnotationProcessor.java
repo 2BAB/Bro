@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
@@ -23,10 +22,11 @@ import me.xx2bab.bro.annotations.BroActivity;
 import me.xx2bab.bro.annotations.BroApi;
 import me.xx2bab.bro.annotations.BroModule;
 import me.xx2bab.bro.common.Constants;
-import me.xx2bab.bro.common.IBroGenerator;
 import me.xx2bab.bro.common.ModuleType;
 import me.xx2bab.bro.common.anno.AnnotatedElement;
-import me.xx2bab.bro.common.util.CommonUtils;
+import me.xx2bab.bro.common.gen.GenOutputs;
+import me.xx2bab.bro.common.gen.IBroAnnoGenerator;
+import me.xx2bab.bro.common.util.FileUtils;
 import me.xx2bab.bro.compiler.classloader.GradleClassLoader;
 import me.xx2bab.bro.compiler.collector.IAnnotationMetaDataCollector;
 import me.xx2bab.bro.compiler.collector.MultiModuleCollector;
@@ -48,7 +48,7 @@ import me.xx2bab.bro.compiler.util.BroCompileLogger;
  */
 public class BroAnnotationProcessor extends AbstractProcessor {
 
-    private CommonUtils commonUtils;
+    private FileUtils fileUtils;
     private final static List<Class<? extends Annotation>> supportedAnnotations;
 
     // Compiler arguments for each module including Application and Library
@@ -97,6 +97,8 @@ public class BroAnnotationProcessor extends AbstractProcessor {
     private String appGeneratorClasses;
     private String libMetaDataOutputPath;
 
+    private GenOutputs genOutputs;
+
     private IAnnotationMetaDataCollector<Element> singleModuleCollector;
     private IAnnotationMetaDataCollector<List<AnnotatedElement>> multiModuleCollector;
 
@@ -106,15 +108,13 @@ public class BroAnnotationProcessor extends AbstractProcessor {
 
         BroCompileLogger.setMessager(processingEnv.getMessager());
         BroCompileLogger.i("bro-compiler processor init");
-        commonUtils = CommonUtils.getDefault();
+        fileUtils = FileUtils.getDefault();
 
         parseCompilerArguments();
 
         singleModuleCollector = new SingleModuleCollector(
-                commonUtils,
-                processingEnv.getTypeUtils(),
-                processingEnv.getElementUtils(),
-                processingEnv.getFiler(),
+                fileUtils,
+                processingEnv,
                 moduleName,
                 libMetaDataOutputPath);
 
@@ -122,11 +122,13 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         // the annotation processor will skip process(...) method below,
         // so we hack this kind of case here.
         if (moduleBuildType == ModuleType.APPLICATION) {
+            genOutputs = new GenOutputs();
+            genOutputs.appPackageName = appPackageName;
+            genOutputs.appAptGenDirectory = new File(appAptGenPath);
+            genOutputs.broBuildDirectory = new File(moduleBroBuildDir);
             multiModuleCollector = new MultiModuleCollector(
-                    processingEnv.getFiler(),
-                    appPackageName,
-                    appAptGenPath,
-                    moduleBroBuildDir,
+                    genOutputs,
+                    processingEnv,
                     getGenerators()
             );
             addMetaDataOfLibs(appMetaDataInputPath);
@@ -221,7 +223,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
             for (File child : childFiles) {
                 BroCompileLogger.i("Processing meta data file: " + child.getName());
                 if (child.getName().endsWith(Constants.MODULE_META_INFO_FILE_SUFFIX)) {
-                    String json = commonUtils.readFile(child);
+                    String json = fileUtils.readFile(child);
                     if (json == null) {
                         continue;
                     }
@@ -233,16 +235,15 @@ public class BroAnnotationProcessor extends AbstractProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    private List<IBroGenerator<List<AnnotatedElement>, Filer>> getGenerators() {
-        List<IBroGenerator<List<AnnotatedElement>, Filer>> res = new ArrayList<>();
+    private List<IBroAnnoGenerator> getGenerators() {
+        List<IBroAnnoGenerator> res = new ArrayList<>();
         GradleClassLoader gradleClassLoader = new GradleClassLoader(
                 appGeneratorClassLoaders.split(","));
         String[] generatorClasses = appGeneratorClasses.split(",");
         for (String clz : generatorClasses) {
             try {
-                IBroGenerator<List<AnnotatedElement>, Filer> generator =
-                        (IBroGenerator<List<AnnotatedElement>, Filer>) gradleClassLoader.load(clz)
-                                .newInstance();
+                IBroAnnoGenerator generator =
+                        (IBroAnnoGenerator) gradleClassLoader.load(clz).newInstance();
                 res.add(generator);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
@@ -256,7 +257,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
             } catch (ClassCastException e) {
                 e.printStackTrace();
                 throw new IllegalArgumentException("Bro generator " + clz + "can not be casted " +
-                        "to IBroGenerator<List<AnnotatedElement>>");
+                        "to IBroAnnoGenerator");
             }
         }
         return res;

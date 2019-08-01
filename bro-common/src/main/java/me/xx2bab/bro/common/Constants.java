@@ -15,7 +15,7 @@ public class Constants {
 
     public static final String MODULE_META_INFO_FILE_SUFFIX = ".bro";
 
-    public static final String ROUTING_TABLE_PACKAGE_NAME = "me.xx2bab.bro.core";
-    public static final String ROUTING_TABLE_FILE_NAME = "BroRoutingTableImpl";
+    public static final String GEN_PACKAGE_NAME = "me.xx2bab.bro.core";
+    public static final String GEN_CLASS_SUFFIX = "Impl";
 
 }

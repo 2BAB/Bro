@@ -5,36 +5,31 @@ import com.alibaba.fastjson.JSON;
 import java.lang.annotation.ElementType;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.annotation.processing.Filer;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 
 import me.xx2bab.bro.common.Constants;
 import me.xx2bab.bro.common.anno.AnnotatedElement;
 import me.xx2bab.bro.common.anno.Annotation;
-import me.xx2bab.bro.common.util.CommonUtils;
+import me.xx2bab.bro.common.util.FileUtils;
 
 /**
  * Created on 2019-07-16
  */
 public class SingleModuleCollector implements IAnnotationMetaDataCollector<Element> {
 
-    private CommonUtils commonUtils;
+    private FileUtils fileUtils;
+    private ProcessingEnvironment processingEnvironment;
 
-    private Types typeUtils;
-    private Elements elementUtils;
-    private Filer filer;
     private String moduleName;
     private String libMetaDataOutputPath;
 
@@ -46,16 +41,12 @@ public class SingleModuleCollector implements IAnnotationMetaDataCollector<Eleme
         }
     };
 
-    public SingleModuleCollector(CommonUtils commonUtils,
-                                 Types typeUtils,
-                                 Elements elementUtils,
-                                 Filer filer,
+    public SingleModuleCollector(FileUtils fileUtils,
+                                 ProcessingEnvironment processingEnvironment,
                                  String moduleName,
                                  String libMetaDataOutputPath) {
-        this.commonUtils = commonUtils;
-        this.typeUtils = typeUtils;
-        this.elementUtils = elementUtils;
-        this.filer = filer;
+        this.fileUtils = fileUtils;
+        this.processingEnvironment = processingEnvironment;
         this.moduleName = moduleName;
         this.libMetaDataOutputPath = libMetaDataOutputPath;
         elements = new ArrayList<>();
@@ -100,9 +91,9 @@ public class SingleModuleCollector implements IAnnotationMetaDataCollector<Eleme
 
     @Override
     public void generate() {
-        String fileName = commonUtils.filterIllegalCharsForResFileName(moduleName)
+        String fileName = fileUtils.filterIllegalCharsForResFileName(moduleName)
                 + Constants.MODULE_META_INFO_FILE_SUFFIX;
-        commonUtils.writeFile(JSON.toJSONString(elements), libMetaDataOutputPath, fileName);
+        fileUtils.writeFile(JSON.toJSONString(elements), libMetaDataOutputPath, fileName);
     }
 
 }

@@ -3,8 +3,9 @@ package me.xx2bab.bro.gradle
 import com.android.build.gradle.api.BaseVariant
 import me.xx2bab.bro.common.Constants
 import me.xx2bab.bro.common.ModuleType
-import me.xx2bab.bro.gradle.generator.BroDocGenerator
-import me.xx2bab.bro.gradle.generator.BroRoutingTableGenerator
+import me.xx2bab.bro.gradle.generator.BroApiInterfaceAndAliasMapAnnoGenerator
+import me.xx2bab.bro.gradle.generator.BroDocAnnoGenerator
+import me.xx2bab.bro.gradle.generator.BroRoutingTableAnnoGenerator
 import me.xx2bab.bro.gradle.util.BuildUtils
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
@@ -111,8 +112,9 @@ object AnnotationProcessorParamsInjector {
     }
 
     private fun getGeneratorClasses(): String {
-        val classes = arrayOf(BroDocGenerator::class.qualifiedName,
-                BroRoutingTableGenerator::class.qualifiedName)
+        val classes = arrayOf(BroDocAnnoGenerator::class.qualifiedName,
+                BroRoutingTableAnnoGenerator::class.qualifiedName,
+                BroApiInterfaceAndAliasMapAnnoGenerator::class.qualifiedName)
         return classes.joinToString(",")
     }
 

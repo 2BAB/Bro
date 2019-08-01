@@ -2,7 +2,7 @@ package me.xx2bab.bro.compiler.collector;
 
 import java.util.List;
 
-import me.xx2bab.bro.common.IBroGenerator;
+import me.xx2bab.bro.common.gen.IBroAnnoGenerator;
 import me.xx2bab.bro.common.anno.AnnotatedElement;
 
 /**
@@ -27,7 +27,7 @@ public interface IAnnotationMetaDataCollector<T> {
     /**
      * To generate some intermediates of meta data or be a delegate for generators.
      *
-     * @see IBroGenerator
+     * @see IBroAnnoGenerator
      */
     void generate();
 
