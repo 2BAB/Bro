@@ -2,24 +2,16 @@ package me.xx2bab.bro.compiler.collector;
 
 import com.alibaba.fastjson.JSON;
 
-import java.lang.annotation.ElementType;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
 
 import me.xx2bab.bro.common.Constants;
-import me.xx2bab.bro.common.anno.AnnotatedElement;
-import me.xx2bab.bro.common.anno.Annotation;
+import me.xx2bab.bro.common.gen.IBroAnnoProcessor;
 import me.xx2bab.bro.common.util.FileUtils;
 
 /**
@@ -27,66 +19,44 @@ import me.xx2bab.bro.common.util.FileUtils;
  */
 public class SingleModuleCollector implements IAnnotationMetaDataCollector<Element> {
 
+    private List<IBroAnnoProcessor> processors;
     private FileUtils fileUtils;
     private ProcessingEnvironment processingEnvironment;
-
     private String moduleName;
     private String libMetaDataOutputPath;
 
-    private List<AnnotatedElement> elements;
-    private Comparator<Annotation> comparator = new Comparator<Annotation>() {
-        @Override
-        public int compare(Annotation a1, Annotation a2) {
-            return a1.name.compareTo(a2.name);
-        }
-    };
+    /**
+     * A map that provides <ProcessorName, FormattedMetaDataString>
+     */
+    private Map<String, List<String>> elements;
 
-    public SingleModuleCollector(FileUtils fileUtils,
+    public SingleModuleCollector(List<IBroAnnoProcessor> processors,
                                  ProcessingEnvironment processingEnvironment,
+                                 FileUtils fileUtils,
                                  String moduleName,
                                  String libMetaDataOutputPath) {
+        this.processors = processors;
         this.fileUtils = fileUtils;
         this.processingEnvironment = processingEnvironment;
         this.moduleName = moduleName;
         this.libMetaDataOutputPath = libMetaDataOutputPath;
-        elements = new ArrayList<>();
-    }
 
-    @Override
-    public List<AnnotatedElement> getMetaData() {
-        return elements;
+        elements = new HashMap<>();
+        for (IBroAnnoProcessor processor : processors) {
+            elements.put(processor.getClass().getCanonicalName(), new ArrayList<String>());
+        }
     }
 
     @Override
     public void addMetaRecord(Element element) {
-        List<? extends AnnotationMirror> list = element.getAnnotationMirrors();
-        AnnotatedElement annotatedElement = new AnnotatedElement();
-        annotatedElement.name = element.asType().toString();
-        annotatedElement.annotations = new TreeSet<>(comparator);
-        for (int i = 0; i < list.size(); i++) {
-            Annotation annotation = new Annotation();
-            annotation.name = list.get(i).getAnnotationType().toString();
-            annotation.values = new TreeMap<>();
-            Map<? extends ExecutableElement, ? extends AnnotationValue> map
-                    = list.get(i).getElementValues();
-            for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry
-                    : map.entrySet()) {
-                annotation.values.put(entry.getKey().toString().replaceAll("\\(\\)", ""),
-                        entry.getValue().toString().replaceAll("([\"'])", ""));
+        for (IBroAnnoProcessor processor : processors) {
+            String collectedRes = processor.onCollect(element, processingEnvironment);
+            if (collectedRes == null || collectedRes.isEmpty()) {
+                continue;
             }
-            annotatedElement.annotations.add(annotation);
+            elements.get(processor.getClass().getCanonicalName())
+                    .add(collectedRes);
         }
-
-        // TODO: support more element type
-        // Parse interface info for class
-        if (element instanceof TypeElement) {
-            annotatedElement.type = ElementType.TYPE;
-            annotatedElement.clazz = annotatedElement.name;
-//            TypeElement typeElement = (TypeElement) element;
-//            String packageName = typeElement.getQualifiedName().toString();
-        }
-
-        elements.add(annotatedElement);
     }
 
     @Override
@@ -95,5 +65,10 @@ public class SingleModuleCollector implements IAnnotationMetaDataCollector<Eleme
                 + Constants.MODULE_META_INFO_FILE_SUFFIX;
         fileUtils.writeFile(JSON.toJSONString(elements), libMetaDataOutputPath, fileName);
     }
+
+    public Map<String, List<String>> getMetaData() {
+        return elements;
+    }
+
 
 }

@@ -1,21 +1,11 @@
 package me.xx2bab.bro.compiler.collector;
 
-import java.util.List;
-
-import me.xx2bab.bro.common.gen.IBroAnnoGenerator;
-import me.xx2bab.bro.common.anno.AnnotatedElement;
+import me.xx2bab.bro.common.gen.IBroAnnoProcessor;
 
 /**
  * A collector for collecting meta data of modules/app via annotated elements.
  */
 public interface IAnnotationMetaDataCollector<T> {
-
-    /**
-     * To get current meta data collection.
-     *
-     * @return Current meta data list.
-     */
-    List<AnnotatedElement> getMetaData();
 
     /**
      * To add a new meta data record.
@@ -27,7 +17,7 @@ public interface IAnnotationMetaDataCollector<T> {
     /**
      * To generate some intermediates of meta data or be a delegate for generators.
      *
-     * @see IBroAnnoGenerator
+     * @see IBroAnnoProcessor
      */
     void generate();
 

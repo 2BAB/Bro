@@ -1,4 +1,4 @@
-package me.xx2bab.bro.gradle.generator;
+package me.xx2bab.bro.gradle.processor;
 
 import java.util.List;
 import java.util.Map;
@@ -6,16 +6,12 @@ import java.util.Map;
 import javax.annotation.processing.ProcessingEnvironment;
 
 import me.xx2bab.bro.common.BroProperties;
-import me.xx2bab.bro.common.anno.AnnotatedElement;
 import me.xx2bab.bro.common.gen.GenOutputs;
-import me.xx2bab.bro.common.gen.IBroAnnoGenerator;
 import me.xx2bab.bro.common.util.FileUtils;
 
-public class BroDocAnnoGenerator implements IBroAnnoGenerator {
+public class BroDocGenerator{
 
-
-    @Override
-    public void onGenerate(List<AnnotatedElement> inputMetaData,
+    public void onGenerate(List<String> inputMetaData,
                            GenOutputs genOutputs,
                            ProcessingEnvironment processingEnvironment) {
         StringBuilder builder = new StringBuilder();

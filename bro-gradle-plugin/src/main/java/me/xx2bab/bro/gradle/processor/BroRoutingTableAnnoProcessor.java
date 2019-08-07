@@ -1,5 +1,6 @@
-package me.xx2bab.bro.gradle.generator;
+package me.xx2bab.bro.gradle.processor;
 
+import com.alibaba.fastjson.JSON;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
@@ -11,24 +12,35 @@ import com.squareup.javapoet.WildcardTypeName;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
 
 import me.xx2bab.bro.annotations.BroActivity;
 import me.xx2bab.bro.annotations.BroApi;
 import me.xx2bab.bro.annotations.BroModule;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.Constants;
-import me.xx2bab.bro.common.gen.IBroAliasRoutingTable;
 import me.xx2bab.bro.common.anno.AnnotatedElement;
 import me.xx2bab.bro.common.gen.GenOutputs;
-import me.xx2bab.bro.common.gen.IBroAnnoGenerator;
+import me.xx2bab.bro.common.gen.IBroAliasRoutingTable;
+import me.xx2bab.bro.common.gen.IBroAnnoProcessor;
 
 /**
  * A generator to generate the implementation of "IBroAliasRoutingTable"
@@ -36,11 +48,18 @@ import me.xx2bab.bro.common.gen.IBroAnnoGenerator;
  *
  * @see IBroAliasRoutingTable
  */
-public class BroRoutingTableAnnoGenerator implements IBroAnnoGenerator {
+public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
 
     private HashMap<String, Class<? extends Annotation>> supportedAnnotations;
     private HashSet<String> nicks;
-    private ProcessingEnvironment processingEnvironment;
+
+    private Comparator<me.xx2bab.bro.common.anno.Annotation> comparator
+            = new Comparator<me.xx2bab.bro.common.anno.Annotation>() {
+        @Override
+        public int compare(me.xx2bab.bro.common.anno.Annotation a1, me.xx2bab.bro.common.anno.Annotation a2) {
+            return a1.name.compareTo(a2.name);
+        }
+    };
 
     private static final ClassName STRING_CLASSNAME = ClassName.get("java.lang", "String");
     private static final ClassName MAP_CLASSNAME = ClassName.get("java.util", "Map");
@@ -74,7 +93,7 @@ public class BroRoutingTableAnnoGenerator implements IBroAnnoGenerator {
     private static final String TEMP_FIELD_ANNO_VALUE = "annotationValues";
     private static final String TEMP_FIELD_BRO_PROP = "broProp";
 
-    public BroRoutingTableAnnoGenerator() {
+    public BroRoutingTableAnnoProcessor() {
         supportedAnnotations = new HashMap<>();
         supportedAnnotations.put(BroActivity.class.getCanonicalName(), BroActivity.class);
         supportedAnnotations.put(BroApi.class.getCanonicalName(), BroApi.class);
@@ -83,15 +102,58 @@ public class BroRoutingTableAnnoGenerator implements IBroAnnoGenerator {
     }
 
     @Override
-    public void onGenerate(final List<AnnotatedElement> inputMetaData,
+    public Collection<Class<? extends Annotation>> getSupportedAnnotationTypes() {
+        return supportedAnnotations.values();
+    }
+
+    @Override
+    public String onCollect(Element element, ProcessingEnvironment processingEnvironment) {
+        List<? extends AnnotationMirror> list = element.getAnnotationMirrors();
+        AnnotatedElement annotatedElement = new AnnotatedElement();
+        annotatedElement.name = element.asType().toString();
+        annotatedElement.annotations = new TreeSet<>(comparator);
+        for (int i = 0; i < list.size(); i++) {
+            me.xx2bab.bro.common.anno.Annotation annotation = new me.xx2bab.bro.common.anno.Annotation();
+            annotation.name = list.get(i).getAnnotationType().toString();
+            annotation.values = new TreeMap<>();
+            Map<? extends ExecutableElement, ? extends AnnotationValue> map
+                    = list.get(i).getElementValues();
+            for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry
+                    : map.entrySet()) {
+                annotation.values.put(entry.getKey().toString().replaceAll("\\(\\)", ""),
+                        entry.getValue().toString().replaceAll("([\"'])", ""));
+            }
+            annotatedElement.annotations.add(annotation);
+        }
+
+        // TODO: support more element type
+        // Parse interface info for class
+        if (element instanceof TypeElement) {
+            annotatedElement.type = ElementType.TYPE;
+            annotatedElement.clazz = annotatedElement.name;
+//            TypeElement typeElement = (TypeElement) element;
+//            String packageName = typeElement.getQualifiedName().toString();
+        }
+
+        return JSON.toJSONString(annotatedElement);
+    }
+
+    @Override
+    public void onGenerate(final List<String> inputMetaData,
                            final GenOutputs genOutputs,
                            final ProcessingEnvironment processingEnvironment) {
-        this.processingEnvironment = processingEnvironment;
+        // Prepare params
+        List<AnnotatedElement> elements = new ArrayList<>();
+        for (String json : inputMetaData) {
+            elements.add(JSON.parseObject(json, AnnotatedElement.class));
+        }
         nicks.clear();
 
+        // Convert the data
         Map<Class<? extends Annotation>, Map<String, BroProperties>> table
-                = breakdownMetaData(inputMetaData);
+                = breakdownMetaData(elements);
 
+        // Start to generate the class
         String className = IBroAliasRoutingTable.class.getSimpleName()
                 + Constants.GEN_CLASS_SUFFIX;
         TypeSpec.Builder builder = TypeSpec.classBuilder(className)
@@ -113,7 +175,7 @@ public class BroRoutingTableAnnoGenerator implements IBroAnnoGenerator {
 
         JavaFile file = JavaFile.builder(Constants.GEN_PACKAGE_NAME, builder.build())
                 .indent("    ") // with 4 spaces
-                .addFileComment("Generated by BroRoutingTableAnnoGenerator.").build();
+                .addFileComment("Generated by BroRoutingTableAnnoProcessor.").build();
         try {
             file.writeTo(processingEnvironment.getFiler());
         } catch (Exception e) {
@@ -263,7 +325,7 @@ public class BroRoutingTableAnnoGenerator implements IBroAnnoGenerator {
      */
     private void checkDuplicatedNick(String nick) throws DuplicatedNickException {
         if (nicks.contains(nick)) {
-            throw new DuplicatedNickException("BroRoutingTableAnnoGenerator: Nick \"" + nick + "\" is" +
+            throw new DuplicatedNickException("BroRoutingTableAnnoProcessor: Nick \"" + nick + "\" is" +
                     " duplicated, please check annotation values!");
         }
         nicks.add(nick);

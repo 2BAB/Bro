@@ -1,7 +1,5 @@
 package me.xx2bab.bro.compiler;
 
-import com.alibaba.fastjson.JSON;
-
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -23,12 +21,10 @@ import me.xx2bab.bro.annotations.BroApi;
 import me.xx2bab.bro.annotations.BroModule;
 import me.xx2bab.bro.common.Constants;
 import me.xx2bab.bro.common.ModuleType;
-import me.xx2bab.bro.common.anno.AnnotatedElement;
 import me.xx2bab.bro.common.gen.GenOutputs;
-import me.xx2bab.bro.common.gen.IBroAnnoGenerator;
+import me.xx2bab.bro.common.gen.IBroAnnoProcessor;
 import me.xx2bab.bro.common.util.FileUtils;
 import me.xx2bab.bro.compiler.classloader.GradleClassLoader;
-import me.xx2bab.bro.compiler.collector.IAnnotationMetaDataCollector;
 import me.xx2bab.bro.compiler.collector.MultiModuleCollector;
 import me.xx2bab.bro.compiler.collector.SingleModuleCollector;
 import me.xx2bab.bro.compiler.util.BroCompileLogger;
@@ -70,13 +66,13 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_NAME);
         compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_BUILD_TYPE);
         compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_BUILD_DIR);
+        compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_PROCESSOR_CLASSES);
+        compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_GENERATOR_CLASSLOADERS);
 
         compilerArgumentForApp = new ArrayList<>();
         compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME);
         compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_META_DATA_INPUT_PATH);
         compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_APT_PATH);
-        compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_GENERATOR_CLASSES);
-        compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_GENERATOR_CLASSLOADERS);
 
         compilerArgumentForLib = new ArrayList<>();
         compilerArgumentForLib.add(Constants.ANNO_PROC_ARG_LIB_META_DATA_OUTPUT_PATH);
@@ -90,17 +86,17 @@ public class BroAnnotationProcessor extends AbstractProcessor {
     private String moduleName;
     private ModuleType moduleBuildType;
     private String moduleBroBuildDir;
+    private String moduleProcessorClassLoaders;
     private String appPackageName;
     private String appMetaDataInputPath;
     private String appAptGenPath;
-    private String appGeneratorClassLoaders;
     private String appGeneratorClasses;
     private String libMetaDataOutputPath;
 
     private GenOutputs genOutputs;
 
-    private IAnnotationMetaDataCollector<Element> singleModuleCollector;
-    private IAnnotationMetaDataCollector<List<AnnotatedElement>> multiModuleCollector;
+    private SingleModuleCollector singleModuleCollector;
+    private MultiModuleCollector multiModuleCollector;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -111,10 +107,12 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         fileUtils = FileUtils.getDefault();
 
         parseCompilerArguments();
+        List<IBroAnnoProcessor> processors = getProcessors();
 
         singleModuleCollector = new SingleModuleCollector(
-                fileUtils,
+                processors,
                 processingEnv,
+                fileUtils,
                 moduleName,
                 libMetaDataOutputPath);
 
@@ -127,11 +125,11 @@ public class BroAnnotationProcessor extends AbstractProcessor {
             genOutputs.appAptGenDirectory = new File(appAptGenPath);
             genOutputs.broBuildDirectory = new File(moduleBroBuildDir);
             multiModuleCollector = new MultiModuleCollector(
-                    genOutputs,
+                    processors,
                     processingEnv,
-                    getGenerators()
-            );
-            addMetaDataOfLibs(appMetaDataInputPath);
+                    fileUtils,
+                    genOutputs);
+            multiModuleCollector.load(appMetaDataInputPath);
             multiModuleCollector.generate();
         }
     }
@@ -147,7 +145,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         }
 
         if (moduleBuildType == ModuleType.APPLICATION) {
-            addMetaDataOfLibs(appMetaDataInputPath);
+            multiModuleCollector.load(appMetaDataInputPath);
             multiModuleCollector.addMetaRecord(singleModuleCollector.getMetaData());
             multiModuleCollector.generate();
         } else {
@@ -174,10 +172,10 @@ public class BroAnnotationProcessor extends AbstractProcessor {
                 this.appMetaDataInputPath = map.get(key);
             } else if (Constants.ANNO_PROC_ARG_APP_APT_PATH.equals(key)) {
                 this.appAptGenPath = map.get(key);
-            } else if (Constants.ANNO_PROC_ARG_APP_GENERATOR_CLASSES.equals(key)) {
+            } else if (Constants.ANNO_PROC_ARG_MODULE_PROCESSOR_CLASSES.equals(key)) {
                 this.appGeneratorClasses = map.get(key);
-            } else if (Constants.ANNO_PROC_ARG_APP_GENERATOR_CLASSLOADERS.equals(key)) {
-                this.appGeneratorClassLoaders = map.get(key);
+            } else if (Constants.ANNO_PROC_ARG_MODULE_GENERATOR_CLASSLOADERS.equals(key)) {
+                this.moduleProcessorClassLoaders = map.get(key);
             } else if (Constants.ANNO_PROC_ARG_LIB_META_DATA_OUTPUT_PATH.equals(key)) {
                 this.libMetaDataOutputPath = map.get(key);
             }
@@ -208,43 +206,18 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         }
     }
 
-    private void addMetaDataOfLibs(String inputPaths) {
-        String[] splitPaths = inputPaths.split(";");
-        for (String path : splitPaths) {
-            File file = new File(path);
-            if (!file.exists() || !file.isDirectory()) {
-                continue;
-            }
-            File[] childFiles = file.listFiles();
-            if (childFiles == null || childFiles.length == 0) {
-                continue;
-            }
-
-            for (File child : childFiles) {
-                BroCompileLogger.i("Processing meta data file: " + child.getName());
-                if (child.getName().endsWith(Constants.MODULE_META_INFO_FILE_SUFFIX)) {
-                    String json = fileUtils.readFile(child);
-                    if (json == null) {
-                        continue;
-                    }
-                    List<AnnotatedElement> list = JSON.parseArray(json, AnnotatedElement.class);
-                    multiModuleCollector.addMetaRecord(list);
-                }
-            }
-        }
-    }
 
     @SuppressWarnings("unchecked")
-    private List<IBroAnnoGenerator> getGenerators() {
-        List<IBroAnnoGenerator> res = new ArrayList<>();
+    private List<IBroAnnoProcessor> getProcessors() {
+        List<IBroAnnoProcessor> res = new ArrayList<>();
         GradleClassLoader gradleClassLoader = new GradleClassLoader(
-                appGeneratorClassLoaders.split(","));
+                moduleProcessorClassLoaders.split(","));
         String[] generatorClasses = appGeneratorClasses.split(",");
         for (String clz : generatorClasses) {
             try {
-                IBroAnnoGenerator generator =
-                        (IBroAnnoGenerator) gradleClassLoader.load(clz).newInstance();
-                res.add(generator);
+                IBroAnnoProcessor processor =
+                        (IBroAnnoProcessor) gradleClassLoader.load(clz).newInstance();
+                res.add(processor);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
                 throw new IllegalArgumentException("Bro generator " + clz + "can not be found.");
@@ -257,7 +230,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
             } catch (ClassCastException e) {
                 e.printStackTrace();
                 throw new IllegalArgumentException("Bro generator " + clz + "can not be casted " +
-                        "to IBroAnnoGenerator");
+                        "to IBroAnnoProcessor");
             }
         }
         return res;

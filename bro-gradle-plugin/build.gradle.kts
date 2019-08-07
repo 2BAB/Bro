@@ -18,6 +18,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${rootProject.extra["kotlinVersion"]}")
     implementation("org.jetbrains.kotlin:kotlin-reflect:${rootProject.extra["kotlinVersion"]}")
     implementation("org.javassist:javassist:3.22.0-GA")
+    implementation(BuildConfig.Deps.fastjson)
     if (project.hasProperty("broPublish")) {
         implementation(BuildConfig.Deps.broAnnotationsDev)
         implementation(BuildConfig.Deps.broCommonDev)
