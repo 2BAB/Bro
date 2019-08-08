@@ -2,23 +2,33 @@ package me.xx2bab.bro.gradle
 
 import com.android.build.gradle.api.BaseVariant
 import me.xx2bab.bro.common.Constants
-import me.xx2bab.bro.gradle.utils.BuildUtils
+import me.xx2bab.bro.common.ModuleType
+import me.xx2bab.bro.gradle.processor.BroApiInterfaceAndAliasMapAnnoProcessor
+import me.xx2bab.bro.gradle.processor.BroRoutingTableAnnoProcessor
+import me.xx2bab.bro.gradle.util.BuildUtils
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import java.io.File
+import java.net.URLClassLoader
 
 object AnnotationProcessorParamsInjector {
 
-    fun inject(isApplication: Boolean, variants: DomainObjectSet<out BaseVariant>, project: Project) {
+    fun inject(isApplication: Boolean,
+               variants: DomainObjectSet<out BaseVariant>,
+               project: Project) {
         variants.all { variant ->
             val args = variant.javaCompileOptions.annotationProcessorOptions.arguments
             val moduleName = project.name
             val buildDir = BuildUtils.getBroBuildPath(project)
 
             // common args
-            args[Constants.KEY_MODULE_NAME] = moduleName
-            args[Constants.KEY_MODULE_BUILD_TYPE] = if (isApplication) "Application" else "Library"
-            args[Constants.KEY_MODULE_BUILD_DIR] = buildDir
+            args[Constants.ANNO_PROC_ARG_MODULE_NAME] = moduleName
+            args[Constants.ANNO_PROC_ARG_MODULE_BUILD_TYPE] =
+                    if (isApplication) ModuleType.APPLICATION.name else ModuleType.LIBRARY.name
+            args[Constants.ANNO_PROC_ARG_MODULE_BUILD_DIR] = buildDir
+            args[Constants.ANNO_PROC_ARG_MODULE_PROCESSOR_CLASSES] = getGeneratorClasses()
+            args[Constants.ANNO_PROC_ARG_MODULE_GENERATOR_CLASSLOADERS] =
+                    getClassLoadersForGenerator(javaClass.classLoader)
 
             // different arg(s) in each condition
             if (isApplication) {
@@ -28,19 +38,18 @@ object AnnotationProcessorParamsInjector {
                 val allMergedAssetsPaths = getAllMergedAssets(variant.name.capitalize(), project)
                 val aptPath = (project.buildDir.absolutePath + File.separator + "generated"
                         + File.separator + "source" + File.separator + "apt")
-                args[Constants.KEY_HOST_PACKAGE_NAME] = applicationId
-                args[Constants.KEY_HOST_ALL_ASSETS_SOURCE] = allMergedAssetsPaths
-                args[Constants.KEY_HOST_APT_PATH] = aptPath
+                args[Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME] = applicationId
+                args[Constants.ANNO_PROC_ARG_APP_META_DATA_INPUT_PATH] = allMergedAssetsPaths
+                args[Constants.ANNO_PROC_ARG_APP_APT_PATH] = aptPath
             } else {
-                args[Constants.KEY_LIB_BUNDLES_ASSETS_PATH] = getBuildBundlesAssetsPath(
+                args[Constants.ANNO_PROC_ARG_LIB_META_DATA_OUTPUT_PATH] = getBuildBundlesAssetsPath(
                         variant.name.capitalize(), project)
             }
         }
-
     }
 
     /**
-     * For HOST to gather .bro files together.
+     * For App to gather .bro files together.
      * @param variantName current build type
      * @param project gradle project object
      * @return all module's merged-assets folders
@@ -78,6 +87,33 @@ object AnnotationProcessorParamsInjector {
         }
 
         return result
+    }
+
+    private fun getClassLoadersForGenerator(appCl: ClassLoader?): String {
+        val GRADLE_PLUGIN = "bro-gradle-plugin-"
+        val BUILD_SRC = "buildSrc.jar"
+
+        var appClassLoader = appCl
+        val list = mutableListOf<String>()
+        while (appClassLoader != null) {
+            if (appClassLoader is URLClassLoader) {
+                for (url in appClassLoader.urLs) {
+                    val urlString = url.toString()
+                    if (urlString.contains(GRADLE_PLUGIN)
+                            || urlString.contains(BUILD_SRC)) {
+                        list.add(urlString)
+                    }
+                }
+            }
+            appClassLoader = appClassLoader.parent
+        }
+        return list.joinToString(",")
+    }
+
+    private fun getGeneratorClasses(): String {
+        val classes = arrayOf(BroRoutingTableAnnoProcessor::class.qualifiedName,
+                BroApiInterfaceAndAliasMapAnnoProcessor::class.qualifiedName)
+        return classes.joinToString(",")
     }
 
 }

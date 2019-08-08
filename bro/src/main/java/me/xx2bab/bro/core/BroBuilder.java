@@ -8,10 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.xx2bab.bro.common.BroProperties;
-import me.xx2bab.bro.common.Constants;
 import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.common.IBroModule;
-import me.xx2bab.bro.common.IBroRoutingTable;
 import me.xx2bab.bro.core.activity.AnnoActivityFinder;
 import me.xx2bab.bro.core.activity.Builder;
 import me.xx2bab.bro.core.activity.IActivityFinder;
@@ -19,13 +17,13 @@ import me.xx2bab.bro.core.activity.PackageManagerActivityFinder;
 import me.xx2bab.bro.core.base.IBroInterceptor;
 import me.xx2bab.bro.core.base.IBroMonitor;
 import me.xx2bab.bro.core.defaultor.DefaultActivity;
+import me.xx2bab.bro.core.util.BroRudder;
 import me.xx2bab.bro.core.util.BroRuntimeLog;
 
 public class BroBuilder {
 
     private IBroInterceptor interceptor;
     private IBroMonitor monitor;
-    private IBroRoutingTable routingTable;
 
     private boolean logEnabled = true;
     private boolean moduleAutoInitEnabled = true;
@@ -43,12 +41,6 @@ public class BroBuilder {
         this.monitor = monitor;
         return this;
     }
-
-    public BroBuilder setRoutingTable(IBroRoutingTable routingTable) {
-        this.routingTable = routingTable;
-        return this;
-    }
-
 
     public BroBuilder setModuleAutoInitEnabled(boolean moduleAutoInitEnabled) {
         this.moduleAutoInitEnabled = moduleAutoInitEnabled;
@@ -86,13 +78,6 @@ public class BroBuilder {
     }
 
     Bro build(Context context) {
-        if (routingTable == null) {
-            routingTable = getDefaultRoutingTable();
-            if (routingTable == null) {
-                throw new IllegalArgumentException("");
-            }
-        }
-
         if (interceptor == null) {
             interceptor = new IBroInterceptor() {
                 @Override
@@ -153,9 +138,9 @@ public class BroBuilder {
         BroContext broContext = new BroContext();
 
         broContext.context = new WeakReference<>(context);
+        broContext.broRudder = new BroRudder();
         broContext.interceptor = interceptor;
         broContext.monitor = monitor;
-        broContext.routingTable = routingTable;
         broContext.moduleAutoInitEnabled = moduleAutoInitEnabled;
         broContext.apiAutoInitEnabled = apiAutoInitEnabled;
         broContext.fallbackActivityCls = activityCls;
@@ -164,21 +149,6 @@ public class BroBuilder {
 
         BroRuntimeLog.logEnabled = logEnabled;
         return new Bro(broContext);
-    }
-
-    private IBroRoutingTable getDefaultRoutingTable() {
-        IBroRoutingTable defaultRoutingTable = null;
-        try {
-            defaultRoutingTable = (IBroRoutingTable) Class.forName(Constants.MERGED_MAP_PACKAGE_NAME
-                    + "." + Constants.MERGED_MAP_FILE_NAME).newInstance();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return defaultRoutingTable;
     }
 
 }
