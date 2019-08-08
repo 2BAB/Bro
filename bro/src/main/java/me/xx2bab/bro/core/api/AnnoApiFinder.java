@@ -1,14 +1,13 @@
 package me.xx2bab.bro.core.api;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
+import me.xx2bab.bro.annotations.BroApi;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroApi;
+import me.xx2bab.bro.common.gen.anno.IBroAliasRoutingTable;
+import me.xx2bab.bro.common.gen.anno.IBroApiInterfaceAndAliasMap;
 import me.xx2bab.bro.core.BroContext;
 import me.xx2bab.bro.core.base.BroErrorType;
 import me.xx2bab.bro.core.base.IBroInterceptor;
@@ -17,7 +16,7 @@ import me.xx2bab.bro.core.util.BroRuntimeLog;
 
 public class AnnoApiFinder implements IApiFinder {
 
-    private List<ApiEntity> apiEntityList;
+    private Map<String, IBroApi> aliasInstanceMap;
     private BroContext broContext;
     private IBroInterceptor interceptor;
     private IBroMonitor monitor;
@@ -26,79 +25,56 @@ public class AnnoApiFinder implements IApiFinder {
         this.broContext = broContext;
         interceptor = broContext.interceptor;
         monitor = broContext.monitor;
-        initApiEntity();
+        aliasInstanceMap = new HashMap<>();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends IBroApi> T getApi(Class<T> apiInterface) {
-        IBroApi broApi = null;
-        BroProperties properties = null;
-        for (ApiEntity bean : apiEntityList) {
-            if (bean.interfaze.equals(apiInterface.getCanonicalName())) {
-                broApi = bean.instance;
-                properties = bean.properties;
-                break;
-            }
-        }
-
-        if (interceptor.beforeGetApi(broContext.context.get(),
-                apiInterface.getCanonicalName(),
-                broApi,
-                properties)) {
-            return null;
-        }
-        if (broApi == null) {
-            BroRuntimeLog.e("The Api Impl of \"" + apiInterface.getCanonicalName() + "\" is not found by Bro!");
-            monitor.onApiException(BroErrorType.API_CANT_FIND_TARGET);
-            return null;
-        }
-        return (T) broApi;
+        String alias = broContext.broRudder
+                .getImplementationByInterface(IBroApiInterfaceAndAliasMap.class)
+                .getAliasByInterface(apiInterface.getCanonicalName());
+        return (T) getApi(alias);
     }
 
     @Override
-    public IBroApi getApi(String nick) {
-        IBroApi api = null;
-        BroProperties properties = null;
-        for (ApiEntity bean : apiEntityList) {
-            if (bean.nick.equals(nick)) {
-                api = bean.instance;
-                properties = bean.properties;
-                break;
-            }
-        }
-        if (!interceptor.beforeGetApi(broContext.context.get(),
-                nick,
-                api,
-                properties)) {
-            return null;
-        }
-        if (api == null) {
-            BroRuntimeLog.e("The Api Nick \"" + nick + "\" is not found by Bro!");
+    public IBroApi getApi(String alias) {
+        if (alias == null || alias.isEmpty()) {
+            BroRuntimeLog.e("The Api alias is EMPTY!");
             monitor.onApiException(BroErrorType.API_CANT_FIND_TARGET);
             return null;
         }
-        return api;
-    }
+        IBroApi instance;
+        BroProperties properties;
+        Map<String, BroProperties> aliasPropertiesMap = broContext.broRudder
+                .getImplementationByInterface(IBroAliasRoutingTable.class)
+                .getRoutingMapByAnnotation(BroApi.class);
 
-    public void initApiEntity() {
-        apiEntityList = new ArrayList<>();
-        for (Map.Entry<String, BroProperties> entry : broContext.routingTable.getBroApiMap().entrySet()) {
+        // Looking up from cache map
+        if (aliasInstanceMap.containsKey(alias)) {
+            instance = aliasInstanceMap.get(alias);
+            properties = aliasPropertiesMap.get(alias);
+        } else {
+            // Or it is the first time we init the instance
             try {
-                JSONObject extraParam = JSON.parseObject(entry.getValue().extraParams);
-                ApiEntity entity = new ApiEntity();
-                entity.nick = entry.getKey();
-                entity.instance = (IBroApi) Class.forName(entry.getValue().clazz).newInstance();
-                entity.interfaze = extraParam.getString("ApiInterface");
-                entity.properties = entry.getValue();
-
-                entity.instance.onInit(); // todo: specify order
-
-                apiEntityList.add(entity);
+                properties = aliasPropertiesMap.get(alias);
+                if (properties == null) {
+                    throw new IllegalArgumentException();
+                }
+                instance = (IBroApi) Class.forName(properties.clazz).newInstance();
+                aliasInstanceMap.put(alias, instance);
             } catch (Exception e) {
-                BroRuntimeLog.e("Bro Provider named " + entry.getValue().clazz + " init failed : " + e.getMessage());
-                monitor.onApiException(BroErrorType.API_INIT_ERROR);
+                BroRuntimeLog.e("The Api alias \"" + alias + "\" is not found by Bro!");
+                monitor.onApiException(BroErrorType.API_CANT_FIND_TARGET);
+                return null;
             }
         }
+
+        if (interceptor.beforeGetApi(broContext.context.get(), alias, instance, properties)) {
+            return null;
+        }
+
+        return instance;
     }
 
 }

@@ -4,7 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
+import java.util.Map;
+
+import me.xx2bab.bro.annotations.BroActivity;
 import me.xx2bab.bro.common.BroProperties;
+import me.xx2bab.bro.common.gen.anno.IBroAliasRoutingTable;
 import me.xx2bab.bro.core.BroContext;
 import me.xx2bab.bro.core.util.ConvertUtils;
 
@@ -17,7 +21,10 @@ public class AnnoActivityFinder implements IActivityFinder {
     @Override
     public Intent find(Context context, Intent intent, BroContext broContext) {
         String name = ConvertUtils.convertUriToStringWithoutParams(intent.getData());
-        BroProperties properties = broContext.routingTable.getBroActivityMap().get(name);
+        Map<String, BroProperties> map = broContext.broRudder
+                .getImplementationByInterface(IBroAliasRoutingTable.class)
+                .getRoutingMapByAnnotation(BroActivity.class);
+        BroProperties properties = map.get(name);
 
         if (properties == null) {
             return null;

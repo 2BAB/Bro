@@ -27,8 +27,8 @@ import me.xx2bab.bro.annotations.BroApi;
 import me.xx2bab.bro.common.Constants;
 import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.common.gen.GenOutputs;
-import me.xx2bab.bro.common.gen.IBroAnnoProcessor;
-import me.xx2bab.bro.common.gen.IBroApiInterfaceAndAliasMap;
+import me.xx2bab.bro.common.gen.anno.IBroAnnoProcessor;
+import me.xx2bab.bro.common.gen.anno.IBroApiInterfaceAndAliasMap;
 
 /**
  * To process the "BroApi.class" annotation and generate [Interface, Alias] map file.
@@ -91,8 +91,8 @@ public class BroApiInterfaceAndAliasMapAnnoProcessor implements IBroAnnoProcesso
         }
 
         // Write it down to a java file
-        String className = IBroApiInterfaceAndAliasMap.class.getSimpleName()
-                + Constants.GEN_CLASS_SUFFIX;
+        String className = genOutputs.generateClassNameForImplementation(
+                IBroApiInterfaceAndAliasMap.class);
         TypeSpec.Builder builder = TypeSpec.classBuilder(className)
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(IBroApiInterfaceAndAliasMap.class);

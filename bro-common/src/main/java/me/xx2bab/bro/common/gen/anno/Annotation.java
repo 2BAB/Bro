@@ -1,4 +1,4 @@
-package me.xx2bab.bro.common.anno;
+package me.xx2bab.bro.common.gen.anno;
 
 import java.util.TreeMap;
 

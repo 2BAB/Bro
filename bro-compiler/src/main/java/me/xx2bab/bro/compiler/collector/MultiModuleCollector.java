@@ -14,7 +14,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 
 import me.xx2bab.bro.common.Constants;
 import me.xx2bab.bro.common.gen.GenOutputs;
-import me.xx2bab.bro.common.gen.IBroAnnoProcessor;
+import me.xx2bab.bro.common.gen.anno.IBroAnnoProcessor;
 import me.xx2bab.bro.common.util.FileUtils;
 import me.xx2bab.bro.compiler.util.BroCompileLogger;
 

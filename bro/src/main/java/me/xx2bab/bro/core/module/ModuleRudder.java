@@ -3,8 +3,10 @@ package me.xx2bab.bro.core.module;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.xx2bab.bro.annotations.BroModule;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroModule;
+import me.xx2bab.bro.common.gen.anno.IBroAliasRoutingTable;
 import me.xx2bab.bro.core.BroContext;
 import me.xx2bab.bro.core.base.BroErrorType;
 import me.xx2bab.bro.core.base.IBroInterceptor;
@@ -27,8 +29,10 @@ public class ModuleRudder {
 
     public void initModuleClasses() {
         moduleInstanceMap = new HashMap<>();
-        for (Map.Entry<String, BroProperties> entry : broContext.routingTable.getBroModuleMap()
-                .entrySet()) {
+        Map<String, BroProperties> map = broContext.broRudder
+                .getImplementationByInterface(IBroAliasRoutingTable.class)
+                .getRoutingMapByAnnotation(BroModule.class);
+        for (Map.Entry<String, BroProperties> entry : map.entrySet()) {
             String name = entry.getValue().clazz;
             try {
                 IBroModule instance = (IBroModule) Class.forName(name).newInstance();

@@ -2,6 +2,8 @@ package me.xx2bab.bro.common.gen;
 
 import java.io.File;
 
+import me.xx2bab.bro.common.Constants;
+
 public class GenOutputs {
 
     // The package name of the app.
@@ -12,5 +14,10 @@ public class GenOutputs {
 
     // The directory for placing other building artifacts like docs, etc.
     public File broBuildDirectory;
+
+    public String generateClassNameForImplementation(Class clazz) {
+        return clazz.getCanonicalName().replaceAll("\\.", "").toUpperCase()
+                + Constants.GEN_CLASS_SUFFIX;
+    }
 
 }

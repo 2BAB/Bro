@@ -1,4 +1,4 @@
-package me.xx2bab.bro.common.gen;
+package me.xx2bab.bro.common.gen.anno;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+
+import me.xx2bab.bro.common.gen.GenOutputs;
 
 /**
  * It's a kind of SPI mechanism to make it easier for extending any other processors by users.

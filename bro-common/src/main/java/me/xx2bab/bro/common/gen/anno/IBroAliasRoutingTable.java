@@ -1,4 +1,4 @@
-package me.xx2bab.bro.common.gen;
+package me.xx2bab.bro.common.gen.anno;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;

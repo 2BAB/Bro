@@ -11,11 +11,13 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 
 import me.xx2bab.bro.common.Constants;
-import me.xx2bab.bro.common.gen.IBroAnnoProcessor;
+import me.xx2bab.bro.common.gen.anno.IBroAnnoProcessor;
 import me.xx2bab.bro.common.util.FileUtils;
 
 /**
- * Created on 2019-07-16
+ * To collect meta data of every module with registered processor, and generate intermediates.
+ *
+ * @see IBroAnnoProcessor
  */
 public class SingleModuleCollector implements IAnnotationMetaDataCollector<Element> {
 

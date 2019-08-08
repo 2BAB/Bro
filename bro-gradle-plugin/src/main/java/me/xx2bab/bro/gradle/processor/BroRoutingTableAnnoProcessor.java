@@ -37,10 +37,10 @@ import me.xx2bab.bro.annotations.BroApi;
 import me.xx2bab.bro.annotations.BroModule;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.Constants;
-import me.xx2bab.bro.common.anno.AnnotatedElement;
+import me.xx2bab.bro.common.gen.anno.AnnotatedElement;
 import me.xx2bab.bro.common.gen.GenOutputs;
-import me.xx2bab.bro.common.gen.IBroAliasRoutingTable;
-import me.xx2bab.bro.common.gen.IBroAnnoProcessor;
+import me.xx2bab.bro.common.gen.anno.IBroAliasRoutingTable;
+import me.xx2bab.bro.common.gen.anno.IBroAnnoProcessor;
 
 /**
  * A generator to generate the implementation of "IBroAliasRoutingTable"
@@ -53,10 +53,10 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
     private HashMap<String, Class<? extends Annotation>> supportedAnnotations;
     private HashSet<String> nicks;
 
-    private Comparator<me.xx2bab.bro.common.anno.Annotation> comparator
-            = new Comparator<me.xx2bab.bro.common.anno.Annotation>() {
+    private Comparator<me.xx2bab.bro.common.gen.anno.Annotation> comparator
+            = new Comparator<me.xx2bab.bro.common.gen.anno.Annotation>() {
         @Override
-        public int compare(me.xx2bab.bro.common.anno.Annotation a1, me.xx2bab.bro.common.anno.Annotation a2) {
+        public int compare(me.xx2bab.bro.common.gen.anno.Annotation a1, me.xx2bab.bro.common.gen.anno.Annotation a2) {
             return a1.name.compareTo(a2.name);
         }
     };
@@ -113,7 +113,7 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
         annotatedElement.name = element.asType().toString();
         annotatedElement.annotations = new TreeSet<>(comparator);
         for (int i = 0; i < list.size(); i++) {
-            me.xx2bab.bro.common.anno.Annotation annotation = new me.xx2bab.bro.common.anno.Annotation();
+            me.xx2bab.bro.common.gen.anno.Annotation annotation = new me.xx2bab.bro.common.gen.anno.Annotation();
             annotation.name = list.get(i).getAnnotationType().toString();
             annotation.values = new TreeMap<>();
             Map<? extends ExecutableElement, ? extends AnnotationValue> map
@@ -154,8 +154,8 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
                 = breakdownMetaData(elements);
 
         // Start to generate the class
-        String className = IBroAliasRoutingTable.class.getSimpleName()
-                + Constants.GEN_CLASS_SUFFIX;
+        String className = genOutputs.generateClassNameForImplementation(
+                IBroAliasRoutingTable.class);
         TypeSpec.Builder builder = TypeSpec.classBuilder(className)
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(IBroAliasRoutingTable.class);
@@ -221,7 +221,7 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
             // [{nickName, BroProperties}]
             String nick = "";
             Map<String, Map<String, String>> extraAnnotations = new HashMap<>();
-            for (me.xx2bab.bro.common.anno.Annotation anno : ae.annotations) {
+            for (me.xx2bab.bro.common.gen.anno.Annotation anno : ae.annotations) {
                 if (anno.name.equals(key.getCanonicalName())) {
                     // Bro annotation only has one field which is "value()"
                     nick = anno.values.get(anno.values.firstKey());
@@ -236,7 +236,7 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
     }
 
     private Class<? extends Annotation> getBroAnnotation(AnnotatedElement ae) {
-        for (me.xx2bab.bro.common.anno.Annotation annotation : ae.annotations) {
+        for (me.xx2bab.bro.common.gen.anno.Annotation annotation : ae.annotations) {
             if (supportedAnnotations.containsKey(annotation.name)) {
                 return supportedAnnotations.get(annotation.name);
             }
@@ -245,7 +245,7 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
     }
 
     /**
-     * The constructor of IBroRoutingTable implementation class.
+     * The constructor of IBroAliasRoutingTable implementation class.
      *
      * @return constructor method
      */

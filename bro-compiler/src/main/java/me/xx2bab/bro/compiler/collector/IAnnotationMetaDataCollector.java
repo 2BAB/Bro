@@ -1,6 +1,6 @@
 package me.xx2bab.bro.compiler.collector;
 
-import me.xx2bab.bro.common.gen.IBroAnnoProcessor;
+import me.xx2bab.bro.common.gen.anno.IBroAnnoProcessor;
 
 /**
  * A collector for collecting meta data of modules/app via annotated elements.

@@ -22,7 +22,7 @@ import me.xx2bab.bro.annotations.BroModule;
 import me.xx2bab.bro.common.Constants;
 import me.xx2bab.bro.common.ModuleType;
 import me.xx2bab.bro.common.gen.GenOutputs;
-import me.xx2bab.bro.common.gen.IBroAnnoProcessor;
+import me.xx2bab.bro.common.gen.anno.IBroAnnoProcessor;
 import me.xx2bab.bro.common.util.FileUtils;
 import me.xx2bab.bro.compiler.classloader.GradleClassLoader;
 import me.xx2bab.bro.compiler.collector.MultiModuleCollector;

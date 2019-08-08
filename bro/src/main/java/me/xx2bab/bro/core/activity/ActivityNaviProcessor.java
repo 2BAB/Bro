@@ -9,7 +9,9 @@ import android.text.TextUtils;
 
 import java.util.Set;
 
+import me.xx2bab.bro.annotations.BroActivity;
 import me.xx2bab.bro.common.BroProperties;
+import me.xx2bab.bro.common.gen.anno.IBroAliasRoutingTable;
 import me.xx2bab.bro.core.base.BroErrorType;
 import me.xx2bab.bro.core.base.IBroInterceptor;
 import me.xx2bab.bro.core.base.IBroMonitor;
@@ -41,8 +43,10 @@ public class ActivityNaviProcessor {
 
         String name = ConvertUtils.convertUriToStringWithoutParams(builder.targetUri);
 
-        // may be null
-        BroProperties properties = builder.broContext.routingTable.getBroActivityMap().get(name);
+        BroProperties properties = builder.broContext.broRudder
+                .getImplementationByInterface(IBroAliasRoutingTable.class)
+                .getRoutingMapByAnnotation(BroActivity.class)
+                .get(name);
 
         intent = new Intent();
         intent.setData(builder.targetUri);
