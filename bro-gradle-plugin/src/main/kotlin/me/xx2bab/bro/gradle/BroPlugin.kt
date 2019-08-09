@@ -4,6 +4,8 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.api.BaseVariant
+import me.xx2bab.bro.gradle.anno.AppAnnoProcessorOptionInjector
+import me.xx2bab.bro.gradle.anno.LibAnnoProcessorOptionInjector
 import me.xx2bab.bro.gradle.util.BroGradleLogger
 import me.xx2bab.bro.gradle.util.BuildUtils
 import org.gradle.api.DomainObjectSet
@@ -31,7 +33,11 @@ class BroPlugin : Plugin<Project> {
 
     private fun onAfterEvaluate(project: Project) {
         val variants = getVariants(project)
-        AnnotationProcessorParamsInjector.inject(isApplication(project), variants, project)
+        if (isApplication(project)) {
+            AppAnnoProcessorOptionInjector().inject(project, variants)
+        } else {
+            LibAnnoProcessorOptionInjector().inject(project, variants)
+        }
         variants.all { variant ->
             val task = project.tasks.getByPath("generate${variant.name.capitalize()}Sources")
             task.outputs.upToDateWhen { false }

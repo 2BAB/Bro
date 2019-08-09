@@ -67,7 +67,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_BUILD_TYPE);
         compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_BUILD_DIR);
         compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_PROCESSOR_CLASSES);
-        compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_GENERATOR_CLASSLOADERS);
+        compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_GENERATOR_CLASSPATHS);
 
         compilerArgumentForApp = new ArrayList<>();
         compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME);
@@ -86,7 +86,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
     private String moduleName;
     private ModuleType moduleBuildType;
     private String moduleBroBuildDir;
-    private String moduleProcessorClassLoaders;
+    private String moduleProcessorClassPaths;
     private String appPackageName;
     private String appMetaDataInputPath;
     private String appAptGenPath;
@@ -174,8 +174,8 @@ public class BroAnnotationProcessor extends AbstractProcessor {
                 this.appAptGenPath = map.get(key);
             } else if (Constants.ANNO_PROC_ARG_MODULE_PROCESSOR_CLASSES.equals(key)) {
                 this.appGeneratorClasses = map.get(key);
-            } else if (Constants.ANNO_PROC_ARG_MODULE_GENERATOR_CLASSLOADERS.equals(key)) {
-                this.moduleProcessorClassLoaders = map.get(key);
+            } else if (Constants.ANNO_PROC_ARG_MODULE_GENERATOR_CLASSPATHS.equals(key)) {
+                this.moduleProcessorClassPaths = map.get(key);
             } else if (Constants.ANNO_PROC_ARG_LIB_META_DATA_OUTPUT_PATH.equals(key)) {
                 this.libMetaDataOutputPath = map.get(key);
             }
@@ -211,7 +211,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
     private List<IBroAnnoProcessor> getProcessors() {
         List<IBroAnnoProcessor> res = new ArrayList<>();
         GradleClassLoader gradleClassLoader = new GradleClassLoader(
-                moduleProcessorClassLoaders.split(","));
+                moduleProcessorClassPaths.split(","));
         String[] generatorClasses = appGeneratorClasses.split(",");
         for (String clz : generatorClasses) {
             try {

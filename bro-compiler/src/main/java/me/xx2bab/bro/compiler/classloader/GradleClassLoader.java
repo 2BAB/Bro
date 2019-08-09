@@ -10,13 +10,13 @@ public class GradleClassLoader {
 
     private URLClassLoader urlClassLoader;
 
-    public GradleClassLoader(String[] jarPaths) {
+    public GradleClassLoader(String[] classPaths) {
         List<URL> urls = new ArrayList<>();
-        for(String jarPath : jarPaths) {
+        for(String classPath : classPaths) {
             try {
-                urls.add(new URL(jarPath));
+                urls.add(new URL(classPath));
             } catch (MalformedURLException e) {
-                throw new IllegalArgumentException("Classloader URL " + jarPath
+                throw new IllegalArgumentException("Classloader URL " + classPath
                         + "is invalid.");
             }
         }
