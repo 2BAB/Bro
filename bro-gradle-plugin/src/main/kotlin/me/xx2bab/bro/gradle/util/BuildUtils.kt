@@ -91,7 +91,7 @@ object BuildUtils {
         if (!target.exists()) {
             val mkdirResult = target.mkdirs()
             if (!mkdirResult) {
-                BroGradleLogger.e("mkdirs for ${targetPath} is failed!")
+                BroGradleLogger.e("mkdirs for $targetPath is failed!")
             }
         }
         files.forEach { file ->
