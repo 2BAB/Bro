@@ -33,7 +33,6 @@ abstract class AnnoProcessorOptionInjector {
                 args[key] = value
             }
         }
-
     }
 
     abstract fun moduleType(): ModuleType

@@ -114,7 +114,8 @@ public class BroAnnotationProcessor extends AbstractProcessor {
                 processingEnv,
                 fileUtils,
                 moduleName,
-                libMetaDataOutputPath);
+                libMetaDataOutputPath,
+                moduleBroBuildDir);
 
         // If the application module doesn't have any annotations that we support
         // the annotation processor will skip process(...) method below,

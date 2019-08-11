@@ -4,6 +4,8 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.api.BaseVariant
+import me.xx2bab.bro.common.Constants
+import me.xx2bab.bro.gradle.anno.AnnoProcessorOptionInjector
 import me.xx2bab.bro.gradle.anno.AppAnnoProcessorOptionInjector
 import me.xx2bab.bro.gradle.anno.LibAnnoProcessorOptionInjector
 import me.xx2bab.bro.gradle.util.BroGradleLogger
@@ -11,6 +13,7 @@ import me.xx2bab.bro.gradle.util.BuildUtils
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import java.io.File
 
 class BroPlugin : Plugin<Project> {
 
@@ -33,14 +36,38 @@ class BroPlugin : Plugin<Project> {
 
     private fun onAfterEvaluate(project: Project) {
         val variants = getVariants(project)
+        val injector: AnnoProcessorOptionInjector
         if (isApplication(project)) {
-            AppAnnoProcessorOptionInjector().inject(project, variants)
+            injector = AppAnnoProcessorOptionInjector()
         } else {
-            LibAnnoProcessorOptionInjector().inject(project, variants)
+            injector = LibAnnoProcessorOptionInjector()
         }
+        injector.inject(project, variants)
+
         variants.all { variant ->
-            val task = project.tasks.getByPath("generate${variant.name.capitalize()}Sources")
+            val variantName = variant.name.capitalize()
+            // A hack to make sure we run annotation processors every time
+            val task = project.tasks.getByPath("generate${variantName}Sources")
             task.outputs.upToDateWhen { false }
+
+            if (!isApplication(project)) {
+                // A hack to make sure .bro file will be packaged into the aar,
+                // by copying each from /module-path/build/bro/xxx.bro
+                // to /{modulePath}/build/intermediates/library_assets/{variantName}/out
+                val packageAssetsTask = project.tasks.getByPath("package${variantName}Assets")
+                packageAssetsTask.doLast {
+                    val libAssetsMergedPath = (injector as LibAnnoProcessorOptionInjector)
+                            .getBuildBundlesAssetsPath(variantName, project)
+                    val broBuildDir = BuildUtils.getBroBuildDir(project).listFiles()
+                    var broFile: File? = null
+                    broBuildDir?.forEach {
+                        if (".${it.extension}" == Constants.MODULE_META_INFO_FILE_SUFFIX) {
+                            broFile = it
+                        }
+                    }
+                    broFile?.let { BuildUtils.copyFiles(libAssetsMergedPath, it) }
+                }
+            }
         }
     }
 
