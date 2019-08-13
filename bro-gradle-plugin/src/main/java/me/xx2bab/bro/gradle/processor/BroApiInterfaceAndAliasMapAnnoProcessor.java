@@ -9,6 +9,9 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
+import net.steppschuh.markdowngenerator.table.Table;
+import net.steppschuh.markdowngenerator.text.heading.Heading;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,6 +32,7 @@ import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.common.gen.GenOutputs;
 import me.xx2bab.bro.common.gen.anno.IBroAnnoProcessor;
 import me.xx2bab.bro.common.gen.anno.IBroApiInterfaceAndAliasMap;
+import me.xx2bab.bro.common.util.FileUtils;
 
 /**
  * To process the "BroApi.class" annotation and generate [Interface, Alias] map file.
@@ -90,7 +94,7 @@ public class BroApiInterfaceAndAliasMapAnnoProcessor implements IBroAnnoProcesso
             }
         }
 
-        // Write it down to a java file
+        // Generate to the java file
         String className = genOutputs.generateClassNameForImplementation(
                 IBroApiInterfaceAndAliasMap.class);
         TypeSpec.Builder builder = TypeSpec.classBuilder(className)
@@ -111,6 +115,9 @@ public class BroApiInterfaceAndAliasMapAnnoProcessor implements IBroAnnoProcesso
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // Generate the doc
+        generateDoc(interfaceAliasMap, genOutputs);
     }
 
     private boolean containBroApi(Collection<? extends AnnotationMirror> collection) {
@@ -190,5 +197,20 @@ public class BroApiInterfaceAndAliasMapAnnoProcessor implements IBroAnnoProcesso
                 .returns(String.class)
                 .addStatement("return " + FIELD_MAP + ".get(" + param + ")")
                 .build();
+    }
+
+    private void generateDoc(Map<String, String> interfaceAliasMap, GenOutputs genOutputs) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(new Heading("Map of [Interface -> Alias]", 1)).append("\n\n\n");
+        builder.append(new Heading("Local Interface", 2)).append("\n\n");
+        Table.Builder localInterfaceTable = new Table.Builder()
+                .withAlignments(Table.ALIGN_LEFT, Table.ALIGN_LEFT)
+                .addRow("Interface", "Alias");
+        for (String key : interfaceAliasMap.keySet()) {
+            localInterfaceTable.addRow(key, interfaceAliasMap.get(key));
+        }
+        builder.append(localInterfaceTable.build());
+        FileUtils.getDefault().writeFile(builder.toString(),
+                genOutputs.broBuildDirectory.getAbsolutePath(), "bro-intf-alias-map.md");
     }
 }

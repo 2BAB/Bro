@@ -11,6 +11,7 @@ dependencies {
     implementation(BuildConfig.Deps.javapoet)
     implementation(BuildConfig.Deps.fastjson)
     implementation(BuildConfig.Deps.orgJson)
+    implementation(BuildConfig.Deps.markdownGenerator)
 
     if (project.hasProperty("broPublish")) {
         implementation(BuildConfig.Deps.broAnnotationsDev)

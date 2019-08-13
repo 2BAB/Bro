@@ -19,6 +19,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:${rootProject.extra["kotlinVersion"]}")
     implementation("org.javassist:javassist:3.22.0-GA")
     implementation(BuildConfig.Deps.fastjson)
+    compileOnly(BuildConfig.Deps.markdownGenerator)
+
     if (project.hasProperty("broPublish")) {
         implementation(BuildConfig.Deps.broAnnotationsDev)
         implementation(BuildConfig.Deps.broCommonDev)
