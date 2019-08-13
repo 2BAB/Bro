@@ -10,6 +10,9 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven {
+            setUrl("http://dl.bintray.com/steppschuh/Markdown-Generator")
+        }
         mavenLocal()
     }
     dependencies {
