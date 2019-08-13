@@ -10,11 +10,9 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.WildcardTypeName;
 
-import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -37,8 +35,8 @@ import me.xx2bab.bro.annotations.BroApi;
 import me.xx2bab.bro.annotations.BroModule;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.Constants;
-import me.xx2bab.bro.common.gen.anno.AnnotatedElement;
 import me.xx2bab.bro.common.gen.GenOutputs;
+import me.xx2bab.bro.common.gen.anno.AnnotatedElement;
 import me.xx2bab.bro.common.gen.anno.IBroAliasRoutingTable;
 import me.xx2bab.bro.common.gen.anno.IBroAnnoProcessor;
 
@@ -51,7 +49,7 @@ import me.xx2bab.bro.common.gen.anno.IBroAnnoProcessor;
 public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
 
     private HashMap<String, Class<? extends Annotation>> supportedAnnotations;
-    private HashSet<String> nicks;
+    private HashSet<String> aliases;
 
     private Comparator<me.xx2bab.bro.common.gen.anno.Annotation> comparator
             = new Comparator<me.xx2bab.bro.common.gen.anno.Annotation>() {
@@ -98,7 +96,7 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
         supportedAnnotations.put(BroActivity.class.getCanonicalName(), BroActivity.class);
         supportedAnnotations.put(BroApi.class.getCanonicalName(), BroApi.class);
         supportedAnnotations.put(BroModule.class.getCanonicalName(), BroModule.class);
-        nicks = new HashSet<>();
+        aliases = new HashSet<>();
     }
 
     @Override
@@ -147,7 +145,7 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
         for (String json : inputMetaData) {
             elements.add(JSON.parseObject(json, AnnotatedElement.class));
         }
-        nicks.clear();
+        aliases.clear();
 
         // Convert the data
         Map<Class<? extends Annotation>, Map<String, BroProperties>> table
@@ -207,7 +205,7 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
      */
     private Map<Class<? extends Annotation>, Map<String, BroProperties>> breakdownMetaData(
             final List<AnnotatedElement> metaDataList) {
-        // eg. BroActivity.class -> [{nickName, BroProperties}]
+        // eg. BroActivity.class -> [{Alias, BroProperties}]
         Map<Class<? extends Annotation>, Map<String, BroProperties>> res = new HashMap<>();
         for (Class<? extends Annotation> broAnno : supportedAnnotations.values()) {
             res.put(broAnno, new HashMap<String, BroProperties>());
@@ -218,19 +216,20 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
             if (key == null) {
                 continue;
             }
-            // [{nickName, BroProperties}]
-            String nick = "";
+            // [{Alias, BroProperties}]
+            String alias = "";
             Map<String, Map<String, String>> extraAnnotations = new HashMap<>();
             for (me.xx2bab.bro.common.gen.anno.Annotation anno : ae.annotations) {
                 if (anno.name.equals(key.getCanonicalName())) {
                     // Bro annotation only has one field which is "value()"
-                    nick = anno.values.get(anno.values.firstKey());
+                    alias = anno.values.get(anno.values.firstKey());
                 } else {
                     extraAnnotations.put(anno.name, anno.values);
                 }
             }
+            checkDuplicatedAlias(alias);
             BroProperties broProperties = new BroProperties(ae.clazz, extraAnnotations);
-            res.get(key).put(nick, broProperties);
+            res.get(key).put(alias, broProperties);
         }
         return res;
     }
@@ -261,9 +260,9 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
                     .addStatement(TEMP_FIELD_BRO_MAP + " = new HashMap<>()");
 
             Map<String, BroProperties> map = table.get(broAnno);
-            for (String nick : map.keySet()) {
-                builder.addCode(generateBroProperties(map.get(nick)))
-                        .addStatement(TEMP_FIELD_BRO_MAP + ".put(\"" + nick + "\", "
+            for (String alias : map.keySet()) {
+                builder.addCode(generateBroProperties(map.get(alias)))
+                        .addStatement(TEMP_FIELD_BRO_MAP + ".put(\"" + alias + "\", "
                                 + TEMP_FIELD_BRO_PROP + ")");
             }
             builder.addStatement(TEMP_FIELD_TABLE + ".put(" + broAnno.getCanonicalName() + ".class, "
@@ -317,56 +316,54 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
     }
 
     /**
-     * Avoid duplicated nick.
+     * Avoid duplicated alias.
      *
-     * @param nick A value in Bro Annotations that can be used to get the real reference of
+     * @param alias A value in Bro Annotations that can be used to get the real reference of
      *             the specific class.
-     * @throws DuplicatedNickException We don't allow duplicated nicks so we throw a custom exp.
      */
-    private void checkDuplicatedNick(String nick) throws DuplicatedNickException {
-        if (nicks.contains(nick)) {
-            throw new DuplicatedNickException("BroRoutingTableAnnoProcessor: Nick \"" + nick + "\" is" +
+    private void checkDuplicatedAlias(String alias) {
+        if (aliases.contains(alias)) {
+            throw new DuplicatedAliasException("BroRoutingTableAnnoProcessor: Alias \"" + alias + "\" is" +
                     " duplicated, please check annotation values!");
         }
-        nicks.add(nick);
+        aliases.add(alias);
     }
 
-    public File findCurrentAptGenFolder(String fileName, File node) {
-        if (node.getName().equals("androidTest")) { // filter some folders
-            return null;
-        }
-        if (node.isDirectory()) {
-            File[] subFiles = node.listFiles();
-            List<String> subFileNames = Arrays.asList(node.list());
-
-            if (subFiles == null) {
-                return null;
-            }
-            if (subFileNames.contains(fileName)) {
-                File target = new File(node.getAbsolutePath() + File.separator + fileName);
-                if (!target.isDirectory()) {
-                    return target;
-                }
-            }
-
-            for (File f : subFiles) {
-                File file = findCurrentAptGenFolder(fileName, f);
-                if (file != null) {
-                    return file;
-                }
-            }
-
-            return null;
-        }
-        return null;
-    }
-
-
-    private class DuplicatedNickException extends Exception {
-        private DuplicatedNickException(String s) {
+    private class DuplicatedAliasException extends IllegalArgumentException {
+        private DuplicatedAliasException(String s) {
             super(s);
         }
     }
 
+
+//    public File findCurrentAptGenFolder(String fileName, File node) {
+//        if (node.getName().equals("androidTest")) { // filter some folders
+//            return null;
+//        }
+//        if (node.isDirectory()) {
+//            File[] subFiles = node.listFiles();
+//            List<String> subFileNames = Arrays.asList(node.list());
+//
+//            if (subFiles == null) {
+//                return null;
+//            }
+//            if (subFileNames.contains(fileName)) {
+//                File target = new File(node.getAbsolutePath() + File.separator + fileName);
+//                if (!target.isDirectory()) {
+//                    return target;
+//                }
+//            }
+//
+//            for (File f : subFiles) {
+//                File file = findCurrentAptGenFolder(fileName, f);
+//                if (file != null) {
+//                    return file;
+//                }
+//            }
+//
+//            return null;
+//        }
+//        return null;
+//    }
 
 }
