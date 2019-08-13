@@ -17,7 +17,6 @@ public class BroProperties {
 
     public String clazz;
     public Map<String, Map<String, String>> extraAnnotations;
-    public String extraParams;
 
     public BroProperties(String clazz, Map<String, Map<String, String>> extraAnnotations) {
         this.clazz = clazz;

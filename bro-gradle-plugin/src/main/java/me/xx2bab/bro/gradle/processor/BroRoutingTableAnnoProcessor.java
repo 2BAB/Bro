@@ -10,6 +10,9 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.WildcardTypeName;
 
+import net.steppschuh.markdowngenerator.table.Table;
+import net.steppschuh.markdowngenerator.text.heading.Heading;
+
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.util.ArrayList;
@@ -39,6 +42,7 @@ import me.xx2bab.bro.common.gen.GenOutputs;
 import me.xx2bab.bro.common.gen.anno.AnnotatedElement;
 import me.xx2bab.bro.common.gen.anno.IBroAliasRoutingTable;
 import me.xx2bab.bro.common.gen.anno.IBroAnnoProcessor;
+import me.xx2bab.bro.common.util.FileUtils;
 
 /**
  * A generator to generate the implementation of "IBroAliasRoutingTable"
@@ -151,7 +155,7 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
         Map<Class<? extends Annotation>, Map<String, BroProperties>> table
                 = breakdownMetaData(elements);
 
-        // Start to generate the class
+        // Generate the Java class
         String className = genOutputs.generateClassNameForImplementation(
                 IBroAliasRoutingTable.class);
         TypeSpec.Builder builder = TypeSpec.classBuilder(className)
@@ -193,7 +197,8 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
 //            file.writeTo(folder);
 //        }
 //
-
+        // Generate the doc
+        generateDoc(table, genOutputs);
     }
 
     /**
@@ -319,7 +324,7 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
      * Avoid duplicated alias.
      *
      * @param alias A value in Bro Annotations that can be used to get the real reference of
-     *             the specific class.
+     *              the specific class.
      */
     private void checkDuplicatedAlias(String alias) {
         if (aliases.contains(alias)) {
@@ -335,6 +340,28 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
         }
     }
 
+
+    private void generateDoc(
+            Map<Class<? extends Annotation>, Map<String, BroProperties>> annoInfoMap,
+            GenOutputs genOutputs) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(new Heading("RoutingTable by [Alias, BroProperties]", 1))
+                .append("\n\n\n");
+        for (Class<? extends Annotation> annoType : annoInfoMap.keySet()) {
+            builder.append(new Heading(annoType.getSimpleName(), 2)).append("\n\n");
+            Map<String, BroProperties> aliasPropMap = annoInfoMap.get(annoType);
+            Table.Builder aliasPropTable = new Table.Builder()
+                    .withAlignments(Table.ALIGN_LEFT, Table.ALIGN_LEFT)
+                    .addRow("Alias", "BroProperties");
+            for (String alias : aliasPropMap.keySet()) {
+                String broPropJson = JSON.toJSONString(aliasPropMap.get(alias));
+                aliasPropTable.addRow(alias, broPropJson);
+            }
+            builder.append(aliasPropTable.build()).append("\n\n");
+        }
+        FileUtils.getDefault().writeFile(builder.toString(),
+                genOutputs.broBuildDirectory.getAbsolutePath(), "bro-alias-prop-map.md");
+    }
 
 //    public File findCurrentAptGenFolder(String fileName, File node) {
 //        if (node.getName().equals("androidTest")) { // filter some folders
