@@ -16,9 +16,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-import me.xx2bab.bro.annotations.BroActivity;
-import me.xx2bab.bro.annotations.BroApi;
-import me.xx2bab.bro.annotations.BroModule;
 import me.xx2bab.bro.common.Constants;
 import me.xx2bab.bro.common.ModuleType;
 import me.xx2bab.bro.common.gen.GenOutputs;
@@ -48,39 +45,36 @@ public class BroAnnotationProcessor extends AbstractProcessor {
     private final static List<Class<? extends Annotation>> supportedAnnotations;
 
     // Compiler arguments for each module including Application and Library
-    private static final List<String> compilerArgumentForModule;
+    private static final List<String> compilerArgsForModule;
     // Compiler arguments for the Application module only
-    private static final List<String> compilerArgumentForApp;
+    private static final List<String> compilerArgsForApp;
     // Compiler arguments for the Library module only
-    private static final List<String> compilerArgumentForLib;
+    private static final List<String> compilerArgsForLib;
     // Combination of Compiler Arguments
     private static final Set<String> compileArgs;
 
     static {
         supportedAnnotations = new ArrayList<>();
-        supportedAnnotations.add(BroActivity.class);
-        supportedAnnotations.add(BroApi.class);
-        supportedAnnotations.add(BroModule.class);
 
-        compilerArgumentForModule = new ArrayList<>();
-        compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_NAME);
-        compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_BUILD_TYPE);
-        compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_BUILD_DIR);
-        compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_PROCESSOR_CLASSES);
-        compilerArgumentForModule.add(Constants.ANNO_PROC_ARG_MODULE_GENERATOR_CLASSPATHS);
+        compilerArgsForModule = new ArrayList<>();
+        compilerArgsForModule.add(Constants.ANNO_PROC_ARG_MODULE_NAME);
+        compilerArgsForModule.add(Constants.ANNO_PROC_ARG_MODULE_BUILD_TYPE);
+        compilerArgsForModule.add(Constants.ANNO_PROC_ARG_MODULE_BUILD_DIR);
+        compilerArgsForModule.add(Constants.ANNO_PROC_ARG_MODULE_PROCESSOR_CLASSES);
+        compilerArgsForModule.add(Constants.ANNO_PROC_ARG_MODULE_GENERATOR_CLASSPATHS);
 
-        compilerArgumentForApp = new ArrayList<>();
-        compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME);
-        compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_META_DATA_INPUT_PATH);
-        compilerArgumentForApp.add(Constants.ANNO_PROC_ARG_APP_APT_PATH);
+        compilerArgsForApp = new ArrayList<>();
+        compilerArgsForApp.add(Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME);
+        compilerArgsForApp.add(Constants.ANNO_PROC_ARG_APP_META_DATA_INPUT_PATH);
+        compilerArgsForApp.add(Constants.ANNO_PROC_ARG_APP_APT_PATH);
 
-        compilerArgumentForLib = new ArrayList<>();
-        compilerArgumentForLib.add(Constants.ANNO_PROC_ARG_LIB_META_DATA_OUTPUT_PATH);
+        compilerArgsForLib = new ArrayList<>();
+        compilerArgsForLib.add(Constants.ANNO_PROC_ARG_LIB_META_DATA_OUTPUT_PATH);
 
         compileArgs = new LinkedHashSet<>();
-        compileArgs.addAll(compilerArgumentForModule);
-        compileArgs.addAll(compilerArgumentForApp);
-        compileArgs.addAll(compilerArgumentForLib);
+        compileArgs.addAll(compilerArgsForModule);
+        compileArgs.addAll(compilerArgsForApp);
+        compileArgs.addAll(compilerArgsForLib);
     }
 
     private String moduleName;
@@ -108,6 +102,9 @@ public class BroAnnotationProcessor extends AbstractProcessor {
 
         parseCompilerArguments();
         List<IBroAnnoProcessor> processors = getProcessors();
+        for (IBroAnnoProcessor processor : processors) {
+            supportedAnnotations.addAll(processor.getSupportedAnnotationTypes());
+        }
 
         singleModuleCollector = new SingleModuleCollector(
                 processors,
@@ -184,21 +181,21 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         }
 
         // Empty check to ensure we can use them safely
-        compilerArgumentForModule.forEach(new Consumer<String>() {
+        compilerArgsForModule.forEach(new Consumer<String>() {
             @Override
             public void accept(String s) {
                 checkNotEmpty(map, s);
             }
         });
         if (moduleBuildType == ModuleType.APPLICATION) {
-            compilerArgumentForApp.forEach(new Consumer<String>() {
+            compilerArgsForApp.forEach(new Consumer<String>() {
                 @Override
                 public void accept(String s) {
                     checkNotEmpty(map, s);
                 }
             });
         } else { // branch for library
-            compilerArgumentForLib.forEach(new Consumer<String>() {
+            compilerArgsForLib.forEach(new Consumer<String>() {
                 @Override
                 public void accept(String s) {
                     checkNotEmpty(map, s);
