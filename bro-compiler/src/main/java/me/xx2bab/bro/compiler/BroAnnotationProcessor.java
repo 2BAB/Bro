@@ -3,6 +3,7 @@ package me.xx2bab.bro.compiler;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -42,33 +43,33 @@ import me.xx2bab.bro.compiler.util.BroCompileLogger;
 public class BroAnnotationProcessor extends AbstractProcessor {
 
     private FileUtils fileUtils;
-    private final static List<Class<? extends Annotation>> supportedAnnotations;
+    private final static Set<Class<? extends Annotation>> supportedAnnotations;
 
     // Compiler arguments for each module including Application and Library
-    private static final List<String> compilerArgsForModule;
+    private static final Set<String> compilerArgsForModule;
     // Compiler arguments for the Application module only
-    private static final List<String> compilerArgsForApp;
+    private static final Set<String> compilerArgsForApp;
     // Compiler arguments for the Library module only
-    private static final List<String> compilerArgsForLib;
+    private static final Set<String> compilerArgsForLib;
     // Combination of Compiler Arguments
     private static final Set<String> compileArgs;
 
     static {
-        supportedAnnotations = new ArrayList<>();
+        supportedAnnotations = new HashSet<>();
 
-        compilerArgsForModule = new ArrayList<>();
+        compilerArgsForModule = new HashSet<>();
         compilerArgsForModule.add(Constants.ANNO_PROC_ARG_MODULE_NAME);
         compilerArgsForModule.add(Constants.ANNO_PROC_ARG_MODULE_BUILD_TYPE);
         compilerArgsForModule.add(Constants.ANNO_PROC_ARG_MODULE_BUILD_DIR);
         compilerArgsForModule.add(Constants.ANNO_PROC_ARG_MODULE_PROCESSOR_CLASSES);
         compilerArgsForModule.add(Constants.ANNO_PROC_ARG_MODULE_GENERATOR_CLASSPATHS);
 
-        compilerArgsForApp = new ArrayList<>();
+        compilerArgsForApp = new HashSet<>();
         compilerArgsForApp.add(Constants.ANNO_PROC_ARG_APP_PACKAGE_NAME);
         compilerArgsForApp.add(Constants.ANNO_PROC_ARG_APP_META_DATA_INPUT_PATH);
         compilerArgsForApp.add(Constants.ANNO_PROC_ARG_APP_APT_PATH);
 
-        compilerArgsForLib = new ArrayList<>();
+        compilerArgsForLib = new HashSet<>();
         compilerArgsForLib.add(Constants.ANNO_PROC_ARG_LIB_META_DATA_OUTPUT_PATH);
 
         compileArgs = new LinkedHashSet<>();
@@ -136,9 +137,9 @@ public class BroAnnotationProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnv) {
         BroCompileLogger.i("bro-compiler processor is processing");
 
-        for (int i = 0; i < supportedAnnotations.size(); i++) {
-            for (Element element : roundEnv.getElementsAnnotatedWith(supportedAnnotations.get(i))) {
-                singleModuleCollector.addMetaRecord(element);
+        for (Class<? extends Annotation> curAnno : supportedAnnotations) {
+            for (Element element : roundEnv.getElementsAnnotatedWith(curAnno)) {
+                singleModuleCollector.addMetaRecord(element, curAnno);
             }
         }
 

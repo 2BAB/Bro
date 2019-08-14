@@ -25,7 +25,7 @@ import me.xx2bab.bro.compiler.util.BroCompileLogger;
  * @see SingleModuleCollector
  * @see IBroAnnoProcessor
  */
-public class MultiModuleCollector implements IAnnotationMetaDataCollector<Map<String, List<String>>> {
+public class MultiModuleCollector {
 
     private List<IBroAnnoProcessor> processors;
     private ProcessingEnvironment processingEnvironment;
@@ -49,7 +49,6 @@ public class MultiModuleCollector implements IAnnotationMetaDataCollector<Map<St
         }
     }
 
-    @Override
     public void addMetaRecord(Map<String, List<String>> singleModuleMetaData) {
         if (singleModuleMetaData == null || singleModuleMetaData.isEmpty()) {
             return;
@@ -58,8 +57,7 @@ public class MultiModuleCollector implements IAnnotationMetaDataCollector<Map<St
             map.get(key).addAll(singleModuleMetaData.get(key));
         }
     }
-
-    @Override
+    
     public void generate() {
         if (processors == null) {
             return;

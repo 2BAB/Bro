@@ -2,6 +2,7 @@ package me.xx2bab.bro.compiler.collector;
 
 import com.alibaba.fastjson.JSON;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,7 @@ import me.xx2bab.bro.common.util.FileUtils;
  *
  * @see IBroAnnoProcessor
  */
-public class SingleModuleCollector implements IAnnotationMetaDataCollector<Element> {
+public class SingleModuleCollector{
 
     private List<IBroAnnoProcessor> processors;
     private FileUtils fileUtils;
@@ -52,9 +53,11 @@ public class SingleModuleCollector implements IAnnotationMetaDataCollector<Eleme
         }
     }
 
-    @Override
-    public void addMetaRecord(Element element) {
+    public void addMetaRecord(Element element, Class<? extends Annotation> annoType) {
         for (IBroAnnoProcessor processor : processors) {
+            if (!processor.getSupportedAnnotationTypes().contains(annoType)) {
+                continue;
+            }
             String collectedRes = processor.onCollect(element, processingEnvironment);
             if (collectedRes == null || collectedRes.isEmpty()) {
                 continue;
@@ -64,7 +67,6 @@ public class SingleModuleCollector implements IAnnotationMetaDataCollector<Eleme
         }
     }
 
-    @Override
     public void generate() {
         String fileName = fileUtils.filterIllegalCharsForResFileName(moduleName)
                 + Constants.MODULE_META_INFO_FILE_SUFFIX;
