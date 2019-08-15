@@ -1,10 +1,10 @@
 # Bro
 
-A Modularity Solution in Android. Now is on ALPHA.
+A Modularity Solution on Android platform.
 
-## Why Modular
+## Why Modularity
 
-Inspired From the topic <From.Containerization.To.Modularity> (Author: Oasis Feng)
+Quoted From the Slide <[From.Containerization.To.Modularity](https://www.slideshare.net/oasisfeng/from-containerization-to-modularity)> (Author: Oasis Feng)
 
 - Engineering
   - Enforced decoupling for high-cohesion code.
@@ -13,18 +13,18 @@ Inspired From the topic <From.Containerization.To.Modularity> (Author: Oasis Fen
 
 - Product
   - Selective Installation(light-weight initial install)
-  - Hybrid-friendly(web&native, mixandmatch)
+  - Hybrid-friendly(web&native, mix&match)
   - Open to (3rd-party) extensions
   
 
 ## Git Commit Check
 
-Check this [link](https://medium.com/walmartlabs/check-out-these-5-git-tips-before-your-next-commit-c1c7a5ae34d1) to make a meaningful commit message.
+Check this [link](https://medium.com/walmartlabs/check-out-these-5-git-tips-before-your-next-commit-c1c7a5ae34d1) to make sure everyone will make a **meaningful** commit message.
 
 So far we haven't added any hook tool, but follow the regex below:
 
 ```
-(chore|feat|docs|fix|refactor|style|test|sonar|hack|release)(:)( )(.{0,80})
+(chore|feat|docs|fix|refactor|style|test|hack|release)(:)( )(.{0,80})
 ```
   
 ## To be continued..
@@ -32,7 +32,7 @@ So far we haven't added any hook tool, but follow the regex below:
 ## License
 
 >
-> Copyright 2019 2BAB
+> Copyright 2016-2019 2BAB
 >
 >Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
