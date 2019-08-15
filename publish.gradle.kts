@@ -24,7 +24,7 @@ val properties = Properties()
 properties.load(project.rootProject.file("local.properties").inputStream())
 
 configure<PublishExtension> {
-    userOrg = "2BAB"
+    userOrg = "2bab"
     groupId = project.group as String
     artifactId = project.properties["ARTIFACT_ID"] as String
     publishVersion = broDevVersion
