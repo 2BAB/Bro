@@ -1,10 +1,13 @@
 # Bro  
 
-> Modularization Solution in Android
+> Modularization Solution 
 > 
-> 0.9.99.1
+> on Android Platform.
+> 
+> v0.13.0
 
-[Get Started](zh-cn/init)
+[Start](uk-en/init)
+[开 始](zh-cn/init)
 
 ![color](#f0f0f0)
 
