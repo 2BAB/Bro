@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 ./gradlew -PbroPublish=bro-common -PdryRun=false :bro-common:clean :bro-common:bintrayUpload
 ./gradlew -PbroPublish=bro-annotations -PdryRun=false :bro-annotations:clean :bro-annotations:bintrayUpload
 ./gradlew -PbroPublish=bro-compiler -PdryRun=false :bro-compiler:clean :bro-compiler:bintrayUpload
