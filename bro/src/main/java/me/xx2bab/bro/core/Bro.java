@@ -29,7 +29,7 @@ public class Bro {
         moduleRudder = new ModuleRudder(broContext);
     }
 
-    public static void initializeBro(Context context, BroBuilder builder) {
+    public static void initialize(Context context, BroBuilder builder) {
         if (initialized.get()) {
             return;
         }

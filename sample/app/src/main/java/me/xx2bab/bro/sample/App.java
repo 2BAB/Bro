@@ -3,7 +3,6 @@ package me.xx2bab.bro.sample;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroApi;
@@ -20,17 +19,17 @@ public class App extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        // MultiDex.init first if it need
-        // Then init bro
-        initBro(base);
+        // MultiDex.init first if it is needed, then init BroPlugadget
+        // TODO: Add new BroPlugadget initialization here.
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        initBro(this);
     }
 
-    private void initBro(Context baseContext) {
+    private void initBro(Context context) {
         IBroInterceptor interceptor = new IBroInterceptor() {
 
             @Override
@@ -77,6 +76,6 @@ public class App extends Application {
                 .setMonitor(monitor)
                 .setInterceptor(interceptor);
 
-        Bro.initializeBro(this, broBuilder);
+        Bro.initialize(this, broBuilder);
     }
 }
