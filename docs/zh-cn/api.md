@@ -44,7 +44,7 @@ public class DataApiImpl implements IDataApi {
 传入接口的 Class 用以获取接口对应的实现，一般地，我们只做接口-实现的单一映射。（若有多实现则只能取到第一个实现，当然实际使用中一般都不会做多实现的）
 
 ``` java
-Bro.getApi(IDataApi.class).getTestData1();
+Bro.get().getApi(IDataApi.class).getTestData1();
 ```
 
 ## 最佳实践

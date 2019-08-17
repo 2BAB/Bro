@@ -26,10 +26,10 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        initBro(this);
+        initBro();
     }
 
-    private void initBro(Context context) {
+    private void initBro() {
         IBroInterceptor interceptor = new IBroInterceptor() {
 
             @Override
@@ -53,6 +53,7 @@ public class App extends Application {
                 return false;
             }
         };
+
         IBroMonitor monitor = new IBroMonitor() {
 
             @Override
@@ -72,7 +73,10 @@ public class App extends Application {
         };
 
         BroBuilder broBuilder = new BroBuilder()
+                .setActivityFinders(activityFinderList)
+                .setActivityTransition(R.anim.enterAnim, R.anim.exitAnim)
                 .setDefaultActivity(SampleDefaultActivity.class)
+                .setLogEnable(false)
                 .setMonitor(monitor)
                 .setInterceptor(interceptor);
 

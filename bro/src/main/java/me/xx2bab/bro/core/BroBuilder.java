@@ -12,7 +12,7 @@ import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.common.IBroModule;
 import me.xx2bab.bro.core.activity.AnnoActivityFinder;
 import me.xx2bab.bro.core.activity.Builder;
-import me.xx2bab.bro.core.activity.IActivityFinder;
+import me.xx2bab.bro.core.activity.IBroActivityFinder;
 import me.xx2bab.bro.core.activity.PackageManagerActivityFinder;
 import me.xx2bab.bro.core.base.IBroInterceptor;
 import me.xx2bab.bro.core.base.IBroMonitor;
@@ -29,7 +29,7 @@ public class BroBuilder {
     private boolean moduleAutoInitEnabled = true;
     private boolean apiAutoInitEnabled = true;
     private Class activityCls;
-    private List<IActivityFinder> activityFinders;
+    private List<IBroActivityFinder> activityFinders;
     private int[] activityTransition;
 
     public BroBuilder setInterceptor(IBroInterceptor interceptor) {
@@ -39,16 +39,6 @@ public class BroBuilder {
 
     public BroBuilder setMonitor(IBroMonitor monitor) {
         this.monitor = monitor;
-        return this;
-    }
-
-    public BroBuilder setModuleAutoInitEnabled(boolean moduleAutoInitEnabled) {
-        this.moduleAutoInitEnabled = moduleAutoInitEnabled;
-        return this;
-    }
-
-    public BroBuilder setApiClassesAutoInitEnabled(boolean apiAutoInitEnabled) {
-        this.apiAutoInitEnabled = apiAutoInitEnabled;
         return this;
     }
 
@@ -62,7 +52,7 @@ public class BroBuilder {
         return this;
     }
 
-    public BroBuilder setActivityFinders(List<IActivityFinder> pageFinders) {
+    public BroBuilder setActivityFinders(List<IBroActivityFinder> pageFinders) {
         this.activityFinders = pageFinders;
         return this;
     }
@@ -141,8 +131,6 @@ public class BroBuilder {
         broContext.broRudder = new BroRudder();
         broContext.interceptor = interceptor;
         broContext.monitor = monitor;
-        broContext.moduleAutoInitEnabled = moduleAutoInitEnabled;
-        broContext.apiAutoInitEnabled = apiAutoInitEnabled;
         broContext.fallbackActivityCls = activityCls;
         broContext.activityFinders = activityFinders;
         broContext.activityTransition = activityTransition;

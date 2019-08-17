@@ -13,7 +13,7 @@ import me.xx2bab.bro.core.BroContext;
 import me.xx2bab.bro.core.util.ConvertUtils;
 
 
-public class AnnoActivityFinder implements IActivityFinder {
+public class AnnoActivityFinder implements IBroActivityFinder {
 
     public AnnoActivityFinder() {
     }

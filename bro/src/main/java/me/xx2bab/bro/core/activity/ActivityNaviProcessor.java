@@ -135,7 +135,7 @@ public class ActivityNaviProcessor {
     }
 
     private Intent findActivity(Intent intent) {
-        for (IActivityFinder finder : builder.broContext.activityFinders) {
+        for (IBroActivityFinder finder : builder.broContext.activityFinders) {
             Intent temp = new Intent(intent);
             temp = finder.find(builder.context, temp, builder.broContext);
             if (temp != null) {
