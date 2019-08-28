@@ -3,6 +3,7 @@ package me.xx2bab.bro.sample;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroApi;
@@ -39,7 +40,7 @@ public class App extends Application {
 
             @Override
             public boolean beforeStartActivity(Context context, String target, Intent intent, BroProperties properties) {
-                //Log.i("App", properties.toJsonString());
+                Log.i("BroProperties", properties.toString());
                 return false;
             }
 
@@ -73,8 +74,6 @@ public class App extends Application {
         };
 
         BroBuilder broBuilder = new BroBuilder()
-                .setActivityFinders(activityFinderList)
-                .setActivityTransition(R.anim.enterAnim, R.anim.exitAnim)
                 .setDefaultActivity(SampleDefaultActivity.class)
                 .setLogEnable(false)
                 .setMonitor(monitor)

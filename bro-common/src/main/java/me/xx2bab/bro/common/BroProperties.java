@@ -22,4 +22,12 @@ public class BroProperties {
         this.clazz = clazz;
         this.extraAnnotations = extraAnnotations;
     }
+
+    @Override
+    public String toString() {
+        return "BroProperties{" +
+                "clazz='" + clazz + '\'' +
+                ", extraAnnotations=" + extraAnnotations.toString() +
+                '}';
+    }
 }
