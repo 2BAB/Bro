@@ -7,7 +7,7 @@
 『可选配置』：初始化 Bro 时，可传入 finder 的具体实现列表：
 
 ``` java
-List<IActivityFinder> finders = new ArrayList<>();
+List<IBroActivityFinder> finders = new ArrayList<>();
 finders.add(new AnnoPageFinder());
 finders.add(new PackageManagerPageFinder());
 finders.add(...);
@@ -94,5 +94,3 @@ processor.getBuilder(); // 获得页面跳转的参数构造器
 2. Service 的数量在一个 App 里本来就不多，需要暴露启动的场景又少，因为一般 Service 都是作为一个长线任务在后台默默工作，在 App 或模块启动时就会启动了；
 
 加上 Bro 本身提供了 BroApi 的接口总线，于是不难想到: 少量的 Fragment 或 Service 的获取、启动场景，可以通过 BroApi 提供接口的方式来实现，具体可以参考 BroApi 的文档以及 Sample 工程。
-
-

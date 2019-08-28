@@ -8,8 +8,8 @@ Bro 提供的模块化，分解为三个部分；
 
 关于模块化存在的形式，分成两种：
 
-1. 单工程多模块（MonoRepo）：如 Sample 工程，主工程源码依赖了业务模块（`compile project(:bizmodule)`），个人觉得适合比较小的工程做简单划分，但实际上 Google 等大公司的诸多开源项目都采用了这种模式；
-2. 多工程多模块：像各种插件化框架做到的那样，每个 Module 都是一个单独的 Repo 单独打包发布（AAR），主工程二进制依赖业务（`compile 'com.example.appname.bizmodule'`），但依赖主工程进行打包调试（APK），国内的中大型的工程较多使用此模式；
+1. 单工程多模块（MonoRepo）：如 Sample 工程，主工程源码依赖了业务模块（`implementation project(:bizmodule)`），个人觉得适合比较小的工程做简单划分，但实际上 Google 等大公司的诸多开源项目都采用了这种模式；
+2. 多工程多模块：像各种插件化框架做到的那样，每个 Module 都是一个单独的 Repo 单独打包发布（AAR），主工程二进制依赖业务（`implementation 'com.example.appname.bizmodule'`），但依赖主工程进行打包调试（APK），国内的中大型的工程较多使用此模式；
 
 ## 初始化
 
@@ -25,7 +25,7 @@ buildscript {
     }
     dependencies {
         ...
-        classpath 'me.2bab.bro:bro-gradle-plugin:1.0.0'
+        classpath("me.2bab.bro:bro-gradle-plugin:1.0.0")
     }
 }
 ```
@@ -36,6 +36,12 @@ buildscript {
 apply plugin: 'me.2bab.bro'
 ```
 
+另外，在模块依赖中引入 Bro 的运行时和编译时依赖：
+
+``` gradle
+implementation("me.2bab.bro:bro:1.0.0")
+annotationProcessor("me.2bab.bro:bro-compiler:1.0.0")
+```
 
 ### 在 Application 中初始化配置
 

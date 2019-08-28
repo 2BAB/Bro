@@ -1,4 +1,8 @@
-提供了模块间的接口调用功能，力求最简单最不会出问题的解法。所有业务把要暴露的 Interface 写在 Common 模块（或者独立的业务 Common 包）中，然后模块之间相互不进行依赖，只依赖 Common。Bro 会在运行时动态注入这些接口的实现，通过 `getApi()` 可以获取到对应的实现实例（单例保存）。
+提供了模块间的接口调用功能。
+
+- 每个模块把要暴露的 Interface 放在 Common 模块（或者独立的业务 Common 包）中;
+- 模块之间相互不进行依赖，只依赖 Common (或者某个特定模块的 Common 包);
+- Bro 会在运行时动态注入这些接口的实现，通过 `getApi(...)` 可以获取到对应的实现实例（实例缓存）;
 
 ## 用法用例
 
@@ -26,7 +30,7 @@ public class DataApiImpl implements IDataApi {
     public void onInit() {
 
     }
-    
+
     // 为服务提供一个声明对其他服务依赖情况的生命周期，会在 onInit() 之前做，
     // 解析出一个依赖树之后，再按顺序进行 onInit()，
     // 如果有环依赖，会在启动时抛错
@@ -41,7 +45,7 @@ public class DataApiImpl implements IDataApi {
 
 ### 使用某个服务
 
-传入接口的 Class 用以获取接口对应的实现，一般地，我们只做接口-实现的单一映射。（若有多实现则只能取到第一个实现，当然实际使用中一般都不会做多实现的）
+传入接口的 Class 用以获取接口对应的实现，一般地，我们只做接口-实现的单一映射。（若有多实现则只能使用另外一个 `getApi(String alias)` 的接口进行获取）
 
 ``` java
 Bro.get().getApi(IDataApi.class).getTestData1();
@@ -72,4 +76,5 @@ class DummyApiImpl implements IDummyApi {
 如上，我们将 DummyView 的操作封装到 DummyAction 中暴露出去，使用方只需要在需要对 DummyView 做 View 相关操作时强转成 View，大多数情况下可以继续保持使用 DummyAction 来对 DummyView 操作。
 
 灵活地运用接口返回可以在一些特殊的场景下创造不可思议的效果，给研发效率的提升和模块解耦的思路提供了更多的可能。
+
 
