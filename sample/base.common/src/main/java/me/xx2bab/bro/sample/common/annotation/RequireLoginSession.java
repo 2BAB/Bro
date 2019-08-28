@@ -10,6 +10,6 @@ import static java.lang.annotation.ElementType.TYPE;
 @Documented
 @Target(TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RequireLogin {
+public @interface RequireLoginSession {
     int value();
 }
