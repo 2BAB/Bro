@@ -1,4 +1,3 @@
-- [概览](zh-cn/init)
 - [快速开始](zh-cn/quick-start)
 - [模块生命周期](zh-cn/lifecycle)
 - [模块间页面跳转](zh-cn/activity)

@@ -1,4 +1,3 @@
-- [Guide](uk-en/init)
 - [Quick Start](uk-en/quick-start)
 - [Module's LifeCycle](uk-en/lifecycle)
 - [Activity Expose](uk-en/activity)
