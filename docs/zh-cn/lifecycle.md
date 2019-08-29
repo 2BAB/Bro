@@ -1,4 +1,4 @@
-提供类似 Application 的模块生命周期回调，其中 `onCreate()` 在 App 的 Application `onCreate()` 中回调。 
+提供类似 Application 的模块生命周期回调，其中 `onCreate()` 在 App 的 Application 的 `onCreate()` 触发时回调。 
 
 ## 用法用例
 
@@ -20,7 +20,7 @@ public class DataModule implements IBroModule {
 
 ### 触发监听回调
 
-- `onCreate()` 的回调，会在 Bro 的 `init(...)` 中触发，所以要求 Bro 在 Application 的 `onCreate()` 中做初始化；
+- `onCreate()` 的回调，会在 Application 的 `onCreate()` 触发时回调子模块初始化；
 
 ## 最佳实践
 

@@ -15,7 +15,7 @@ dependencies {
     implementation deps.recyclerview
     implementation deps.design
     implementation deps.fastjson
-    api deps.bro
+    implementation deps.bro
     annotationProcessor deps.broCompiler
 
     implementation project(':app.home')

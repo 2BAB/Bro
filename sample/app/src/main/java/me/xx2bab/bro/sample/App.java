@@ -20,17 +20,17 @@ public class App extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        // MultiDex.init first if it need
-        // Then init bro
-        initBro(base);
+        // MultiDex.init first if it is needed, then init BroPlugadget
+        // TODO: Add new BroPlugadget initialization here.
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        initBro();
     }
 
-    private void initBro(Context baseContext) {
+    private void initBro() {
         IBroInterceptor interceptor = new IBroInterceptor() {
 
             @Override
@@ -40,7 +40,7 @@ public class App extends Application {
 
             @Override
             public boolean beforeStartActivity(Context context, String target, Intent intent, BroProperties properties) {
-                //Log.i("App", properties.toJsonString());
+                Log.i("BroProperties", properties.toString());
                 return false;
             }
 
@@ -54,6 +54,7 @@ public class App extends Application {
                 return false;
             }
         };
+
         IBroMonitor monitor = new IBroMonitor() {
 
             @Override
@@ -74,9 +75,10 @@ public class App extends Application {
 
         BroBuilder broBuilder = new BroBuilder()
                 .setDefaultActivity(SampleDefaultActivity.class)
+                .setLogEnable(false)
                 .setMonitor(monitor)
                 .setInterceptor(interceptor);
 
-        Bro.initializeBro(this, broBuilder);
+        Bro.initialize(this, broBuilder);
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 
 import me.xx2bab.bro.core.BroContext;
 
-public class PackageManagerActivityFinder implements IActivityFinder {
+public class PackageManagerActivityFinder implements IBroActivityFinder {
 
     public PackageManagerActivityFinder() {
     }

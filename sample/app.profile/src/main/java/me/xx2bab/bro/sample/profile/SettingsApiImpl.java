@@ -6,13 +6,9 @@ import java.util.List;
 
 import me.xx2bab.bro.annotations.BroApi;
 import me.xx2bab.bro.common.IBroApi;
-import me.xx2bab.bro.sample.common.annotation.RequireLogin;
-import me.xx2bab.bro.sample.common.annotation.RequireMultiValues;
 import me.xx2bab.bro.sample.common.api.ISettingsApi;
 import me.xx2bab.bro.sample.common.mine.IMinePresenter;
 
-@RequireLogin(123)
-@RequireMultiValues(value = 1, value1 = "AString", value2 = 12345L, value3 = 'a', value4 = true)
 @BroApi("SettingsApi")
 public class SettingsApiImpl implements ISettingsApi {
 

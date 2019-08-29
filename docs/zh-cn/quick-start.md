@@ -8,8 +8,8 @@ Bro 提供的模块化，分解为三个部分；
 
 关于模块化存在的形式，分成两种：
 
-1. 单工程多模块（MonoRepo）：如 Sample 工程，主工程源码依赖了业务模块（`compile project(:bizmodule)`），个人觉得适合比较小的工程做简单划分，但实际上 Google 等大公司的诸多开源项目都采用了这种模式；
-2. 多工程多模块：像各种插件化框架做到的那样，每个 Module 都是一个单独的 Repo 单独打包发布（AAR），主工程二进制依赖业务（`compile 'com.example.appname.bizmodule'`），但依赖主工程进行打包调试（APK），国内的中大型的工程较多使用此模式；
+1. 单工程多模块（MonoRepo）：如 Sample 工程，主工程源码依赖了业务模块（`implementation project(:bizmodule)`），笔者认为适合比较小的工程做简单划分，但实际上 Google 等大公司的诸多开源项目都采用了这种模式；
+2. 多工程多模块：像各种插件化框架做到的那样，每个 Module 都是一个单独的 Repo 单独打包发布（AAR），主工程二进制依赖业务（`implementation 'com.example.appname.bizmodule'`），但依赖主工程进行打包调试（APK），诸如 Alibaba 等公司较多使用此模式；
 
 ## 初始化
 
@@ -25,7 +25,7 @@ buildscript {
     }
     dependencies {
         ...
-        classpath 'me.2bab.bro:bro-gradle-plugin:0.13.0'
+        classpath("me.2bab.bro:bro-gradle-plugin:1.0.0")
     }
 }
 ```
@@ -36,8 +36,16 @@ buildscript {
 apply plugin: 'me.2bab.bro'
 ```
 
+另外，在模块依赖中引入 Bro 的运行时和编译时依赖：
 
-### Application 中初始化配置
+``` gradle
+implementation("me.2bab.bro:bro:1.0.0")
+annotationProcessor("me.2bab.bro:bro-compiler:1.0.0")
+```
+
+### 在 Application 中初始化配置
+
+一般地，我们需要构造一个 `BroBuilder` 对象，然后调用 `Bro.initialize(application, broBuilder);` 进行初始化操作。
 
 ``` java
 public class App extends Application {
@@ -45,17 +53,18 @@ public class App extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        // MultiDex.init(...) first if it is needed, then init the bro framework
-        initBro(base);
+        // MultiDex.init first if it is needed, then init BroPlugadget
+        // TODO: Add new BroPlugadget initialization here.
     }
     
     @Override
     public void onCreate() {
         super.onCreate();
+        initBro();
     }
 
 
-    private void initBro(Context baseContext) {
+    private void initBro() {
         IBroInterceptor interceptor = new IBroInterceptor() {
 
             @Override
@@ -98,13 +107,30 @@ public class App extends Application {
         };
 
         BroBuilder broBuilder = new BroBuilder()
-                .setDefaultActivity(SampleDefaultActivity.class)
                 .setMonitor(monitor)
                 .setInterceptor(interceptor);
 
         Bro.initialize(this, broBuilder);
     }
 }        
+```
+
+上面的代码我们配置了一个自定义的 Monitor 和 Interceptor，一般情况下我们都希望能对找不到某个 API 或无法跳转到某个页面的情况进行监控，或者通过拦截器配合实时更新的在线规则进行页面的切换、Native/Web 的切换等等功能，关于监控和拦截的详细实践，请参阅后续的『监控和拦截』小节。
+
+此外，`BroBuilder` 的其他配置都在下方列出：
+
+``` java
+new BroBuilder()
+        // 自定义 Activity 的查找器
+        .setActivityFinders(activityFinderList) 
+        // 自定义 Activity 的转场动画
+        .setActivityTransition(R.anim.enterAnim, R.anim.exitAnim) 
+        // 自定义 Activity 查找失败时的默认提示页（错误兜底）
+        .setDefaultActivity(SampleDefaultActivity.class)
+        // 自定义是否输出 Log
+        .setLogEnable(false)
+        .setMonitor(monitor)
+        .setInterceptor(interceptor);
 ```
 
 

@@ -6,7 +6,7 @@ buildscript {
     }
 
     ext {
-        broLatestReleaseVersion = "0.13.0-SNAPSHOT"
+        broLatestReleaseVersion = "1.0.0"
         broSourceCompatibilityVersion = JavaVersion.VERSION_1_7
         broTargetCompatibilityVersion = JavaVersion.VERSION_1_7
     }
@@ -18,8 +18,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.1'
-        classpath "me.2bab:bro-gradle-plugin:$broLatestReleaseVersion"
+        classpath("com.android.tools.build:gradle:3.4.2")
+        classpath("me.2bab:bro-gradle-plugin:$broLatestReleaseVersion")
     }
 
 }

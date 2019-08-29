@@ -5,7 +5,7 @@ import android.content.Intent;
 
 import me.xx2bab.bro.core.BroContext;
 
-public interface IActivityFinder {
+public interface IBroActivityFinder {
 
     Intent find(Context context, Intent intent, BroContext broContext);
 

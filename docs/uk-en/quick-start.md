@@ -1,10 +1,10 @@
 # Concepts
 
-The modularity provided by Bro is broken down into three parts.
+The modularity feature provided by Bro is broken down into three parts.
 
-1. **Application** (Host, equals to the [main project], [shell project] and [main Bundle] mentioned later): In general engineering have ` apply plugin: '. Com. Android application ` main module while are used to package APK and do application entry configuration and initialization;
-2.  **Library** (Business Bundle & SDK, equals to「business module」「Business Bundle」and「Java Bundle」 ): In general engineering is done ` apply plugin: 'com. Android. Library' ` business module (or SDK) which is used as a business module and can package and output AAR independently. Among all business module in addition to the special circumstances do not depend on each other and only be dependent on Common modules in general; **In addition, When the Library is packaged as a local hot-deployed module, Bro calls it Plugadget, which is a variant of the Library;**
-3. **Common** (API - Interface Center): Common is first a special  Library, and is dependent on all business modules except itself and store all the external Interface of all business inside. Although most of the Android modular libraries and articles do not explicitly mention that Common is a necessary Library, the modules of major companies such as aliyun and WeChat have such an interface module.
+1. **Application** (Host, equals to the [main project], [shell project] and [main Bundle] mentioned later): In general, it means the project which states `apply plugin: 'com.android.application`, and it's used to package APK and declare application's entrance with configuration and initialization;
+2.  **Library** (Feature Bundle & SDK, equals to [feature module] and [feature Bundle]): In general, it means the project which states ` apply plugin: 'com.android.library' `, and it is used as a specific feature module and can be packaged to `.aar` archive independently. Among all feature modules, they do not depend on each other but only be dependent on Common modules in general; **In addition, When the Library is packaged as a local hot-deployed module, we call it Plugadget in Bro context, which is a kind of mutant for Library;**
+3. **Common** (Interface & Model & Utils): Firstly, Common is a kind of special Library, it is dependent on all business modules except itself and store all external Interfaces of feature modules inside. Although most of the Android modular libraries and articles do not explicitly mention that Common is a necessary module, the modularity solution from giant companies such as aliyun and WeChat have such a common module(s).
 
 As for the  modularity existence form, there are two kinds:
 
@@ -97,3 +97,5 @@ public class App extends Application {
                 config);
      }         
 ```
+
+

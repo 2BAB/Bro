@@ -5,6 +5,6 @@ apply from: '../sample_common.gradle'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation deps.appcompatV7
-    api deps.bro
+    implementation deps.bro
     annotationProcessor deps.broCompiler
 }
