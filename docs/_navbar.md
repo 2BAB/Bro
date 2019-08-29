@@ -1,3 +1,3 @@
 - Translations
-  - [:cn: 中文](/zh-cn/init)
-  - [:uk: English](/uk-en/init)
+  - [:cn: 中文](/zh-cn/quick-start)
+  - [:uk: English](/uk-en/quick-start)
