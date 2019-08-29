@@ -6,7 +6,7 @@ buildscript {
     }
 
     ext {
-        broLatestReleaseVersion = "0.13.3-SNAPSHOT"
+        broLatestReleaseVersion = "1.0.0"
         broSourceCompatibilityVersion = JavaVersion.VERSION_1_7
         broTargetCompatibilityVersion = JavaVersion.VERSION_1_7
     }
