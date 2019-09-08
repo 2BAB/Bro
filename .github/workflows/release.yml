@@ -14,9 +14,9 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      with:
+      run: chmod +x ./publish.sh | sh ./publish.sh
+      env:
         bintray_user: ${{ secrets.BINTRAY_USER }}
         bintray_apikey: ${{ secrets.BINTRAY_APIKEY }}
-      run: chmod +x ./publish.sh | sh ./publish.sh
 
 
