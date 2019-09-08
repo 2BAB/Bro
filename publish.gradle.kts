@@ -29,8 +29,8 @@ if (localPropertiesFile.exists()) {
     bintrayUserName = properties.getProperty("bintray.user")
     bintrayApiKey = properties.getProperty("bintray.apikey")
 } else {
-    bintrayUserName = System.getProperty("BINTRAY_USER")
-    bintrayApiKey = System.getProperty("BINTRAY_APIKEY")
+    bintrayUserName = System.getenv("BINTRAY_USER")
+    bintrayApiKey = System.getenv("BINTRAY_APIKEY")
 }
 
 require(!(bintrayUserName.isEmpty() || bintrayApiKey.isEmpty())) {
