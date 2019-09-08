@@ -21,7 +21,21 @@ project.version = broDevVersion
 apply(plugin = "com.novoda.bintray-release")
 
 val properties = Properties()
-properties.load(project.rootProject.file("local.properties").inputStream())
+val localPropertiesFile = project.rootProject.file("local.properties")
+var bintrayUserName = ""
+var bintrayApiKey = ""
+if (localPropertiesFile.exists()) {
+    properties.load(localPropertiesFile.inputStream())
+    bintrayUserName = properties.getProperty("bintray.user")
+    bintrayApiKey = properties.getProperty("bintray.apikey")
+} else {
+    bintrayUserName = System.getProperty("BINTRAY_USER")
+    bintrayApiKey = System.getProperty("BINTRAY_APIKEY")
+}
+
+require(!(bintrayUserName.isEmpty() || bintrayApiKey.isEmpty())) {
+    "Please set user and apiKey for Bintray uploading."
+}
 
 configure<PublishExtension> {
     userOrg = "2bab"
@@ -30,6 +44,6 @@ configure<PublishExtension> {
     publishVersion = broDevVersion
     desc = "Modularization Solution of Android"
     website = "https://github.com/2BAB/Bro"
-    bintrayUser = properties.getProperty("bintray.user")
-    bintrayKey = properties.getProperty("bintray.apikey")
+    bintrayUser = bintrayUserName
+    bintrayKey = bintrayApiKey
 }
