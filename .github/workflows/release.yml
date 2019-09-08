@@ -16,7 +16,7 @@ jobs:
     - name: Build with Gradle
       run: chmod +x ./publish.sh | sh ./publish.sh
       env:
-        bintray_user: ${{ secrets.BINTRAY_USER }}
-        bintray_apikey: ${{ secrets.BINTRAY_APIKEY }}
+        BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
+        BINTRAY_APIKEY: ${{ secrets.BINTRAY_APIKEY }}
 
 
