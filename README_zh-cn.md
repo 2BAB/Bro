@@ -54,7 +54,7 @@ Android 的模块化解决方案。
 AGP Version|Compatible Status
 -----------|-----------------
 3.5.x | Testing...
-3.4.x | Support (last support version - 1.0.0)
+3.4.x | Support (last support version - 1.0.1)
 
 
 ## Git Commit Check

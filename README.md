@@ -68,7 +68,7 @@ Bro is only supported & tested on latest **2** Minor versions of Android Gradle 
 AGP Version|Compatible Status
 -----------|-----------------
 3.5.x | Testing...
-3.4.x | Support (last support version - 1.0.0)
+3.4.x | Support (last support version - 1.0.1)
 
 
 ## Git Commit Check
