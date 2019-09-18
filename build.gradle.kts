@@ -29,6 +29,10 @@ allprojects {
     }
 }
 
+plugins {
+    id("me.2bab.bro.build.release")
+}
+
 task("clean") {
     delete(rootProject.buildDir)
 }

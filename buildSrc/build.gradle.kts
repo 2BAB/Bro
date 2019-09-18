@@ -14,4 +14,10 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("com.android.tools.build:gradle:3.4.1")
+
+    // Github Release
+    implementation("gradle.plugin.com.github.breadmoirai:github-release:2.2.1")
+    implementation("com.squareup.okhttp3:okhttp:3.8.1")
+    implementation("com.j256.simplemagic:simplemagic:1.10")
+    implementation("org.zeroturnaround:zt-exec:1.10")
 }
