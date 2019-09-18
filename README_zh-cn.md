@@ -2,6 +2,8 @@
 
 中文 | [English](https://github.com/2BAB/Bro/blob/master/README.md)
 
+[![JCenter](https://api.bintray.com/packages/2bab/maven/bro/images/download.svg)](https://bintray.com/2bab/maven/bro/_latestVersion) [![Apache 2](https://img.shields.io/badge/License-Apache%202-brightgreen.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+
 Android 的模块化解决方案。
 
 
