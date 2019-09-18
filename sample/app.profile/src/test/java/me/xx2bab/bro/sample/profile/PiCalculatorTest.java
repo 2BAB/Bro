@@ -4,11 +4,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Created on 2019-05-28
- *
- * @author El <bingquan.zhang@honestbee.com>
- */
 public class PiCalculatorTest {
 
 
