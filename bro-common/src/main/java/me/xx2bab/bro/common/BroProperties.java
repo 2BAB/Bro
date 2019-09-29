@@ -5,21 +5,26 @@ import java.util.Map;
 /**
  * Extra properties description for Bro annotations.
  * <p>
- * // @NeedLogin
+ * // @requireLoginSession
  * // @BroActivity("Main")
  * class MainActivity {}
  * <p>
- * 1. clazz : is the full class name of MainActivity like com.example.MainActivity;
- * 2. extraParam : NeedLogin will be an extraParam, formatted by JSON, value is set only by value(),
+ * 1. clazz: the full class name of MainActivity like com.example.MainActivity;
+ * 2. module: the
+ * 3. extraParam: requireLoginSession will be an extraParam, formatted by JSON, value is set only by value(),
  * a example maybe like {"com.company.NeedLogin":"blahblah"};
  */
 public class BroProperties {
 
     public String clazz;
+    public String module;
     public Map<String, Map<String, String>> extraAnnotations;
 
-    public BroProperties(String clazz, Map<String, Map<String, String>> extraAnnotations) {
+    public BroProperties(String clazz,
+                         String module,
+                         Map<String, Map<String, String>> extraAnnotations) {
         this.clazz = clazz;
+        this.module = module;
         this.extraAnnotations = extraAnnotations;
     }
 
@@ -27,7 +32,8 @@ public class BroProperties {
     public String toString() {
         return "BroProperties{" +
                 "clazz='" + clazz + '\'' +
-                ", extraAnnotations=" + extraAnnotations.toString() +
+                ", module=" + module +
+                ", extraAnnotations=" + extraAnnotations +
                 '}';
     }
 }

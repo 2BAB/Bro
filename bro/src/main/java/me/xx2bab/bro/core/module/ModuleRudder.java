@@ -3,10 +3,13 @@ package me.xx2bab.bro.core.module;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.xx2bab.bro.annotations.BroApi;
 import me.xx2bab.bro.annotations.BroModule;
 import me.xx2bab.bro.common.BroProperties;
+import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.common.IBroModule;
 import me.xx2bab.bro.common.gen.anno.IBroAliasRoutingTable;
+import me.xx2bab.bro.common.gen.anno.IBroApiInterfaceAndAliasMap;
 import me.xx2bab.bro.core.BroContext;
 import me.xx2bab.bro.core.base.BroErrorType;
 import me.xx2bab.bro.core.base.IBroInterceptor;
@@ -27,8 +30,9 @@ public class ModuleRudder {
         initModuleClasses();
     }
 
-    public void initModuleClasses() {
+    private void initModuleClasses() {
         moduleInstanceMap = new HashMap<>();
+        DAG<String> dag = new DAG<>();
         Map<String, BroProperties> map = broContext.broRudder
                 .getImplementationByInterface(IBroAliasRoutingTable.class)
                 .getRoutingMapByAnnotation(BroModule.class);
@@ -36,24 +40,39 @@ public class ModuleRudder {
             String name = entry.getValue().clazz;
             try {
                 IBroModule instance = (IBroModule) Class.forName(name).newInstance();
-                instance.onCreate();
                 ModuleEntity bean = new ModuleEntity();
-                bean.nick = entry.getKey();
+                bean.clazz = name;
                 bean.instance = instance;
                 bean.properties = entry.getValue();
-                moduleInstanceMap.put(entry.getKey(), bean);
+                moduleInstanceMap.put(name, bean);
+
+
+                if (instance.dependencies() == null) {
+                    dag.addPrerequisite(name, null);
+                } else {
+                    for (Class<? extends IBroApi> apiClazz : instance.dependencies()) {
+                        dag.addPrerequisite(name, getAttachedModule(apiClazz.getCanonicalName()));
+                    }
+                }
             } catch (Exception e) {
-                BroRuntimeLog.e("Bro Module named " + name + " init failed : " + e.getMessage());
-                monitor.onModuleException(BroErrorType.MODULE_INIT_ERROR);
+                BroRuntimeLog.e("Bro Module named " + name + " newInstance() failed : " + e.getMessage());
+                monitor.onModuleException(BroErrorType.MODULE_CLASS_NOT_FOUND_ERROR);
+            }
+        }
+
+        for (String moduleName : dag.topologicalSort()) {
+            if (moduleInstanceMap.get(moduleName) != null) {
+                moduleInstanceMap.get(moduleName).instance.onCreate();
             }
         }
     }
 
-    public IBroModule getModule(String moduleNick) {
+    @SuppressWarnings("unchecked")
+    public <T extends IBroModule> T getModule(Class<T> moduleName) {
         IBroModule broModule = null;
         BroProperties properties = null;
         for (Map.Entry<String, ModuleEntity> entry : moduleInstanceMap.entrySet()) {
-            if (entry.getKey().equals(moduleNick)) {
+            if (entry.getKey().equals(moduleName.getCanonicalName())) {
                 broModule = entry.getValue().instance;
                 properties = entry.getValue().properties;
                 break;
@@ -61,17 +80,36 @@ public class ModuleRudder {
         }
 
         if (interceptor.beforeGetModule(broContext.context.get(),
-                moduleNick,
+                moduleName.getCanonicalName(),
                 broModule,
                 properties)) {
             return null;
         }
         if (broModule == null) {
-            BroRuntimeLog.e("The Module Nick \"" + moduleNick + "\" is not found by Bro!");
+            BroRuntimeLog.e("The Module Alias \"" + moduleName.getCanonicalName() + "\" is not found by Bro!");
             monitor.onModuleException(BroErrorType.MODULE_CANT_FIND_TARGET);
             return null;
         }
-        return broModule;
+        return (T) broModule;
+    }
+
+    /**
+     * TODO: refactor it by generating a better map for indexing
+     */
+    private String getAttachedModule(String apiClass) {
+        String apiImplAlias = broContext.broRudder
+                .getImplementationByInterface(IBroApiInterfaceAndAliasMap.class)
+                .getAliasByInterface(apiClass);
+
+        Map<String, BroProperties> map = broContext.broRudder
+                .getImplementationByInterface(IBroAliasRoutingTable.class)
+                .getRoutingMapByAnnotation(BroApi.class);
+
+        if (map.containsKey(apiImplAlias)) {
+            return map.get(apiImplAlias).module;
+        }
+
+        throw new IllegalArgumentException("Couldn't find api's corresponding module.");
     }
 
 }

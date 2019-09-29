@@ -25,8 +25,8 @@ public class Bro {
     Bro(BroContext broContext) {
         this.broContext = broContext;
         activityRudder = new ActivityRudder(broContext);
-        apiRudder = new ApiRudder(broContext);
         moduleRudder = new ModuleRudder(broContext);
+        apiRudder = new ApiRudder(broContext);
     }
 
     public static void initialize(Context context, BroBuilder builder) {
@@ -58,8 +58,8 @@ public class Bro {
         return apiRudder.getApi(apiInterface);
     }
 
-    public IBroModule getModule(String moduleNick) {
-        return moduleRudder.getModule(moduleNick);
+    public <T extends IBroModule> T getModule(Class<T> moduleClass) {
+        return moduleRudder.getModule(moduleClass);
     }
 
 }

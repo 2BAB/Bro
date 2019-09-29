@@ -1,6 +1,6 @@
-package me.xx2bab.bro.build
+package me.xx2bab.bro.sample.build
 
-import me.xx2bab.bro.build.Config.Versions.broDevVersion
+import me.xx2bab.bro.sample.build.Config.Versions.broDevVersion
 import org.gradle.api.JavaVersion
 
 object Config {
@@ -10,7 +10,7 @@ object Config {
         const val minSdkVersion = 15
         const val targetSdkVersion = 28
 
-        const val broDevVersion = "0.10.21-SNAPSHOT"
+        const val broDevVersion = "1.1.0-SNAPSHOT"
 
         val broSourceCompatibilityVersion = JavaVersion.VERSION_1_7
         val broTargetCompatibilityVersion = JavaVersion.VERSION_1_7

@@ -16,7 +16,7 @@ import me.xx2bab.bro.sample.common.annotation.RequireLoginSession;
 
 @RequireLoginSession(123)
 @RequireMultiValues(value = 1, value1 = "AString", value2 = 12345L, value3 = 'a', value4 = true)
-@BroActivity("broapp://home")
+@BroActivity(alias = "broapp://home", module = HomeModule.class)
 public class HomeActivity extends AppCompatActivity {
 
     private Fragment homeFragment;

@@ -223,17 +223,27 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
             }
             // [{Alias, BroProperties}]
             String alias = "";
+            String module = "";
             Map<String, Map<String, String>> extraAnnotations = new HashMap<>();
             for (me.xx2bab.bro.common.gen.anno.Annotation anno : ae.annotations) {
                 if (anno.name.equals(key.getCanonicalName())) {
                     // Bro annotation only has one field which is "value()"
-                    alias = anno.values.get(anno.values.firstKey());
+                    if (!anno.values.containsKey("alias") || anno.values.get("alias").isEmpty()) {
+                        alias = ae.clazz;
+                        // module = "";
+                    } else {
+                        alias = anno.values.get("alias");
+                    }
+                    if (anno.values.containsKey("module") && !anno.values.get("module").isEmpty()) {
+                        module = anno.values.get("module");
+                        module = module.substring(0, module.length() - ".class".length());
+                    }
                 } else {
                     extraAnnotations.put(anno.name, anno.values);
                 }
             }
             checkDuplicatedAlias(alias);
-            BroProperties broProperties = new BroProperties(ae.clazz, extraAnnotations);
+            BroProperties broProperties = new BroProperties(ae.clazz, module, extraAnnotations);
             res.get(key).put(alias, broProperties);
         }
         return res;
@@ -315,7 +325,10 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
         }
 
         builder.append(TEMP_FIELD_BRO_PROP).append(" = new BroProperties(\"")
-                .append(clazz).append("\", ").append(TEMP_FIELD_EXTRA_ANNO).append(");\n");
+                .append(clazz).append("\", ")
+                .append("\"").append(broProperties.module).append("\",")
+                .append(TEMP_FIELD_EXTRA_ANNO)
+                .append(");\n");
 
         return builder.toString();
     }

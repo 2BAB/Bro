@@ -5,7 +5,7 @@ import me.xx2bab.bro.common.IBroModule;
 
 public class ModuleEntity {
 
-    public String nick;
+    public String clazz;
     public IBroModule instance;
     public BroProperties properties;
 

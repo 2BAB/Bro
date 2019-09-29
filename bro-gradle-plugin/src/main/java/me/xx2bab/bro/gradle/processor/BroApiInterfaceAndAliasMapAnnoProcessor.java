@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
@@ -65,7 +66,7 @@ public class BroApiInterfaceAndAliasMapAnnoProcessor implements IBroAnnoProcesso
         if (!containBroApi(typeElement.getAnnotationMirrors())) {
             return null;
         }
-        String alias = parseClassAlias(typeElement.getAnnotationMirrors());
+        String alias = parseClassAlias(typeElement);
         if (alias == null || alias.isEmpty()) {
             return null;
         }
@@ -129,12 +130,16 @@ public class BroApiInterfaceAndAliasMapAnnoProcessor implements IBroAnnoProcesso
         return false;
     }
 
-    private String parseClassAlias(Collection<? extends AnnotationMirror> collection) {
+    private String parseClassAlias(TypeElement element) {
+        Collection<? extends AnnotationMirror> collection = element.getAnnotationMirrors();
         for (AnnotationMirror anno : collection) {
             if (anno.getAnnotationType().toString().equals(BRO_API_CLASS)) {
-                for (Object obj : anno.getElementValues().values()) {
-                    return obj.toString().replaceAll("([\"'])", "");
+                for (ExecutableElement key : anno.getElementValues().keySet()) {
+                    if (key.getSimpleName().contentEquals("alias")) {
+                        return anno.getElementValues().get(key).toString();
+                    }
                 }
+                return element.asType().toString();
             }
         }
         return null;

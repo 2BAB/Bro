@@ -42,6 +42,7 @@ dependencies {
         implementation(project(":bro-annotations"))
         implementation(project(":bro-common"))
     }
+    testImplementation(BuildConfig.Deps.junit)
 }
 
 java {
