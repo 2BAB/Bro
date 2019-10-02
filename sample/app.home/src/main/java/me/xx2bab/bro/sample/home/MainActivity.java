@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getApi(View view) {
-        int pi = Bro.get().getApi(ISettingsApi.class).getPi();
+        double pi = Bro.get().getApi(ISettingsApi.class).getPi();
         Toast.makeText(this, pi + "", Toast.LENGTH_SHORT).show();
     }
 

@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import me.xx2bab.bro.common.IBroModule;
+import me.xx2bab.bro.common.AbstractBroModule;
 
 @Documented
 @Target(ElementType.TYPE)
@@ -15,6 +15,6 @@ public @interface BroApi {
 
     String alias() default "";
 
-    Class<? extends IBroModule> module();
+    Class<? extends AbstractBroModule> module();
 
 }
