@@ -3,10 +3,10 @@ package me.xx2bab.bro.core.defaultor;
 import android.content.Context;
 import android.content.Intent;
 
+import me.xx2bab.bro.common.AbstractBroModule;
 import me.xx2bab.bro.core.base.IBroInterceptor;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroApi;
-import me.xx2bab.bro.common.IBroModule;
 
 public class DefaultInterceptor implements IBroInterceptor {
 
@@ -26,7 +26,7 @@ public class DefaultInterceptor implements IBroInterceptor {
     }
 
     @Override
-    public boolean beforeGetModule(Context context, String target, IBroModule module, BroProperties properties) {
+    public boolean beforeGetModule(Context context, String target, AbstractBroModule module, BroProperties properties) {
         return false;
     }
 

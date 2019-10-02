@@ -1,6 +1,7 @@
 package me.xx2bab.bro.common.gen;
 
 import java.io.File;
+import java.util.Arrays;
 
 import me.xx2bab.bro.common.Constants;
 
@@ -16,8 +17,14 @@ public class GenOutputs {
     public File broBuildDirectory;
 
     public String generateClassNameForImplementation(Class clazz) {
-        return clazz.getCanonicalName().replaceAll("\\.", "").toUpperCase()
-                + Constants.GEN_CLASS_SUFFIX;
+        String[] className = clazz.getCanonicalName().split("\\.");
+        StringBuilder builder = new StringBuilder();
+        builder.append(className[0]);
+        for (int i = 1; i < className.length; i++) {
+            builder.append(className[i].substring(0, 1).toUpperCase())
+                    .append(className[i].substring(1));
+        }
+        return builder.toString() + Constants.GEN_CLASS_SUFFIX;
     }
 
 }

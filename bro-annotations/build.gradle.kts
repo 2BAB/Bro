@@ -7,6 +7,11 @@ apply(rootProject.file("publish.gradle.kts"))
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
+    if (project.hasProperty("broPublish")) {
+        api(BuildConfig.Deps.broCommonDev)
+    } else {
+        implementation(project(":bro-common"))
+    }
 }
 
 java {

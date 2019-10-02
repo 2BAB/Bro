@@ -2,20 +2,20 @@ package me.xx2bab.bro.sample.profile;
 
 import android.util.Log;
 
-import java.util.List;
-
 import me.xx2bab.bro.annotations.BroApi;
-import me.xx2bab.bro.common.IBroApi;
+import me.xx2bab.bro.core.Bro;
 import me.xx2bab.bro.sample.common.api.ISettingsApi;
 import me.xx2bab.bro.sample.common.mine.IMinePresenter;
 
-@BroApi("SettingsApi")
+@BroApi(module = SettingsModule.class)
 public class SettingsApiImpl implements ISettingsApi {
 
-
     @Override
-    public int getPi() {
-        return 314159;
+    public double getPi() {
+        return Bro.get()
+                .getModule(SettingsModule.class)
+                .getDependencyBySingleton(PiCalculator.class)
+                .calculate();
     }
 
     @Override
@@ -29,12 +29,8 @@ public class SettingsApiImpl implements ISettingsApi {
     }
 
     @Override
-    public void onInit() {
+    public void onCreate() {
         Log.e("SettingsApiImpl", "onInit");
     }
 
-    @Override
-    public List<Class<? extends IBroApi>> onEvaluate() {
-        return null;
-    }
 }

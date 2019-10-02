@@ -1,9 +1,9 @@
 .gradle
-/local.properties
-/.idea
+local.properties
+.idea/
 .DS_Store
-/build
-/captures
+build/
+captures/
 .externalNativeBuild
 *.iml
 build-cache

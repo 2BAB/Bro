@@ -62,6 +62,7 @@ public class AnnoApiFinder implements IApiFinder {
                     throw new IllegalArgumentException();
                 }
                 instance = (IBroApi) Class.forName(properties.clazz).newInstance();
+                instance.onCreate();
                 aliasInstanceMap.put(alias, instance);
             } catch (Exception e) {
                 BroRuntimeLog.e("The Api alias \"" + alias + "\" is not found by Bro!");

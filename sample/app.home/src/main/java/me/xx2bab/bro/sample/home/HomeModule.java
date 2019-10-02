@@ -1,14 +1,32 @@
 package me.xx2bab.bro.sample.home;
 
-import me.xx2bab.bro.annotations.BroModule;
-import me.xx2bab.bro.common.IBroModule;
+import android.content.Context;
+import android.util.Log;
 
-@BroModule("HomeModule")
-public class HomeModule implements IBroModule {
+import java.util.HashSet;
+import java.util.Set;
+
+import me.xx2bab.bro.annotations.BroModule;
+import me.xx2bab.bro.common.AbstractBroModule;
+import me.xx2bab.bro.common.IBroApi;
+import me.xx2bab.bro.core.Bro;
+import me.xx2bab.bro.sample.common.api.ISettingsApi;
+
+@BroModule()
+public class HomeModule extends AbstractBroModule {
 
     @Override
-    public void onCreate() {
+    public Set<Class<? extends IBroApi>> dependencies() {
+        Set<Class<? extends IBroApi>> set = new HashSet<>();
+        set.add(ISettingsApi.class);
+        return set;
+    }
 
+    @Override
+    public void onCreate(Context context) {
+        super.onCreate(context);
+        Log.d("ModuleCreates", "HomeModule, getPi() from SettingsApi: "
+                + Bro.get().getApi(ISettingsApi.class).getPi());
     }
 
 }
