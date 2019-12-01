@@ -1,4 +1,5 @@
-import me.xx2bab.bro.build.BuildConfig
+import me.xx2bab.bro.build.BuildConfig.Deps
+import me.xx2bab.bro.build.BuildConfig.Versions
 
 plugins {
     id("java-library")
@@ -8,14 +9,15 @@ apply(rootProject.file("publish.gradle.kts"))
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
 
-    implementation(BuildConfig.Deps.javapoet)
-    implementation(BuildConfig.Deps.fastjson)
-    implementation(BuildConfig.Deps.orgJson)
-    implementation(BuildConfig.Deps.markdownGenerator)
+    compileOnly(Deps.androidRuntime)
+    implementation(Deps.javapoet)
+    implementation(Deps.fastjson)
+    implementation(Deps.orgJson)
+    implementation(Deps.markdownGenerator)
 
     if (project.hasProperty("broPublish")) {
-        implementation(BuildConfig.Deps.broAnnotationsDev)
-        implementation(BuildConfig.Deps.broCommonDev)
+        implementation(Deps.broAnnotationsDev)
+        implementation(Deps.broCommonDev)
     } else {
         implementation(project(":bro-annotations"))
         implementation(project(":bro-common"))
@@ -23,6 +25,6 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = BuildConfig.Versions.broSourceCompatibilityVersion
-    targetCompatibility = BuildConfig.Versions.broTargetCompatibilityVersion
+    sourceCompatibility = Versions.broSourceCompatibilityVersion
+    targetCompatibility = Versions.broTargetCompatibilityVersion
 }

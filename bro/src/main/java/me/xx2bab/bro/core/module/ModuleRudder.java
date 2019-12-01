@@ -22,17 +22,15 @@ public class ModuleRudder {
     private BroContext broContext;
     private IBroInterceptor interceptor;
     private IBroMonitor monitor;
+    private DAG<String> dag;
 
     public ModuleRudder(BroContext broContext) {
         this.broContext = broContext;
         interceptor = broContext.interceptor;
         monitor = broContext.monitor;
-        initModuleClasses();
-    }
 
-    private void initModuleClasses() {
         moduleInstanceMap = new HashMap<>();
-        DAG<String> dag = new DAG<>();
+        dag = new DAG<>();
         Map<String, BroProperties> map = broContext.broRudder
                 .getImplementationByInterface(IBroAliasRoutingTable.class)
                 .getRoutingMapByAnnotation(BroModule.class);
@@ -59,12 +57,15 @@ public class ModuleRudder {
                 monitor.onModuleException(BroErrorType.MODULE_CLASS_NOT_FOUND_ERROR);
             }
         }
+    }
 
+    public void onCreate() {
         for (String moduleName : dag.topologicalSort()) {
             if (moduleInstanceMap.get(moduleName) != null) {
-                moduleInstanceMap.get(moduleName).instance.onCreate();
+                moduleInstanceMap.get(moduleName).instance.onCreate(broContext.context.get());
             }
         }
+        dag = null;
     }
 
     @SuppressWarnings("unchecked")

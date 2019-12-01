@@ -1,5 +1,6 @@
 package me.xx2bab.bro.sample.home;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.util.Collections;
@@ -22,7 +23,7 @@ public class HomeModule extends DefaultModule {
     }
 
     @Override
-    public void onCreate() {
+    public void onCreate(Context context) {
         Log.d("ModuleCreates", "HomeModule");
     }
 

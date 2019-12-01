@@ -1,5 +1,6 @@
 package me.xx2bab.bro.sample.profile;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.util.Set;
@@ -17,7 +18,7 @@ public class SettingsModule implements IBroModule {
     }
 
     @Override
-    public void onCreate() {
+    public void onCreate(Context context) {
         Log.d("ModuleCreates", "SettingsModule");
     }
 

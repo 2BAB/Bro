@@ -24,9 +24,13 @@ public class Bro {
 
     Bro(BroContext broContext) {
         this.broContext = broContext;
+    }
+
+    private void onCreate() {
         activityRudder = new ActivityRudder(broContext);
-        moduleRudder = new ModuleRudder(broContext);
         apiRudder = new ApiRudder(broContext);
+        moduleRudder = new ModuleRudder(broContext);
+        moduleRudder.onCreate();
     }
 
     public static void initialize(Context context, BroBuilder builder) {
@@ -35,6 +39,7 @@ public class Bro {
         }
         initialized.set(true);
         bro = builder.build(context.getApplicationContext());
+        bro.onCreate();
     }
 
     public static Bro get() {
