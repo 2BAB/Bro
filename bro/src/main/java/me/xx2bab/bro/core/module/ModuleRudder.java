@@ -5,9 +5,9 @@ import java.util.Map;
 
 import me.xx2bab.bro.annotations.BroApi;
 import me.xx2bab.bro.annotations.BroModule;
-import me.xx2bab.bro.common.AbstractBroModule;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroApi;
+import me.xx2bab.bro.common.IBroModule;
 import me.xx2bab.bro.common.gen.anno.IBroAliasRoutingTable;
 import me.xx2bab.bro.common.gen.anno.IBroApiInterfaceAndAliasMap;
 import me.xx2bab.bro.core.BroContext;
@@ -22,23 +22,24 @@ public class ModuleRudder {
     private BroContext broContext;
     private IBroInterceptor interceptor;
     private IBroMonitor monitor;
-    private DAG<String> dag;
 
     public ModuleRudder(BroContext broContext) {
         this.broContext = broContext;
         interceptor = broContext.interceptor;
         monitor = broContext.monitor;
+        initModuleClasses();
+    }
 
-
+    private void initModuleClasses() {
         moduleInstanceMap = new HashMap<>();
-        dag = new DAG<>();
+        DAG<String> dag = new DAG<>();
         Map<String, BroProperties> map = broContext.broRudder
                 .getImplementationByInterface(IBroAliasRoutingTable.class)
                 .getRoutingMapByAnnotation(BroModule.class);
         for (Map.Entry<String, BroProperties> entry : map.entrySet()) {
             String name = entry.getValue().clazz;
             try {
-                AbstractBroModule instance = (AbstractBroModule) Class.forName(name).newInstance();
+                IBroModule instance = (IBroModule) Class.forName(name).newInstance();
                 ModuleEntity bean = new ModuleEntity();
                 bean.clazz = name;
                 bean.instance = instance;
@@ -58,20 +59,17 @@ public class ModuleRudder {
                 monitor.onModuleException(BroErrorType.MODULE_CLASS_NOT_FOUND_ERROR);
             }
         }
-    }
 
-    public void onCreate() {
         for (String moduleName : dag.topologicalSort()) {
             if (moduleInstanceMap.get(moduleName) != null) {
-                moduleInstanceMap.get(moduleName).instance.onCreate(broContext.context.get());
+                moduleInstanceMap.get(moduleName).instance.onCreate();
             }
         }
-        dag = null;
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends AbstractBroModule> T getModule(Class<T> moduleName) {
-        AbstractBroModule broModule = null;
+    public <T extends IBroModule> T getModule(Class<T> moduleName) {
+        IBroModule broModule = null;
         BroProperties properties = null;
         for (Map.Entry<String, ModuleEntity> entry : moduleInstanceMap.entrySet()) {
             if (entry.getKey().equals(moduleName.getCanonicalName())) {

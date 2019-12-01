@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroApi;
-import me.xx2bab.bro.common.AbstractBroModule;
+import me.xx2bab.bro.common.IBroModule;
 
 public interface IBroInterceptor {
 
@@ -27,7 +27,7 @@ public interface IBroInterceptor {
 
     boolean beforeGetModule(@Nullable Context context,
                             String target,
-                            AbstractBroModule module,
+                            IBroModule module,
                             BroProperties properties);
 
 }

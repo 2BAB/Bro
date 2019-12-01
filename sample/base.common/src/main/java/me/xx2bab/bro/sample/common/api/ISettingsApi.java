@@ -5,7 +5,7 @@ import me.xx2bab.bro.sample.common.mine.IMinePresenter;
 
 public interface ISettingsApi extends IBaseApi {
 
-    double getPi();
+    int getPi();
 
     IMinePresenter getMineFragment();
 

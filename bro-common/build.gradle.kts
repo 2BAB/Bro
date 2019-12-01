@@ -7,9 +7,7 @@ apply(rootProject.file("publish.gradle.kts"))
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
-    compileOnly(BuildConfig.Deps.androidRuntime)
     compileOnly(BuildConfig.Deps.orgJson)
-    api(BuildConfig.Deps.supportAnno)
 }
 
 java {

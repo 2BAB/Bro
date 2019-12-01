@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import me.xx2bab.bro.common.AbstractBroModule;
+import me.xx2bab.bro.common.IBroModule;
 
 
 @Documented
@@ -16,6 +16,6 @@ public @interface BroActivity {
 
     String alias();
 
-    Class<? extends AbstractBroModule> module();
+    Class<? extends IBroModule> module();
 
 }

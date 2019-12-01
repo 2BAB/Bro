@@ -1,19 +1,18 @@
 package me.xx2bab.bro.sample.home;
 
-import android.content.Context;
 import android.util.Log;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import me.xx2bab.bro.annotations.BroModule;
-import me.xx2bab.bro.common.AbstractBroModule;
 import me.xx2bab.bro.common.IBroApi;
-import me.xx2bab.bro.core.Bro;
+import me.xx2bab.bro.core.defaultor.DefaultModule;
 import me.xx2bab.bro.sample.common.api.ISettingsApi;
 
 @BroModule()
-public class HomeModule extends AbstractBroModule {
+public class HomeModule extends DefaultModule {
 
     @Override
     public Set<Class<? extends IBroApi>> dependencies() {
@@ -23,10 +22,8 @@ public class HomeModule extends AbstractBroModule {
     }
 
     @Override
-    public void onCreate(Context context) {
-        super.onCreate(context);
-        Log.d("ModuleCreates", "HomeModule, getPi() from SettingsApi: "
-                + Bro.get().getApi(ISettingsApi.class).getPi());
+    public void onCreate() {
+        Log.d("ModuleCreates", "HomeModule");
     }
 
 }

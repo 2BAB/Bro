@@ -5,9 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import me.xx2bab.bro.common.AbstractBroModule;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroApi;
+import me.xx2bab.bro.common.IBroModule;
 import me.xx2bab.bro.core.Bro;
 import me.xx2bab.bro.core.BroBuilder;
 import me.xx2bab.bro.core.activity.Builder;
@@ -50,7 +50,7 @@ public class App extends Application {
             }
 
             @Override
-            public boolean beforeGetModule(Context context, String target, AbstractBroModule module, BroProperties properties) {
+            public boolean beforeGetModule(Context context, String target, IBroModule module, BroProperties properties) {
                 return false;
             }
         };

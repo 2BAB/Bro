@@ -6,10 +6,10 @@ import android.support.annotation.VisibleForTesting;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import me.xx2bab.bro.common.IBroApi;
+import me.xx2bab.bro.common.IBroModule;
 import me.xx2bab.bro.core.activity.ActivityRudder;
 import me.xx2bab.bro.core.activity.Builder;
 import me.xx2bab.bro.core.api.ApiRudder;
-import me.xx2bab.bro.common.AbstractBroModule;
 import me.xx2bab.bro.core.module.ModuleRudder;
 
 public class Bro {
@@ -24,13 +24,9 @@ public class Bro {
 
     Bro(BroContext broContext) {
         this.broContext = broContext;
-    }
-
-    private void onCreate() {
         activityRudder = new ActivityRudder(broContext);
-        apiRudder = new ApiRudder(broContext);
         moduleRudder = new ModuleRudder(broContext);
-        moduleRudder.onCreate();
+        apiRudder = new ApiRudder(broContext);
     }
 
     public static void initialize(Context context, BroBuilder builder) {
@@ -39,7 +35,6 @@ public class Bro {
         }
         initialized.set(true);
         bro = builder.build(context.getApplicationContext());
-        bro.onCreate();
     }
 
     public static Bro get() {
@@ -63,7 +58,7 @@ public class Bro {
         return apiRudder.getApi(apiInterface);
     }
 
-    public <T extends AbstractBroModule> T getModule(Class<T> moduleClass) {
+    public <T extends IBroModule> T getModule(Class<T> moduleClass) {
         return moduleRudder.getModule(moduleClass);
     }
 

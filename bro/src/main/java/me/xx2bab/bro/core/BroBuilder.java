@@ -9,6 +9,7 @@ import java.util.List;
 
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroApi;
+import me.xx2bab.bro.common.IBroModule;
 import me.xx2bab.bro.core.activity.AnnoActivityFinder;
 import me.xx2bab.bro.core.activity.Builder;
 import me.xx2bab.bro.core.activity.IBroActivityFinder;
@@ -16,7 +17,6 @@ import me.xx2bab.bro.core.activity.PackageManagerActivityFinder;
 import me.xx2bab.bro.core.base.IBroInterceptor;
 import me.xx2bab.bro.core.base.IBroMonitor;
 import me.xx2bab.bro.core.defaultor.DefaultActivity;
-import me.xx2bab.bro.common.AbstractBroModule;
 import me.xx2bab.bro.core.util.BroRudder;
 import me.xx2bab.bro.core.util.BroRuntimeLog;
 
@@ -86,7 +86,7 @@ public class BroBuilder {
                 }
 
                 @Override
-                public boolean beforeGetModule(Context context, String target, AbstractBroModule module, BroProperties properties) {
+                public boolean beforeGetModule(Context context, String target, IBroModule module, BroProperties properties) {
                     return false;
                 }
             };
