@@ -29,8 +29,8 @@ public class MinePresenterFragment extends Fragment implements IMinePresenter {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mine, container, false);
-        countView = (TextView) view.findViewById(R.id.mine_count);
-        countView.setText(count + "");
+        countView = view.findViewById(R.id.mine_count);
+        countView.setText(String.valueOf(count));
         return view;
     }
 
@@ -44,7 +44,7 @@ public class MinePresenterFragment extends Fragment implements IMinePresenter {
     public void updateCount() {
         count++;
         if (countView != null) {
-            countView.setText(count + "");
+            countView.setText(String.valueOf(count));
         }
     }
 }
