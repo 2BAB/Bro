@@ -50,12 +50,11 @@ public class AnnoApiFinder implements IApiFinder {
                 .getImplementationByInterface(IBroAliasRoutingTable.class)
                 .getRoutingMapByAnnotation(BroApi.class);
 
-        // Looking up from cache map
-        if (aliasInstanceMap.containsKey(alias)) {
+        // If api cache was enabled, looking up from cache map first
+        if (broContext.apiCacheEnabled && aliasInstanceMap.containsKey(alias)) {
             instance = aliasInstanceMap.get(alias);
             properties = aliasPropertiesMap.get(alias);
         } else {
-            // Or it is the first time we init the instance
             try {
                 properties = aliasPropertiesMap.get(alias);
                 if (properties == null) {
@@ -63,7 +62,9 @@ public class AnnoApiFinder implements IApiFinder {
                 }
                 instance = (IBroApi) Class.forName(properties.clazz).newInstance();
                 instance.onCreate();
-                aliasInstanceMap.put(alias, instance);
+                if (broContext.apiCacheEnabled) {
+                    aliasInstanceMap.put(alias, instance);
+                }
             } catch (Exception e) {
                 BroRuntimeLog.e("The Api alias \"" + alias + "\" is not found by Bro!");
                 monitor.onApiException(BroErrorType.API_CANT_FIND_TARGET);

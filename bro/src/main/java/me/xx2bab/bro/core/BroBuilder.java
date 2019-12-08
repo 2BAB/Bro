@@ -26,8 +26,7 @@ public class BroBuilder {
     private IBroMonitor monitor;
 
     private boolean logEnabled = true;
-    private boolean moduleAutoInitEnabled = true;
-    private boolean apiAutoInitEnabled = true;
+    private boolean apiCacheEnabled = false;
     private Class activityCls;
     private List<IBroActivityFinder> activityFinders;
     private int[] activityTransition;
@@ -44,6 +43,11 @@ public class BroBuilder {
 
     public BroBuilder setLogEnable(boolean logEnabled) {
         this.logEnabled = logEnabled;
+        return this;
+    }
+
+    public BroBuilder setApiCacheEnable(boolean apiCacheEnabled) {
+        this.apiCacheEnabled = apiCacheEnabled;
         return this;
     }
 
@@ -134,6 +138,7 @@ public class BroBuilder {
         broContext.fallbackActivityCls = activityCls;
         broContext.activityFinders = activityFinders;
         broContext.activityTransition = activityTransition;
+        broContext.apiCacheEnabled = apiCacheEnabled;
 
         BroRuntimeLog.logEnabled = logEnabled;
         return new Bro(broContext);

@@ -19,5 +19,6 @@ public class BroContext {
     public Class fallbackActivityCls;
     public List<IBroActivityFinder> activityFinders;
     public int[] activityTransition;
+    public boolean apiCacheEnabled;
 
 }
