@@ -45,10 +45,10 @@ public class ModuleRudder {
                 moduleInstanceMap.put(name, bean);
 
 
-                if (instance.dependencies() == null) {
+                if (instance.getLaunchDependencies() == null) {
                     dag.addPrerequisite(name, null);
                 } else {
-                    for (Class<? extends IBroApi> apiClazz : instance.dependencies()) {
+                    for (Class<? extends IBroApi> apiClazz : instance.getLaunchDependencies()) {
                         dag.addPrerequisite(name, getAttachedModule(apiClazz.getCanonicalName()));
                     }
                 }
