@@ -20,6 +20,7 @@ dependencies {
 
     implementation project(':app.home')
     implementation project(':app.profile')
+    implementation project(':app.location')
 }
 
 //bro {

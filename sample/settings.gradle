@@ -1,1 +1,1 @@
-include ':app', ':app.profile', ':app.home', ':base.common'
+include ':app', ':app.profile', ':app.home', ":app.location", ':base.common'

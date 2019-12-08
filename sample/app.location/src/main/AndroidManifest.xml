@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="me.xx2bab.bro.sample.location">
+
+    <application>
+        <service
+            android:name="me.xx2bab.bro.sample.location.LocationService"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <activity
+            android:name="me.xx2bab.bro.sample.location.LocationActivity"
+            android:theme="@style/Theme.AppCompat.Light"></activity>
+    </application>
+
+</manifest>

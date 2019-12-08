@@ -27,8 +27,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)
-                findViewById(R.id.home_bottom_navigation);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.home_bottom_navigation);
 
         bottomNavigationView.inflateMenu(R.menu.navi_menu);
         bottomNavigationView.setItemBackgroundResource(R.color.bottom_bar_bg);
@@ -39,9 +38,13 @@ public class HomeActivity extends AppCompatActivity {
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         int id = item.getItemId();
                         if (id == R.id.action_home) {
-                            getFragmentManager().beginTransaction().replace(R.id.home_fragment_container, homeFragment).commitAllowingStateLoss();
+                            getFragmentManager().beginTransaction()
+                                    .replace(R.id.home_fragment_container, homeFragment)
+                                    .commitAllowingStateLoss();
                         } else if (id == R.id.action_mine) {
-                            getFragmentManager().beginTransaction().replace(R.id.home_fragment_container, (Fragment) mineFragment).commitAllowingStateLoss();
+                            getFragmentManager().beginTransaction()
+                                    .replace(R.id.home_fragment_container, (Fragment) mineFragment)
+                                    .commitAllowingStateLoss();
                             mineFragment.updateCount();
                         }
                         return true;
@@ -51,6 +54,8 @@ public class HomeActivity extends AppCompatActivity {
         homeFragment = HomeFragment.newInstance(null);
         mineFragment = Bro.get().getApi(ISettingsApi.class).getMineFragment();
 
-        getFragmentManager().beginTransaction().replace(R.id.home_fragment_container, homeFragment).commitAllowingStateLoss();
+        getFragmentManager().beginTransaction()
+                .replace(R.id.home_fragment_container, homeFragment)
+                .commitAllowingStateLoss();
     }
 }
