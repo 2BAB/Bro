@@ -6,7 +6,7 @@ import java.util.Set;
 
 public interface IBroModule {
 
-    Set<Class<? extends IBroApi>> dependencies();
+    Set<Class<? extends IBroApi>> getLaunchDependencies();
 
     void onCreate(Context context);
 

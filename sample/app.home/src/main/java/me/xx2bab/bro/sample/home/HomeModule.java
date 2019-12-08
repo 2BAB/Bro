@@ -12,11 +12,11 @@ import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.core.defaultor.DefaultModule;
 import me.xx2bab.bro.sample.common.api.ISettingsApi;
 
-@BroModule()
+@BroModule
 public class HomeModule extends DefaultModule {
 
     @Override
-    public Set<Class<? extends IBroApi>> dependencies() {
+    public Set<Class<? extends IBroApi>> getLaunchDependencies() {
         Set<Class<? extends IBroApi>> set = new HashSet<>();
         set.add(ISettingsApi.class);
         return set;

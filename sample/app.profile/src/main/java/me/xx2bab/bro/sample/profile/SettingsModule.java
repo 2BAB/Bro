@@ -13,7 +13,7 @@ import me.xx2bab.bro.common.IBroModule;
 public class SettingsModule implements IBroModule {
 
     @Override
-    public Set<Class<? extends IBroApi>> dependencies() {
+    public Set<Class<? extends IBroApi>> getLaunchDependencies() {
         return null;
     }
 
