@@ -1,7 +1,13 @@
-Bro promises you can call interfaces between different modules with the simplest and least problematic solution. All businesses should write their interfaces which to be exposed in the Common module (or Common package with independent businesses). And then modules rely only on Common, not on each other. Bro will dynamically inject the implementation of the interfaces, and get the corresponding instance(singleton) through ``getApi()``.
+
+# API Exposure
+
+## Overall
+Bro offers module can call interfaces between different modules with the simplest and least problematic solution. All businesses should write their interfaces which to be exposed in the Common module (or Common package with independent businesses). And then modules rely only on Common, not on each other. Bro will dynamically inject the implementation of the interfaces, and get the corresponding instance(singleton) through ``getApi()``.
 
 ## Usage
+
 ### Expose interfaces
+
 ```
 // Extend IBroApi in the Common module first.
 public interface IDataApi extends IBroApi{
@@ -10,8 +16,9 @@ public interface IDataApi extends IBroApi{
 
 }
 
-// Implement the interface and annotate the implementation class to be exposed. Implementation should be written in its own business module.
-@BroApi("DataApi")
+// Implement the interface and annotate the implementation class to be exposed. 
+// Implementation should be written in its own feature module.
+@BroApi(module = DataModule.class)
 public class DataApiImpl implements IDataApi {
 
     @Override
@@ -25,9 +32,9 @@ public class DataApiImpl implements IDataApi {
 
     }
 
-// Provide a life cycle for the service which declares its dependencies on other services before calling onInit()
-// and then call onInit() sequentially after parsing out a dependency tree.
-// If there is a cycle dependency, it will throw an exception at startup.
+    // Provide a life cycle for the service which declares its dependencies on other services before calling onInit()
+    // and then call onInit() sequentially after parsing out a dependency tree.
+    // If there is a cycle dependency, it will throw an exception at startup.
     @Override
     public List<Class<? extends IBroApi>> onEvaluate() {
         ArrayList<Class<? extends IBroApi>> depends = new ArrayList<>();
@@ -38,6 +45,7 @@ public class DataApiImpl implements IDataApi {
 ```
 
 ### Using a service
+
  ``Class``es pass into the interface is used to get the corresponding implementation for the interface. Generally, we only do a single mapping of the interface-implementation. (you can only get the first implementation if you have multiple implementations, while it's not usual in practical use)
 ```
 Bro.getApi(IDataApi.class).getTestData1();

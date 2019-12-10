@@ -5,4 +5,3 @@
 - [Interceptor](uk-en/interceptor)
 - [Livereload](uk-en/livereload)
 - [Sample](uk-en/sample)
-

@@ -6,9 +6,9 @@ Using Activity as the carrier,  Native Page， Web Page, Weex Page will be gener
 
 ### Initialization
 
-When initializing Bro, pass the implementations of ``IActivityFinder``as a parameter.
+When initializing Bro, pass the implementations of `IActivityFinder`as a parameter.
 
-````
+``` java
 List<IActivityFinder> finders = new ArrayList<>();
 finders(new AnnoPageFinder());
 finders(new PackageManagerPageFinder());
@@ -18,7 +18,7 @@ BroConfig config = new BroConfig.Builder()
                     .setActivityFinders(finders)
                     .build();
 
-````
+```
 
 Bro iterates the list of finders in the initialization process when looking for the target Activity, and the process will not proceed when the return value of one of ``PageFinder``s is not null.
 
@@ -28,7 +28,7 @@ Two approaches are supported by default so far. ``Finder`` can be extended for a
 
 - Annotation: ``@BroActivity(String URI)`` Passing  ``URI`` as a parameter for the annotation for the Activity needing to be exposed.
 
-````
+``` java
 @BroActivity("broapp://settings")
 public class SettingsActivity extends AppCompatActivity {
     ...
@@ -43,11 +43,11 @@ public class SettingsActivity extends AppCompatActivity {
         android:host="home"
         android:scheme="broapp" />
 </intent-filter>
-````
+```
 
 ### Start Another Activity
 
-````
+``` java
 Bundle bundle = new Bundle();
 bundle.putString("bundleparam", "123");
 Bro.startActivityFrom(context)
@@ -67,30 +67,30 @@ Bro.startActivityFrom(context)
 // rudder.isIntercepted(); //    whether it is intercepted
 // rudder.getIntent(); // get the  Intent for start Activity
 // rudder.getBuilder(); //  get the builder for start Activity
-````
+```
 
 ## Best Practice
 
-## It's recommended to use annotation to declare ``Page``
+## It's recommended to use annotation to declare `Page`
 
-It's recommended to use ``@BroActivity`` to expose an ``Activity``, though Bro gives you ``IActivityFinded`` and ``setFinders`` as customized options. The reasons are listed as follows:
+It's recommended to use `@BroActivity` to expose an `Activity`, though Bro gives you `IActivityFinded` and `setFinders`` as customized options. The reasons are listed as follows:
 
-- Declarations in Manifest often come with logic needing special treatment. For example, if the third-party SDK comes along with an ``intent-filter`` for HTTP while another ``intent-filter`` has already been declared in your app, some treatment will be applied to match and distinguish them( eg: using category).
+- Declarations in Manifest often come with logic needing special treatment. For example, if the third-party SDK comes along with an `intent-filter` for HTTP while another `intent-filter` has already been declared in your app, some treatment will be applied to match and distinguish them( eg: using category).
 
 - Manifest declarations don't support customization for BroProperties, which means some customized attributes cannot be intercepted ( but this question will be solved in future)
 
 - Manifest declaration may relatively expose some unnecessary information.
 
 
-As a matter of fact, ``AnnoActivityFinder`` seems to be able to take care of everything, customized ``Finder`` is not necessary. Taking into account the actual situation, the remaining navigation login and existed bus design often use manifest as the container, in order to make users migrate seamlessly to Bro, these interfaces come into being.
+As a matter of fact, `AnnoActivityFinder` seems to be able to take care of everything, customized `Finder` is not necessary. Taking into account the actual situation, the remaining navigation login and existed bus design often use manifest as the container, in order to make users migrate seamlessly to Bro, these interfaces come into being.
 
 
 
 ## Bus for Fragments and Services
 
-In the early versions of Bro, such methods like ``getFragment()`` and ``startSerivce()`` once existed. However, these methods cannot apply very often:
+In the early versions of Bro, such methods like `getFragment()` and `startSerivce()` once existed. However, these methods cannot apply very often:
 
-- Most of Android engineers prefer to replace fragment with transparent Activity or Dialog after breaking down modules in some scenarios, such as implementing the update dialog or display a film ticket, in this way, the implementation is more independent and easier ( data interaction can be realized through methods like ``onActivityResult()``)
+- Most of Android engineers prefer to replace fragment with transparent Activity or Dialog after breaking down modules in some scenarios, such as implementing the update dialog or display a film ticket, in this way, the implementation is more independent and easier ( data interaction can be realized through methods like `onActivityResult()`)
 
 - There are not so many Services in an App, let along fewer situations to expose them as usual Services are existed as a long-term task running in the background or start when App and module starts.
 

@@ -3,6 +3,7 @@
 It only provides global interceptions and monitoring callbacks. In essence,  it is not appropriate to expose each business to register as both intercepting and monitoring belong to the structure of the basic logic, which may cause issues such as false intercept. When using interceptors, you can customize the processing flow of Pipeline and divide interceptors into several, but the proposed way to get them together.
 
 ## Usage
+
 ### Initialization
 During initialization, inject the implementation of interceptor and monitor:
 ```
@@ -61,8 +62,9 @@ Bro(sApplication,
 - BroProperties,  divided into two parts: clazz is the actual class name of the annotated class; extraParam is a JSON string that contains any annotations(full class name) except the ones with the beginning of @Broxxx and its contents, as well as some other class-related parameters collected by Bro during its compilation.
 
 ## Best practices
+
 ### Page permission validation (scene validation)
-In order to attract users, many apps do not check logins on the first few pages until some important operations(such as logging into "favorites", "member purchase",etc.) that pop up the login box or upgrade to membership. At this time, we can define two annotations as @needlogin @needvip in the Common module, and then add the annotations in the corresponding pagee:
+In order to attract users, many apps do not check logins on first few pages until some important operations(such as opening "favorites", "member purchase", etc.) that pop up the login box or upgrade to membership. At this time, we can define two annotations as @needlogin @needvip in the Common module, and then add the annotations in the corresponding pagee:
 ```
 @NeedLogin
 @NeedVip("1")
