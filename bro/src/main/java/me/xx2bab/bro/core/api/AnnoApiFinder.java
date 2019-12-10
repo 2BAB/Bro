@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.xx2bab.bro.annotations.BroApi;
+import me.xx2bab.bro.annotations.BroSingleton;
 import me.xx2bab.bro.common.BroProperties;
 import me.xx2bab.bro.common.IBroApi;
 import me.xx2bab.bro.common.gen.anno.IBroAliasRoutingTable;
@@ -51,7 +52,7 @@ public class AnnoApiFinder implements IApiFinder {
                 .getRoutingMapByAnnotation(BroApi.class);
 
         // If api cache was enabled, looking up from cache map first
-        if (broContext.apiCacheEnabled && aliasInstanceMap.containsKey(alias)) {
+        if (aliasInstanceMap.containsKey(alias)) {
             instance = aliasInstanceMap.get(alias);
             properties = aliasPropertiesMap.get(alias);
         } else {
@@ -62,7 +63,8 @@ public class AnnoApiFinder implements IApiFinder {
                 }
                 instance = (IBroApi) Class.forName(properties.clazz).newInstance();
                 instance.onCreate();
-                if (broContext.apiCacheEnabled) {
+                if (broContext.apiCacheEnabled || properties.extraAnnotations.containsKey(
+                        BroSingleton.class.getCanonicalName())) {
                     aliasInstanceMap.put(alias, instance);
                 }
             } catch (Exception e) {
