@@ -20,7 +20,7 @@ import me.xx2bab.bro.sample.common.annotation.RequireLoginSession;
 public class HomeActivity extends AppCompatActivity {
 
     private Fragment homeFragment;
-    private IMinePresenter mineFragment;
+    private IMinePresenter profileFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,16 +43,16 @@ public class HomeActivity extends AppCompatActivity {
                                     .commitAllowingStateLoss();
                         } else if (id == R.id.action_mine) {
                             getFragmentManager().beginTransaction()
-                                    .replace(R.id.home_fragment_container, (Fragment) mineFragment)
+                                    .replace(R.id.home_fragment_container, (Fragment) profileFragment)
                                     .commitAllowingStateLoss();
-                            mineFragment.updateCount();
+                            profileFragment.updateCount();
                         }
                         return true;
                     }
                 });
 
         homeFragment = HomeFragment.newInstance(null);
-        mineFragment = Bro.get().getApi(ISettingsApi.class).getMineFragment();
+        profileFragment = Bro.get().getApi(ISettingsApi.class).getProfileFragment();
 
         getFragmentManager().beginTransaction()
                 .replace(R.id.home_fragment_container, homeFragment)

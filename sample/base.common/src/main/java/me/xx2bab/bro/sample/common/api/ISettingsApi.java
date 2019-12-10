@@ -7,6 +7,6 @@ public interface ISettingsApi extends IBaseApi {
 
     int getPi();
 
-    IMinePresenter getMineFragment();
+    IMinePresenter getProfileFragment();
 
 }

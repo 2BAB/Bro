@@ -7,7 +7,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import me.xx2bab.bro.core.Bro;
+import me.xx2bab.bro.sample.common.api.ILocationApi;
 import me.xx2bab.bro.sample.common.api.ISettingsApi;
+import me.xx2bab.bro.sample.common.api.ISingletonLocationApi;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,8 +32,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getApi(View view) {
-        int pi = Bro.get().getApi(ISettingsApi.class).getPi();
-        Toast.makeText(this, pi + "", Toast.LENGTH_SHORT).show();
+        String location = Bro.get().getApi(ILocationApi.class).getUserCurrentLocation();
+        Toast.makeText(this, location, Toast.LENGTH_SHORT).show();
     }
 
+    public void getSingletonApi(View view) {
+        String location = Bro.get().getApi(ISingletonLocationApi.class).getUserCurrentLocation();
+        Toast.makeText(this, location, Toast.LENGTH_SHORT).show();
+    }
 }

@@ -9,13 +9,13 @@ import android.widget.TextView;
 
 import me.xx2bab.bro.sample.common.mine.IMinePresenter;
 
-public class MinePresenterFragment extends Fragment implements IMinePresenter {
+public class ProfilePresenterFragment extends Fragment implements IMinePresenter {
 
     private int count = 0;
     private TextView countView;
 
     public static IMinePresenter newInstance(Bundle args) {
-        MinePresenterFragment fragment = new MinePresenterFragment();
+        ProfilePresenterFragment fragment = new ProfilePresenterFragment();
         fragment.setArguments(args);
         return fragment;
     }

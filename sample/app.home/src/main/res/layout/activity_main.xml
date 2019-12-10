@@ -42,6 +42,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
+        android:onClick="getSingletonApi"
+        android:padding="12dp"
+        android:text="get other module's api (Singleton)"
+        android:textAllCaps="false"
+        tools:ignore="HardcodedText" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:onClick="startActivityUsingAnnotation"
         android:padding="12dp"
         android:text="get other module's \n view / fragment / service / everything "
