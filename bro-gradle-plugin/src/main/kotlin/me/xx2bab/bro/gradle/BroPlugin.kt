@@ -13,6 +13,7 @@ import me.xx2bab.bro.gradle.util.BuildUtils
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.jetbrains.kotlin.gradle.plugin.KaptExtension
 import java.io.File
 
 class BroPlugin : Plugin<Project> {
@@ -36,11 +37,10 @@ class BroPlugin : Plugin<Project> {
 
     private fun onAfterEvaluate(project: Project) {
         val variants = getVariants(project)
-        val injector: AnnoProcessorOptionInjector
-        if (isApplication(project)) {
-            injector = AppAnnoProcessorOptionInjector()
+        val injector = if (isApplication(project)) {
+            AppAnnoProcessorOptionInjector()
         } else {
-            injector = LibAnnoProcessorOptionInjector()
+            LibAnnoProcessorOptionInjector()
         }
         injector.inject(project, variants)
 

@@ -242,7 +242,8 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
                     extraAnnotations.put(anno.name, anno.values);
                 }
             }
-            checkDuplicatedAlias(alias);
+            // TODO: kapt called twice of process(), find it out and remove the comment if possible
+            // checkDuplicatedAlias(alias);
             BroProperties broProperties = new BroProperties(ae.clazz, module, extraAnnotations);
             res.get(key).put(alias, broProperties);
         }

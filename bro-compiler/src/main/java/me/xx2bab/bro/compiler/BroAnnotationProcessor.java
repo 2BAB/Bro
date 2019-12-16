@@ -1,8 +1,14 @@
 package me.xx2bab.bro.compiler;
 
+import com.alibaba.fastjson.JSONObject;
+
 import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -11,11 +17,14 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
 
 import me.xx2bab.bro.common.Constants;
 import me.xx2bab.bro.common.ModuleType;
@@ -154,9 +163,41 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         return true;
     }
 
+    private File getDummyOutputDir() throws IOException {
+        Filer filer = processingEnv.getFiler();
+        FileObject resource = filer.createResource(StandardLocation.CLASS_OUTPUT,
+                "", "tmp", (Element[]) null);
+        Path projectPath = Paths.get(resource.toUri()).getParent().getParent();
+        resource.delete();
+        return projectPath.toFile();
+    }
+
+    // TODO: refactor me
+    private File getAnnotationProcessorOptionsFile() throws IOException {
+        File dummyOutputDir = getDummyOutputDir();
+        while (dummyOutputDir.getParentFile() != null) {
+            dummyOutputDir = dummyOutputDir.getParentFile();
+            if (dummyOutputDir.getName().equals("build")) {
+                return new File(dummyOutputDir.getAbsolutePath()
+                        + File.separator + "bro"
+                        + File.separator + "annotation_processor_option.json");
+            }
+        }
+        return null;
+    }
 
     private void parseCompilerArguments() {
-        final Map<String, String> map = processingEnv.getOptions();
+        Map<String, String> map = null;
+        try {
+            File jsonFile = getAnnotationProcessorOptionsFile();
+            if (jsonFile == null || !jsonFile.exists()) {
+                throw new IllegalArgumentException("Error when call parseCompilerArguments()");
+            }
+            map = (Map<String, String>) JSONObject.parseObject(FileUtils.getDefault().readFile(jsonFile), Map.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+
         Set<String> keys = map.keySet();
         for (String key : keys) {
             if (Constants.ANNO_PROC_ARG_MODULE_NAME.equals(key)) {
@@ -182,24 +223,25 @@ public class BroAnnotationProcessor extends AbstractProcessor {
         }
 
         // Empty check to ensure we can use them safely
+        final Map<String, String> finalMap = map;
         compilerArgsForModule.forEach(new Consumer<String>() {
             @Override
             public void accept(String s) {
-                checkNotEmpty(map, s);
+                checkNotEmpty(finalMap, s);
             }
         });
         if (moduleBuildType == ModuleType.APPLICATION) {
             compilerArgsForApp.forEach(new Consumer<String>() {
                 @Override
                 public void accept(String s) {
-                    checkNotEmpty(map, s);
+                    checkNotEmpty(finalMap, s);
                 }
             });
         } else { // branch for library
             compilerArgsForLib.forEach(new Consumer<String>() {
                 @Override
                 public void accept(String s) {
-                    checkNotEmpty(map, s);
+                    checkNotEmpty(finalMap, s);
                 }
             });
         }
@@ -236,7 +278,7 @@ public class BroAnnotationProcessor extends AbstractProcessor {
     }
 
     private void checkNotEmpty(Map<String, String> map, String key) {
-        if (!map.containsKey(key) || processingEnv.getOptions().get(key).isEmpty()) {
+        if (!map.containsKey(key) || map.get(key).isEmpty()) {
             throw new IllegalArgumentException("Compiler argument " + key + " is empty! " +
                     "Please check bro-gradle-plugin is applied correctly");
         }
