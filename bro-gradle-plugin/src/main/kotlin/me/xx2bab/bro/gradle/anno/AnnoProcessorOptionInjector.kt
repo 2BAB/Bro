@@ -9,8 +9,6 @@ import me.xx2bab.bro.gradle.processor.BroRoutingTableAnnoProcessor
 import me.xx2bab.bro.gradle.util.BuildUtils
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
-import org.jetbrains.kotlin.gradle.internal.Kapt3GradleSubplugin
-import org.jetbrains.kotlin.gradle.plugin.KaptExtension
 import java.io.File
 import java.net.URLClassLoader
 
