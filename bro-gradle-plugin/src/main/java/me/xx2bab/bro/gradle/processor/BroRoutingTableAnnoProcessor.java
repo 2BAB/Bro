@@ -115,8 +115,12 @@ public class BroRoutingTableAnnoProcessor implements IBroAnnoProcessor {
         annotatedElement.name = element.asType().toString();
         annotatedElement.annotations = new TreeSet<>(comparator);
         for (int i = 0; i < list.size(); i++) {
+            String name = list.get(i).getAnnotationType().toString();
+            if ("kotlin.Metadata".equalsIgnoreCase(name)) { // TODO: check if there is any other auto generated annotation
+                continue;
+            }
             me.xx2bab.bro.common.gen.anno.Annotation annotation = new me.xx2bab.bro.common.gen.anno.Annotation();
-            annotation.name = list.get(i).getAnnotationType().toString();
+            annotation.name = name;
             annotation.values = new TreeMap<>();
             Map<? extends ExecutableElement, ? extends AnnotationValue> map
                     = list.get(i).getElementValues();
