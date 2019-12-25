@@ -1,73 +1,94 @@
 
-# API Exposure
+# API Export
 
 ## Overall
-Bro offers module can call interfaces between different modules with the simplest and least problematic solution. All businesses should write their interfaces which to be exposed in the Common module (or Common package with independent businesses). And then modules rely only on Common, not on each other. Bro will dynamically inject the implementation of the interfaces, and get the corresponding instance(singleton) through ``getApi()``.
+
+Bro offers API export & calling functions among different modules.
+
+- Put your Interface files into a individual module like `featureA-api`.
+- Each `FeatureX-impl` doesn't depend on each other, instead they can depend on `FeatureX-api` modules for correct decoupling.
+- Bro will inject the implementation of the interface when you call `Bro.get().`
 
 ## Usage
 
-### Expose interfaces
+### Export interfaces
 
-```
-// Extend IBroApi in the Common module first.
+``` java
+// Place your API interface (which extends IBroApi) in the feature-api or common module first.
 public interface IDataApi extends IBroApi{
 
     int getTestData1();
 
 }
 
-// Implement the interface and annotate the implementation class to be exposed. 
-// Implementation should be written in its own feature module.
-@BroApi(module = DataModule.class)
-public class DataApiImpl implements IDataApi {
+// Implement the interface and annotate with @BroApi on the implementation class to be exposed. 
+// The implementation class should be placed in its feature-impl module to avoid.
+
+// @BroSingleton stands for keeping the single instance in App Scope,
+// because we initialized Bro in Application#onCreate(), and this instance
+// will be cached inside the Bro obviously so that it shares the same
+// lifecycle with the entire application
+@BroSingleton
+// @BroApi stands for exposing this class, and in this case, it belongs 
+// to SettingsModule.class, anyone who wants to invoke this API trigger 
+// the module entry's initialization if it hasn't done that
+@BroApi(module = SettingsModule.class) 
+public class SettingsApiImpl implements IBroApi {
 
     @Override
-    public int getTestData1() {
-        return 66666;
+    public int getPi() {
+        return 314159;
     }
 
-    // Provide an initial life cycle for the service when Bro is initialized.
     @Override
-    public void onInit() {
-
+    public IMinePresenter getProfileFragment() {
+        return ProfilePresenterFragment.newInstance(null);
     }
-
-    // Provide a life cycle for the service which declares its dependencies on other services before calling onInit()
-    // and then call onInit() sequentially after parsing out a dependency tree.
-    // If there is a cycle dependency, it will throw an exception at startup.
+    
     @Override
-    public List<Class<? extends IBroApi>> onEvaluate() {
-        ArrayList<Class<? extends IBroApi>> depends = new ArrayList<>();
-        depends.add(IPiApi.class);
-        return depends;
+    public void onCreate() {
+        Log.e("SettingsApiImpl", "onInit");
     }
+
 }
+
 ```
 
-### Using a service
+### Invoke Export APIs from Other Modules
 
- ``Class``es pass into the interface is used to get the corresponding implementation for the interface. Generally, we only do a single mapping of the interface-implementation. (you can only get the first implementation if you have multiple implementations, while it's not usual in practical use)
 ```
 Bro.getApi(IDataApi.class).getTestData1();
 ```
 
 ## Best Practice
+
 ### Extend the boundaries of navigation through BroApi services
-We have discussed the reason why don't provide an approach for navigation between Fragment, Service, etc. In fact, it's not just Fragment, Service. In most cases, modules also depend on more fine-grained components in the level of View. They may not be provided by a simple data interface, but they can be encapsulated and exposed through the interface of BroApi.
-```
+
+We have discussed the reason why bro doesn't provide APIs for navigation between Fragment, Service, etc. In fact, not just Fragment, Service, but modules also depend on more fine-grained components like Views. They may not be provided by a simple interface file, but they can be encapsulated and exposed through the interface of BroApi.
+
+``` java
 class DummyView extends View implements DummyAction {
-      ...
+    
+    void start();
+    
+    void pause();
+    
+    void stop();
+    
+    ...
 }
 
 interface IDummyApi extends IBroApi {
-      DummyAction getDummyVIew();
+    DummyAction getDummyVIew();
 }
 
 class DummyApiImpl implements IDummyApi {
-      public DummyAction getDummyVIew() {
-             return new DummyView(mContext);
-      }
+    public DummyAction getDummyVIew() {
+        return new DummyView(mContext);
+    }
 }
 ```
-In the example, we've encapsulated the operation of DummyView into a DummyAction and exposed it. The user only needs to convert it into a View when they need to do some operations relative View. In most cases, we can continue to use DummyAction to do the DummyView operation.
-Flexible use of return of interfaces can create some incredible effects in some special scenarios, and providing more possibilities for improving the efficiency and decoupling of modules.
+
+From the example above, we've encapsulated the behaviors of `DummyView` by a `DummyAction` interface and then exposed it. In most cases, the user needs `DummyAction` instead of the `DummyView`. However, the user is able to convert it into a `View` object when they are going to do something related to `View` object like `View#setVisibility(int i)`. 
+
+Decoupling with interfaces is a flexible approach, which can create some incredible effects in particular scenarios, and provide more possibilities for improving the efficiency and decoupling of modules.
