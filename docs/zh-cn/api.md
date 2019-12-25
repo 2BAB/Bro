@@ -16,7 +16,7 @@ public interface IDataApi extends IBroApi{
 
 }
 
-// 再实现该接口并注解实现类用以 expose，实现写在自己的业务模块中
+// 再实现该接口并注解实现类来表示对外导出这个类，实现写在自己的业务模块中
 @BroApi("DataApi")
 public class DataApiImpl implements IDataApi {
 
