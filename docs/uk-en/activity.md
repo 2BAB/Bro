@@ -1,100 +1,151 @@
-# Global Routing
+# Activity Export
 
-Using Activity as the carrier,  Native Page， Web Page, Weex Page will be generalized as unified Uris.
+## Overall
+
+`@BroActivity(alias: String, module: IBroModule)` provides Activity export function. As you know, feature modules don't depend on each other directly, so if `FeatureA` wants to navigate to `FeatureB` via `startActivity(intent: Intent)`, we can not just pass the target Activity Class into. Now with Bro, you can pass the `Uri` or `Alias` to do the navigation.
 
 ## Usage
 
 ### Initialization
 
-When initializing Bro, pass the implementations of `IActivityFinder`as a parameter.
+By default, you don't need to do anything for Initialization on Activity export function. However, there are some advanced options you can choose for better fitting your App. 
+
+While initializing Bro, you can pass the implementations of `IActivityFinder` into for supporting different kinds of 
 
 ``` java
-List<IActivityFinder> finders = new ArrayList<>();
-finders(new AnnoPageFinder());
-finders(new PackageManagerPageFinder());
+List<IBroActivityFinder> finders = new ArrayList<>();
+finders.add(new AnnoActivityFinder());
+finders.add(new PackageManagerActivityFinder());
+        
+BroBuilder broBuilder = new BroBuilder()
+        .setDefaultActivity(SampleDefaultActivity.class)
+        .setActivityFinders(finders)
+        .setLogEnable(false)
+        .setMonitor(monitor)
+        .setInterceptor(interceptor);
 
-BroConfig config = new BroConfig.Builder()
-                    .setLogEnable(true)
-                    .setActivityFinders(finders)
-                    .build();
-
+Bro.initialize(this, broBuilder);
 ```
 
-Bro iterates the list of finders in the initialization process when looking for the target Activity, and the process will not proceed when the return value of one of ``PageFinder``s is not null.
+Bro iterates the list of finders in the process of looking up the target Activity. Once a finder located the target Activity, it executes the navigation and skips the rest of all.
 
-### Declaration of Pages that need to be exposed
+### Declaration of Pages that need to be exported
 
-Two approaches are supported by default so far. ``Finder`` can be extended for a wider range of support.
+Two approaches are supported by default so far. `IBroActivityFinder` can be extended for a broader range of support.
 
 - Annotation: ``@BroActivity(String URI)`` Passing  ``URI`` as a parameter for the annotation for the Activity needing to be exposed.
 
 ``` java
-@BroActivity("broapp://settings")
+@RequireMultiValues(value = 1, value1 = "AString", value2 = 12345L, value3 = 'a', value4 = true)
+@BroActivity(alias = "broapp://settings", module = SettingsModule.class)
 public class SettingsActivity extends AppCompatActivity {
     ...
 }
-````
-
-- Manifest: compatible with Android native router support.
-````
-<intent-filter>
-    <category android:name="android.intent.category.DEFAULT" />
-    <data
-        android:host="home"
-        android:scheme="broapp" />
-</intent-filter>
 ```
 
-### Start Another Activity
+- AndroidManifest: compatible with Android native router support.
+
+```xml
+<activity
+    android:name="me.xx2bab.bro.sample.profile.SettingsActivity"
+    android:theme="@style/Theme.AppCompat.Light">
+    <intent-filter>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <action android:name="android.intent.action.VIEW"/>
+        <data
+            android:host="settings"
+            android:scheme="broapp" />
+    </intent-filter>
+</activity>
+```
+
+### Start exported Activity
+
+To the `HomeActivity` with `BroActivity` Annotation:
 
 ``` java
 Bundle bundle = new Bundle();
 bundle.putString("bundleparam", "123");
-Bro.startActivityFrom(context)
+Bro.get().startActivityFrom(this)
         .withExtras(bundle)
-        .toUri(Uri.parse("broapp://home?urlparam=233"));
+        .toUri(Uri.parse("broapp://home?urlparam=233"));        
+```
 
-// more APIs and how to get the result of redirection
-// ActivityRudder rudder = Bro.startPageFrom(this) // current Context
-//        .withExtras(bundle) // with Extras
-//        .withFlags(flags) //   with Flags
-//        .withCategory(category) // add category
-//        .forResult(resultCode) // for parameters of onActivityResult  
-//        .justForCheck() //Activity will not start if this api is applied, which usualy is to check the existence of the target page without turning to it
-//        .toUri(Uri.parse("broapp://home?urlparam=233"));   // target Uri
-//
-// rudder.isIntentValidate(); // whether Activity is valid 
-// rudder.isIntercepted(); //    whether it is intercepted
-// rudder.getIntent(); // get the  Intent for start Activity
-// rudder.getBuilder(); //  get the builder for start Activity
+To the `HomeActivity` with Manifest declaration:
+
+``` java
+Bro.get().startActivityFrom(this)
+        .toUri(Uri.parse("broapp://settings"));
+```
+
+
+More APIs and how to get the result of navigations:
+
+``` java
+ActivityNaviProcessor processor = Bro.get()
+        .startActivityFrom(this) // current Context
+        .withExtras(bundle) // with Extras
+        .withFlags(flags) //   with Flags
+        .withCategory(category) // add category
+        .forResult(resultCode) // for parameters of onActivityResult  
+        .dryRun() //Activity will not start if this api is applied, which usualy is to check the existence of the target page without turning to it
+        .toUri(Uri.parse("broapp://home?urlparam=233"));   // target Uri
+
+processor.isIntentValidate(); // whether Activity is valid 
+processor.isIntercepted(); // whether it is intercepted by IBroInterceptor
+processor.getIntent(); // get the Intent for start Activity
+processor.getBuilder(); // get the builder for start Activity
 ```
 
 ## Best Practice
 
-## It's recommended to use annotation to declare `Page`
+### Annotation Declaration is Preferred
 
-It's recommended to use `@BroActivity` to expose an `Activity`, though Bro gives you `IActivityFinded` and `setFinders`` as customized options. The reasons are listed as follows:
+It's recommended to use `@BroActivity` to export an `Activity`, although Bro offers `IActivityFinder` and `setActivityFinders` as customized options. The reasons are listed as follows:
 
-- Declarations in Manifest often come with logic needing special treatment. For example, if the third-party SDK comes along with an `intent-filter` for HTTP while another `intent-filter` has already been declared in your app, some treatment will be applied to match and distinguish them( eg: using category).
+- Manifest declaration is strict to support customization for extra properties.
+- Manifest declaration may disclose some unnecessary information easily while you can have the `DexProtector` tool for hiding Dex files to avoid Activity export data being leaked.
 
-- Manifest declarations don't support customization for BroProperties, which means some customized attributes cannot be intercepted ( but this question will be solved in future)
+As a matter of fact, `AnnoActivityFinder` is able to take care of many things, `PackageManagerActivityFinder` is not mandatory. However, taking into account the actual situation, 
 
-- Manifest declaration may relatively expose some unnecessary information.
+- Some apps integrated native manifest navigation already
+- Some 3rd SDKs may provide the Activity with implicit intent like a WebView Activity accepts all "http" prefixing paths
 
+To make these users migrate to Bro seamlessly, `PackageManagerActivityFinder` is still an excellent secondary choice for navigation.
 
-As a matter of fact, `AnnoActivityFinder` seems to be able to take care of everything, customized `Finder` is not necessary. Taking into account the actual situation, the remaining navigation login and existed bus design often use manifest as the container, in order to make users migrate seamlessly to Bro, these interfaces come into being.
+Customized `Finder` is also acceptable to extend the Bro navigating features. For example, you got a WebView Activity and ReactNative Activity, both of them accept "http" in AndroidManifest scheme. In this case, it's a good practice to create a `HttpSchemeFinder` to route different URIs to different Activities.
 
+### Substitute of getFragments() and startServices()
 
+You may wonder why Bro didn't provide such as `getFragment()` and `startSerivce()` APIs, that's because:
 
-## Bus for Fragments and Services
+- If you only want to get a Fragment instance without casting to the specified class type (ex. CartFragment, ProfileFragment), add an export API to do that like:
 
-In the early versions of Bro, such methods like `getFragment()` and `startSerivce()` once existed. However, these methods cannot apply very often:
+``` java
+@Override
+public Fragment getProfileFragment() {
+    return ProfilePresenterFragment.newInstance();
+}
+```
 
-- Most of Android engineers prefer to replace fragment with transparent Activity or Dialog after breaking down modules in some scenarios, such as implementing the update dialog or display a film ticket, in this way, the implementation is more independent and easier ( data interaction can be realized through methods like `onActivityResult()`)
+- If the specify class type required, add a Interface for exported actions:
 
-- There are not so many Services in an App, let along fewer situations to expose them as usual Services are existed as a long-term task running in the background or start when App and module starts.
+``` java
+@Override
+public IProfilePageActions getProfileFragment() {
+    return ProfilePresenterFragment.newInstance();
+}
 
+...
 
-It's not difficult to realize that, with BroApi offered by Bro, the above scenarios can be implemented with APIs in BroApi. 
-See the BroApi documentation and the Sample project for details.
+// When take it as IProfilePageActions
+ProfileApi.getProfileFragment().doAction();
+
+// When take it as Fragment
+Fragment f = (Fragment) ProfileApi.getProfileFragment())
+getFragmentManager().beginTransaction().add(f, "profile").commit();
+```
+
+- There are not so many Services that be exported among the App so that you can do the same behavior as exported Fragment above. Or, if it's a long-term task running on the background, you can start it when the module starts (check `onCreate(context: Context)` method of the `IBroModule`).
+
 
