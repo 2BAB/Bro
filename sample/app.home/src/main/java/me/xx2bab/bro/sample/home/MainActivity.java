@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import me.xx2bab.bro.core.Bro;
+import me.xx2bab.bro.core.activity.ActivityNaviProcessor;
 import me.xx2bab.bro.sample.common.api.ILocationApi;
 import me.xx2bab.bro.sample.common.api.ISettingsApi;
 import me.xx2bab.bro.sample.common.api.ISingletonLocationApi;
@@ -29,6 +30,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void startActivityUsingIntentFilter(View view) {
         Bro.get().startActivityFrom(this).toUri(Uri.parse("broapp://settings"));
+//        ActivityNaviProcessor processor = Bro.get()
+//                .startActivityFrom(this)
+//                .withExtras(bundle)
+//                .withFlags(flags)
+//                .withCategory(category)
+//                .forResult()
+//                .dryRun()
+//                .toUri(Uri.parse("broapp://settings"));
     }
 
     public void getApi(View view) {
