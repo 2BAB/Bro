@@ -137,8 +137,8 @@ public class BroAnnotationProcessor extends AbstractProcessor {
                     processingEnv,
                     fileUtils,
                     genOutputs);
-            multiModuleCollector.load(appMetaDataInputPath);
-            multiModuleCollector.generate();
+//            multiModuleCollector.load(appMetaDataInputPath);
+//            multiModuleCollector.generate();
         }
     }
 

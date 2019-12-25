@@ -1,5 +1,6 @@
 package me.xx2bab.bro.gradle.util
 
+import com.android.build.gradle.AppPlugin
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import java.io.*
@@ -7,6 +8,29 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 object BuildUtils {
+
+    private val dummyAppModuleContent = "package me.xx2bab.bro.dummy;\n" +
+            "\n" +
+            "import android.content.Context;\n" +
+            "\n" +
+            "import java.util.Set;\n" +
+            "\n" +
+            "import me.xx2bab.bro.annotations.BroModule;\n" +
+            "import me.xx2bab.bro.common.IBroApi;\n" +
+            "import me.xx2bab.bro.common.IBroModule;\n" +
+            "\n" +
+            "@BroModule\n" +
+            "public class BroDummyAppModule implements IBroModule {\n" +
+            "    @Override\n" +
+            "    public Set<Class<? extends IBroApi>> getLaunchDependencies() {\n" +
+            "        return null;\n" +
+            "    }\n" +
+            "\n" +
+            "    @Override\n" +
+            "    public void onCreate(Context context) {\n" +
+            "\n" +
+            "    }\n" +
+            "}\n"
 
 //    fun getApplicationInfoFilePath(project: Project, variantName: String): String {
 //        return getBroBuildPath(project) + File.separator + variantName + File.separator + Constants.APPLICATION_INFO_FILE_NAME
@@ -40,6 +64,16 @@ object BuildUtils {
 //        return File(getApplicationResBundleFilePath(project))
 //    }
 
+    fun getBroDummyAppModuleFilePath(project: Project): String {
+        val list = listOf<String>(project.buildDir.absolutePath, "generated", "bro_dummy",
+                "me", "xx2bab", "bro","dummy", "BroDummyAppModule.java")
+        return list.joinToString(File.separator)
+    }
+
+    fun getBroDummyAppModuleFile(project: Project): File {
+        return File(getBroDummyAppModuleFilePath(project))
+    }
+
 
     fun getBroBuildPath(project: Project): String {
         return project.buildDir.absolutePath + File.separator + "bro"
@@ -56,6 +90,27 @@ object BuildUtils {
                 val re = file.mkdirs()
                 if (!re) {
                     BroGradleLogger.e("Bro Gradle Plugin Error: Make Build Dir Failed")
+                }
+            }
+        }
+    }
+
+    fun createDummyAppModule(project: Project) {
+        if (project.plugins.hasPlugin(AppPlugin::class.java)) {
+            project.tasks.getByPath("preBuild").doLast {
+                val file = getBroDummyAppModuleFile(project)
+                if (!file.parentFile.exists()) {
+                    val re = file.parentFile.mkdirs()
+                    if (!re) {
+                        BroGradleLogger.e("Bro Gradle Plugin Error: Make Build Dir Failed")
+                    }
+                }
+                if (!file.exists()) {
+                    val re = file.createNewFile()
+                    if (!re) {
+                        BroGradleLogger.e("Bro Gradle Plugin Error: Make Build Dir Failed")
+                    }
+                    file.bufferedWriter().use { it.write(dummyAppModuleContent) }
                 }
             }
         }
