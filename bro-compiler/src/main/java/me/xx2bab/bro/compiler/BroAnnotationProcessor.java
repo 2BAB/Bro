@@ -146,12 +146,16 @@ public class BroAnnotationProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnv) {
         BroCompileLogger.i("bro-compiler processor is processing");
 
+        boolean foundSupportedAnnotations = false;
         for (Class<? extends Annotation> curAnno : supportedAnnotations) {
             for (Element element : roundEnv.getElementsAnnotatedWith(curAnno)) {
                 singleModuleCollector.addMetaRecord(element, curAnno);
+                foundSupportedAnnotations = true;
             }
         }
-
+        if (!foundSupportedAnnotations) {
+            return true;
+        }
         if (moduleBuildType == ModuleType.APPLICATION) {
             multiModuleCollector.load(appMetaDataInputPath);
             multiModuleCollector.addMetaRecord(singleModuleCollector.getMetaData());
