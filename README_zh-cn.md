@@ -51,10 +51,10 @@ Android 的模块化解决方案。
 
 精力有限，Bro 只会至多支持最新两个 Minor 版本的 Android Gradle Plugin（例如最新版是 3.4.x，那同时会支持 3.3.x）：
 
-AGP Version|Compatible Status
------------|-----------------
-3.5.x | Testing...
-3.4.x | Support (last support version - 1.0.1)
+AGP Version| Latest Support Version
+:-----------:|:-----------------:
+3.5.x | 1.3.3
+3.4.x | 1.1.0
 
 
 ## Git Commit Check
