@@ -1,88 +1,131 @@
 # Interceptor 
 
-It only provides global interceptions and monitoring callbacks. In essence,  it is not appropriate to expose each business to register as both intercepting and monitoring belong to the structure of the basic logic, which may cause issues such as false intercept. When using interceptors, you can customize the processing flow of Pipeline and divide interceptors into several, but the proposed way to get them together.
+## Overall
+
+Bro provides global intercepting on per core function and error monitoring callbacks. 
 
 ## Usage
 
 ### Initialization
-During initialization, inject the implementation of interceptor and monitor:
-```
+
+On initialization process of Bro, set the implementation of interceptor and monitor:
+
+``` java
 IBroInterceptor interceptor = new IBroInterceptor() {
-  // True stands for intercepting and preventing subsequent actions
+
     @Override
-    public boolean onFindActivity(Context context, String s, Intent intent, BroProperties broProperties) {
-        // Before looking for Activity, you can replace the Activity's target link and other interception funtions(intent setdata()) here
+    public boolean beforeFindActivity(Context context, String target, Intent intent, BroProperties properties) {
+        // True stands for intercepting and preventing subsequent actions
+        // Before looking up, you can replace the target link and 
+        // or modify intent objects to set a new Uri here
         return false;
     }
 
     @Override
-    public boolean onStartActivity(Context context, String s, Intent intent, BroProperties broProperties) {
-
-        // The search and Parameter splicing have been completed, you can do login interception and other functions here only before jumping(get the information of whether login is required from broProperties, please refer to the best practice below)
+    public boolean beforeStartActivity(Context context, String target, Intent intent, BroProperties properties) {
+        // The looking-up process and parameter parsing have been completed, 
+        // you can now do the "login" interception and other operations here
+        // only before navigation (on how to get data of whether login is required 
+        // from BroProperties, please refer to the best practice below)
+        Log.i("BroProperties", properties.toString());
         return false;
     }
 
     @Override
-    public boolean onGetApi(Context context, String s, IBroApi iBroApi, BroProperties broProperties) {
-        // After finding the BroApi, you can replace an instance of the API, and so on, before returning .(this is often seen with Mock data)
+    public boolean beforeGetApi(Context context, String target, IBroApi api, BroProperties properties) {
+        // This happened after located the target BroApi, 
+        // you can replace any instance of that particular API object before return.
+        // This is quite a simple solution for data mocking
         return false;
     }
 
     @Override
-    public boolean onGetModule(Context context, String s, IBroModule iBroModule, BroProperties broProperties) {
-        // After finding the BroModule, you can replace the instance of the module and other functions, before returning. (usually seen in Mock data)
+    public boolean beforeGetModule(Context context, String target, IBroModule module, BroProperties properties) {
+        // This happened after located the BroModule, 
+        // you can replace the instance of particular module before return.
         return false;
     }
 };
 
 IBroMonitor monitor = new IBroMonitor() {
+
     @Override
-    public void onActivityException(int i, ActivityRudder.Builder builder) {
-        // When Activity throws an error during a lookup or jump.
+    public void onActivityRudderException(int errorCode, Builder builder) {
+        // When it throws an exception on the process of locating an Activity.
     }
 
     @Override
-    public void onModuleException(int i) {
-        // When it throws an error while looking for Module.
+    public void onModuleException(int errorCode) {
+        // When it throws an exception on the process of locating an IBroModule instance.
     }
 
     @Override
-    public void onApiException(int i) {
-         // When it throws an error while looking for Api.
+    public void onApiException(int errorCode) {
+        // When it throws an exception on the process of locating an IBroApi instance.
     }
 };
 
-Bro(sApplication,
-        new BroInfoMapImpl(),
-        interceptor,
-        monitor,
-        config);
+BroBuilder broBuilder = new BroBuilder()
+        .setXxx()
+        .setMonitor(monitor)
+        .setInterceptor(interceptor);
+
+Bro.initialize(this, broBuilder);
 ```
 ### Parameter description
-- BroProperties,  divided into two parts: clazz is the actual class name of the annotated class; extraParam is a JSON string that contains any annotations(full class name) except the ones with the beginning of @Broxxx and its contents, as well as some other class-related parameters collected by Bro during its compilation.
+
+``` java
+public class BroProperties {
+
+    public String clazz;
+    public String module;
+    public Map<String, Map<String, String>> extraAnnotations;
+    
+}
+```
+
+- **clazz**: it is the actual class name of the annotated class.
+- **module**: the belonging module of the annotated API or activity.
+- **extraAnnotations**: a map contains any other annotations(full class name) except the ones with the prefix of @BroXxx, for the key is the name of particular annotation, and the value is properties of this annotation by a Map\<prop-key, prop-value\>.
+
 
 ## Best practices
 
-### Page permission validation (scene validation)
-In order to attract users, many apps do not check logins on first few pages until some important operations(such as opening "favorites", "member purchase", etc.) that pop up the login box or upgrade to membership. At this time, we can define two annotations as @needlogin @needvip in the Common module, and then add the annotations in the corresponding pagee:
-```
-@NeedLogin
-@NeedVip("1")
-@BroActivity("TestActivity")e
-public class TestActivity extends Activity {...}
-```
-This code will create the extraParams of BroProperties as:
-```
-{
-"com.example.package.NeedLogin": "",
-"com.example.package.NeedVip": "1",
+### Processing Pipeline
+
+To avoid chaos and keep robust of the app, Bro doesn't provide a subscription in the pipeline way for interceptor and monitor. It means you can not add an interceptor in your feature module, and the only one subscription entry is at the initialization of Bro. You can still provide some intercepting APIs from feature modules, and manage all of them here inside the intercepting methods. A good idea that might be taken is to pipeline these sub-interceptors by your favorite order.
+
+### Activity permission validation
+
+In order to attract new users, many apps do not require log-in on first few pages until some important operations (such as tapping "Favourites", "Member Promo", etc.) then pop up the login dialog.In this case, we create a new annotation named `@RequireLoginSession()` in the a common module, and then add the annotation in the corresponding activities:
+
+``` java
+@RequireLoginSession(123)
+@RequireMultiValues(value = 1, value1 = "AString", value2 = 12345L, value3 = 'a', value4 = true)
+@BroActivity(alias = "broapp://home", module = HomeModule.class)
+public class HomeActivity extends AppCompatActivity {
+    ...
 }
-
 ```
-This allows you to check in the interceptor whether the Activity jump contains such descriptions (NeedLogin, NeedVip), and do some controlling and jumping to the corresponding logic for global page permissions (for example, jump to the login page after an interception).
 
-### Degrading and Immediate Bug Solving
-Generally, we can preset an online configuration check in the interceptor. When we get a bug in the page and we can't find a way to fix it at once, we can turn off the access to a specific page by activating the configuration, and displaying a customized 404 page. This method to deal with an emergency is very effective, getting more time for actual bug fixes and reducing user loss.
+You can trigger the login navigation by checking the annotation `@RequireLoginSession()` above:
 
+``` java
+@Override
+public boolean beforeStartActivity(Context context, String target, Intent intent, BroProperties properties) {
+    String loginAnnotation = "me.xx2bab.bro.sample.common.annotation.RequireLoginSession";
+    if (properties.extraAnnotations.containsKey(loginAnnotation)) {
+        Intent i = new Intent(context, LoginActivty.class);
+        i.putExtra("orginalTarget", intent);
+        startActivity(i);
+        return true;
+    }
+    return false;
+}
+```
 
-At the same time, when a Native page has a corresponding Web implementation version(it is better to unify the Uri), we can also accomplish the graceful degradation of Native -> Web by push configuring when a Bug occurs in Native Activity. Thus, the bug will not affect the user's use.
+### First Aid with Online Configuration
+
+Generally, we can preset an online configuration check inside the interceptor. When we found a bug that caused the crash in the particular page but we could not fix it immediately, we can block the access of it by modifying the configuration, as well as displaying a customized error page. This is quite a widely used and effective solution to do the "First Aid" of the app; it buys more time for real bug fixes and avoids user loss.
+
+On the other way, when a Native page has a corresponding Web/ReactNative/Weex version, we can also do a graceful degradation from Native to other versions by pushing the configuring when a Bug occurs. For example, a redemption Activity usually has an alternative webpage that can accomplish the same operations.
