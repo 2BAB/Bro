@@ -2,9 +2,8 @@ import me.xx2bab.bro.build.BuildConfig.Deps
 import me.xx2bab.bro.build.BuildConfig.Versions
 
 plugins {
-    id("java-library")
+    kotlin("jvm")
 }
-apply(rootProject.file("publish.gradle.kts"))
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
@@ -14,7 +13,8 @@ dependencies {
     implementation(Deps.fastjson)
     implementation(Deps.orgJson)
     implementation(Deps.markdownGenerator)
-
+    implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("reflect"))
     if (project.hasProperty("broPublish")) {
         implementation(Deps.broAnnotationsDev)
         implementation(Deps.broCommonDev)

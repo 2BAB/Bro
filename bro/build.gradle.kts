@@ -4,7 +4,6 @@ import me.xx2bab.bro.build.BuildConfig
 plugins {
     id("com.android.library")
 }
-apply(rootProject.file("publish.gradle.kts"))
 
 android {
 
