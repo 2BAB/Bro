@@ -12,9 +12,9 @@ import me.xx2bab.bro.compiler.collector.SingleModuleCollector
 import me.xx2bab.bro.compiler.util.BroCompileLogger.i
 import me.xx2bab.bro.compiler.util.BroCompileLogger.setMessager
 import me.xx2bab.bro.compiler.util.DummyClassCreator
+import me.xx2bab.bro.compiler.util.AptGenLocationProvider
 import java.io.File
 import java.io.IOException
-import java.nio.file.Paths
 import java.util.*
 import java.util.function.Consumer
 import javax.annotation.processing.AbstractProcessor
@@ -22,7 +22,6 @@ import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
-import javax.tools.StandardLocation
 import kotlin.collections.HashSet
 
 
@@ -73,6 +72,7 @@ class BroAnnotationProcessor : AbstractProcessor() {
         }
     }
 
+
     private val supportedAnnotations = HashSet<Class<out Annotation>>()
     private var moduleName: String? = null
     private var moduleBuildType: ModuleType? = null
@@ -84,6 +84,7 @@ class BroAnnotationProcessor : AbstractProcessor() {
     private var appGeneratorClasses: String? = null
     private var libMetaDataOutputPath: String? = null
 
+    private lateinit var aptAptGenLocationProvider: AptGenLocationProvider
     private lateinit var genOutputs: GenOutputs
     private lateinit var singleModuleCollector: SingleModuleCollector
     private lateinit var multiModuleCollector: MultiModuleCollector
@@ -95,6 +96,7 @@ class BroAnnotationProcessor : AbstractProcessor() {
         setMessager(processingEnv.messager)
         i("bro-compiler processor init")
 
+        aptAptGenLocationProvider = AptGenLocationProvider(processingEnv)
         parseCompilerArguments()
         val processors = processors
         for (processor in processors) {
@@ -127,7 +129,7 @@ class BroAnnotationProcessor : AbstractProcessor() {
             // multiModuleCollector.load(appMetaDataInputPath);
             // multiModuleCollector.generate();
 
-            DummyClassCreator.create(processingEnv.filer)
+            DummyClassCreator.create(processingEnv.filer, aptAptGenLocationProvider)
         }
     }
 
@@ -153,27 +155,18 @@ class BroAnnotationProcessor : AbstractProcessor() {
         return true
     }
 
-    @get:Throws(IOException::class)
-    private val dummyOutputDir: File
-        get() {
-            val filer = processingEnv.filer
-            val resource = filer.createResource(StandardLocation.CLASS_OUTPUT, "", "tmp")
-            val projectPath = Paths.get(resource.toUri()).parent.parent
-            resource.delete()
-            return projectPath.toFile()
-        }
 
     // TODO: refactor me
     @get:Throws(IOException::class)
     private val annotationProcessorOptionsFile: File?
         get() {
-            var dummyOutputDir = dummyOutputDir
+            var dummyOutputDir = aptAptGenLocationProvider.get()
             while (dummyOutputDir.parentFile != null) {
                 dummyOutputDir = dummyOutputDir.parentFile
                 if (dummyOutputDir.name == "build") {
                     return File(dummyOutputDir.absolutePath
                             + File.separator + "bro"
-                            + File.separator + "annotation_processor_option.json")
+                            + File.separator + Constants.MODULE_COMPILER_OPTIONS_FILE)
                 }
             }
             return null
@@ -183,7 +176,8 @@ class BroAnnotationProcessor : AbstractProcessor() {
         val map: Map<String, String> = try {
             val jsonFile = annotationProcessorOptionsFile
             require(!(jsonFile == null || !jsonFile.exists())) { "Error when call parseCompilerArguments()" }
-            JSONObject.parseObject<Map<*, *>>(FileUtils.getDefault().readFile(jsonFile), MutableMap::class.java) as Map<String, String>
+            JSONObject.parseObject<Map<*, *>>(FileUtils.getDefault().readFile(jsonFile),
+                    MutableMap::class.java) as Map<String, String>
         } catch (e: IOException) {
             throw IllegalArgumentException(e.message)
         }

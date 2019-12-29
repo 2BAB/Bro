@@ -60,7 +60,7 @@ abstract class AnnoProcessorOptionInjector {
                                       map: Map<String, String>,
                                       broBuildDir: String) =
             project.tasks.getByPath("preBuild").doLast {
-                File(broBuildDir, "annotation_processor_option.json").bufferedWriter().use {
+                File(broBuildDir, Constants.MODULE_COMPILER_OPTIONS_FILE).bufferedWriter().use {
                     it.write(JSON.toJSONString(map))
                 }
             }

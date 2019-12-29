@@ -14,6 +14,7 @@ public class Constants {
     public static final String ANNO_PROC_ARG_LIB_META_DATA_OUTPUT_PATH = "bro.libMetaDataOutputPath";
 
     public static final String MODULE_META_INFO_FILE_SUFFIX = ".bro";
+    public static final String MODULE_COMPILER_OPTIONS_FILE = "annotation_processor_options.json";
 
     public static final String GEN_PACKAGE_NAME = "me.xx2bab.bro.core";
     public static final String GEN_CLASS_SUFFIX = "Impl";

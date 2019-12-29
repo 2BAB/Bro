@@ -29,7 +29,6 @@ class BroPlugin : Plugin<Project> {
         // Register Tasks
         project.afterEvaluate {
             BuildUtils.mkdirBroBuildDir(project)
-            BuildUtils.createDummyAppModule(project)
             onAfterEvaluate(project)
         }
     }
