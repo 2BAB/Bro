@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON
 import me.xx2bab.bro.common.Constants
 import me.xx2bab.bro.common.gen.anno.IBroAnnoProcessor
 import me.xx2bab.bro.common.util.FileUtils
+import me.xx2bab.bro.compiler.util.DummyClassCreator
 import java.util.*
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Element
@@ -34,7 +35,11 @@ class SingleModuleCollector(private val processors: List<IBroAnnoProcessor>,
         }
     }
 
-    fun addMetaRecord(element: Element?, annoType: Class<out Annotation?>?) {
+    fun addMetaRecord(element: Element, annoType: Class<out Annotation?>?) {
+        val annotatedElementName = element.asType().toString()
+        if (annotatedElementName == DummyClassCreator.canonicalName) {
+            return
+        }
         for (processor in processors) {
             if (!processor.supportedAnnotationTypes.contains(annoType)) {
                 continue

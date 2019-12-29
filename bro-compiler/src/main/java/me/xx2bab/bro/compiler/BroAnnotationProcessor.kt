@@ -11,6 +11,7 @@ import me.xx2bab.bro.compiler.collector.MultiModuleCollector
 import me.xx2bab.bro.compiler.collector.SingleModuleCollector
 import me.xx2bab.bro.compiler.util.BroCompileLogger.i
 import me.xx2bab.bro.compiler.util.BroCompileLogger.setMessager
+import me.xx2bab.bro.compiler.util.DummyClassCreator
 import java.io.File
 import java.io.IOException
 import java.nio.file.Paths
@@ -126,11 +127,11 @@ class BroAnnotationProcessor : AbstractProcessor() {
             // multiModuleCollector.load(appMetaDataInputPath);
             // multiModuleCollector.generate();
 
-            
+            DummyClassCreator.create(processingEnv.filer)
         }
     }
 
-    override fun process(set: Set<TypeElement?>, roundEnv: RoundEnvironment): Boolean {
+    override fun process(set: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
         i("bro-compiler processor is processing")
         var foundSupportedAnnotations = false
         for (curAnno in supportedAnnotations) {
