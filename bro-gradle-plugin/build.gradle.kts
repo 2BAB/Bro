@@ -1,7 +1,6 @@
 import me.xx2bab.bro.build.BuildConfig
 
 plugins {
-    id("maven")
     kotlin("jvm")
 }
 

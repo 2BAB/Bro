@@ -8,11 +8,9 @@ import me.xx2bab.bro.common.gen.GenOutputs;
 
 public class BroRudder {
 
-    private GenOutputs genOutputs;
     private Map<Class, Object> implCache;
 
     public BroRudder() {
-        genOutputs = new GenOutputs();
         implCache = new HashMap<>();
     }
 
@@ -23,7 +21,7 @@ public class BroRudder {
             return (T) cacheRes;
         }
         try {
-            String implClassName = genOutputs.generateClassNameForImplementation(interfaze);
+            String implClassName = GenOutputs.Companion.generateClassNameForImplementation(interfaze);
             Object res = Class.forName(Constants.GEN_PACKAGE_NAME + "." + implClassName).newInstance();
             implCache.put(interfaze, res);
             return (T) res;

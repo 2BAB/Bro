@@ -3,6 +3,7 @@ import me.xx2bab.bro.build.BuildConfig
 
 plugins {
     id("com.android.library")
+    id("kotlin-android")
 }
 
 android {
@@ -33,7 +34,7 @@ android {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
     implementation(BuildConfig.Deps.supportAnno)
-
+    implementation(kotlin("stdlib-jdk8"))
     if (project.hasProperty("broPublish")) {
         api(BuildConfig.Deps.broAnnotationsDev)
         api(BuildConfig.Deps.broCommonDev)

@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
+//    implementation(kotlin("stdlib-jdk8"))
     if (project.hasProperty("broPublish")) {
         api(BuildConfig.Deps.broCommonDev)
     } else {

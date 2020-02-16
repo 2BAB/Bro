@@ -61,9 +61,9 @@ public class AnnoApiFinder implements IApiFinder {
                 if (properties == null) {
                     throw new IllegalArgumentException();
                 }
-                instance = (IBroApi) Class.forName(properties.clazz).newInstance();
+                instance = (IBroApi) Class.forName(properties.getClazz()).newInstance();
                 instance.onCreate();
-                if (broContext.apiCacheEnabled || properties.extraAnnotations.containsKey(
+                if (broContext.apiCacheEnabled || properties.getExtraAnnotations().containsKey(
                         BroSingleton.class.getCanonicalName())) {
                     aliasInstanceMap.put(alias, instance);
                 }
