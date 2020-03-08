@@ -3,17 +3,16 @@ package me.xx2bab.bro.sample.home;
 import android.content.Context;
 import android.util.Log;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import me.xx2bab.bro.annotations.BroModule;
 import me.xx2bab.bro.common.IBroApi;
-import me.xx2bab.bro.core.defaultor.DefaultModule;
+import me.xx2bab.bro.common.IBroModule;
 import me.xx2bab.bro.sample.common.api.ISettingsApi;
 
 @BroModule
-public class HomeModule extends DefaultModule {
+public class HomeModule implements IBroModule {
 
     @Override
     public Set<Class<? extends IBroApi>> getLaunchDependencies() {

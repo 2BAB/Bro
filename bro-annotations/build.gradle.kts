@@ -1,12 +1,12 @@
 import me.xx2bab.bro.build.BuildConfig
 
 plugins {
-    id("java-library")
+    id("kotlin")
 }
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
-//    implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("stdlib-jdk8"))
     if (project.hasProperty("broPublish")) {
         api(BuildConfig.Deps.broCommonDev)
     } else {

@@ -1,5 +1,6 @@
 package me.xx2bab.bro.core.module
 
+import android.util.Log
 import me.xx2bab.bro.annotations.BroApi
 import me.xx2bab.bro.annotations.BroModule
 import me.xx2bab.bro.common.BroProperties
@@ -20,10 +21,43 @@ class ModuleRudder(private val broContext: BroContext) {
     private val monitor: IBroMonitor = broContext.monitor
     private val dag: DAG<String> = DAG()
 
+    init {
+        moduleInstanceMap = HashMap()
+        val map = broContext.broRudder
+                .getImplementationByInterface(IBroAliasRoutingTable::class.java)
+                .getRoutingMapByAnnotation(BroModule::class.java)
+        for ((_, value) in map!!) {
+            val name = value!!.clazz
+            try {
+                val instance = Class.forName(name).newInstance() as IBroModule
+                val bean = ModuleEntity(name, instance, value)
+                moduleInstanceMap[name] = bean
+                if (instance.getLaunchDependencies() == null) {
+                    dag.addPrerequisite(name, null)
+                } else {
+                    val set = instance.getLaunchDependencies()
+                    if (set != null) {
+                        for (apiClazz in set) {
+                            dag.addPrerequisite(name, getAttachedModule(apiClazz.canonicalName))
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                BroRuntimeLog.e("Bro Module named " + name + " newInstance() failed : " + e.message)
+                monitor.onModuleException(BroErrorType.MODULE_CLASS_NOT_FOUND_ERROR)
+            }
+        }
+    }
+
     fun onCreate() {
-        for (moduleName in dag.topologicalSort()) {
-            if (moduleInstanceMap[moduleName] != null) {
-                moduleInstanceMap[moduleName]!!.instance.onCreate(broContext.context.get())
+        val res = dag.topologicalSort()
+        if (res == null) {
+            BroRuntimeLog.e("Bro topologicalSort result is emptu!")
+        } else {
+            for (moduleName in res) {
+                if (moduleInstanceMap[moduleName] != null) {
+                    moduleInstanceMap[moduleName]!!.instance.onCreate(broContext.context.get())
+                }
             }
         }
     }
@@ -38,8 +72,8 @@ class ModuleRudder(private val broContext: BroContext) {
                 break
             }
         }
-        if (interceptor.beforeGetModule(broContext.context.get(),
-                        moduleName.canonicalName,
+        if (interceptor.beforeGetModule(broContext.context.get()!!,
+                        moduleName.canonicalName!!,
                         broModule,
                         properties)) {
             return null
@@ -68,34 +102,4 @@ class ModuleRudder(private val broContext: BroContext) {
         throw IllegalArgumentException("Couldn't find api's corresponding module.")
     }
 
-    init {
-        moduleInstanceMap = HashMap()
-        val map = broContext.broRudder
-                .getImplementationByInterface(IBroAliasRoutingTable::class.java)
-                .getRoutingMapByAnnotation(BroModule::class.java)
-        for ((_, value) in map!!) {
-            val name = value!!.clazz
-            try {
-                val instance = Class.forName(name).newInstance() as IBroModule
-                val bean = ModuleEntity()
-                bean.clazz = name
-                bean.instance = instance
-                bean.properties = value
-                moduleInstanceMap[name] = bean
-                if (instance.getLaunchDependencies() == null) {
-                    dag.addPrerequisite(name, null)
-                } else {
-                    val set = instance.getLaunchDependencies()
-                    if (set != null) {
-                        for (apiClazz in set) {
-                            dag.addPrerequisite(name, getAttachedModule(apiClazz.canonicalName))
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                BroRuntimeLog.e("Bro Module named " + name + " newInstance() failed : " + e.message)
-                monitor.onModuleException(BroErrorType.MODULE_CLASS_NOT_FOUND_ERROR)
-            }
-        }
-    }
 }
