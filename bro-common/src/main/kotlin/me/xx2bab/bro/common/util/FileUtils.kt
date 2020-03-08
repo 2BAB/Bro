@@ -1,6 +1,9 @@
 package me.xx2bab.bro.common.util
 
-import java.io.*
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
 
 class FileUtils {
     fun filterIllegalCharsForResFileName(origin: String): String {
@@ -10,18 +13,15 @@ class FileUtils {
     }
 
     fun readFile(file: File?): String? {
-        return try {
-            val inputStream: InputStream = FileInputStream(file)
-            val reader = BufferedReader(InputStreamReader(inputStream))
-            val builder = StringBuilder()
-            var line: String?
-            while (reader.readLine().also { line = it } != null) {
-                builder.append(line)
+        try {
+            if (file == null) {
+                return null
             }
-            builder.toString()
+            val bufferedReader: BufferedReader = file.bufferedReader()
+            return bufferedReader.use { it.readText() }
         } catch (e: Exception) {
             println(e.message)
-            null
+            return null
         }
     }
 
@@ -42,7 +42,7 @@ class FileUtils {
                 }
             }
             val writer = FileWriter(file)
-            writer.write(content)
+            writer.write(content ?: "")
             writer.close()
         } catch (e: IOException) {
             println(e.message)

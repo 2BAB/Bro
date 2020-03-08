@@ -26,6 +26,7 @@ object BuildConfig {
         const val supportAnno = "com.android.support:support-annotations:28.0.0"
         const val markdownGenerator = "net.steppschuh.markdowngenerator:markdowngenerator:1.3.1.1"
         const val junit = "junit:junit:4.12"
+        const val mockito = "org.mockito:mockito-core:3.3.1"
     }
 
 }
