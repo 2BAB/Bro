@@ -65,7 +65,8 @@ Bro is only supported & tested on latest **2** Minor versions of Android Gradle 
 
 AGP Version| Latest Support Version
 :-----------:|:-----------------:
-3.5.x | 1.3.3
+3.6.x | [![JCenter](https://api.bintray.com/packages/2bab/maven/bro/images/download.svg)]
+3.5.x | 1.3.4
 3.4.x | 1.1.0
 
 
@@ -83,7 +84,7 @@ So far we haven't added any hook tool, but follow the regex below:
 ## License
 
 >
-> Copyright 2016-2019 2BAB
+> Copyright 2016-2020 2BAB
 >
 >Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
