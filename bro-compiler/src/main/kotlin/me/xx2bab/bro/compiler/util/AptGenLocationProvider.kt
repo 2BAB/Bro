@@ -22,7 +22,7 @@ class AptGenLocationProvider(private val processingEnv: ProcessingEnvironment) {
             javaFileObject.delete()
             dir = projectPath.toFile()
             return dir!!
-        } catch (e: KotlinNullPointerException) {
+        } catch (e: Exception) {
             // kapt.kotlin.generated -> /path-to-your-module/build/generated/source/kaptKotlin/debug
             val kaptGenerateingDir = processingEnv.options["kapt.kotlin.generated"]
             if (kaptGenerateingDir == null || !File(kaptGenerateingDir).exists()) {
