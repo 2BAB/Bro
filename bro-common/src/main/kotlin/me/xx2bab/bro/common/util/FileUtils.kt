@@ -25,7 +25,10 @@ class FileUtils {
         }
     }
 
-    fun writeFile(content: String?, filePath: String, fileName: String) {
+    fun writeFile(content: String?, filePath: String?, fileName: String?) {
+        if (filePath == null || fileName == null) {
+            return
+        }
         val folder = File(filePath)
         if (!folder.exists()) {
             val result = folder.mkdirs()

@@ -10,7 +10,7 @@ class GradleClassLoader(classPaths: Array<String>) {
     private val urlClassLoader: URLClassLoader
 
     @Throws(ClassNotFoundException::class)
-    fun load(clazz: String?): Class<*> {
+    fun load(clazz: String): Class<*> {
         return urlClassLoader.loadClass(clazz)
     }
 

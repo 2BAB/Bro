@@ -1,4 +1,5 @@
-import me.xx2bab.bro.build.BuildConfig
+import me.xx2bab.bro.build.BuildConfig.Deps
+import me.xx2bab.bro.build.BuildConfig.Versions
 
 plugins {
     kotlin("jvm")
@@ -15,19 +16,21 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     implementation("org.javassist:javassist:3.22.0-GA")
-    implementation(BuildConfig.Deps.fastjson)
-    compileOnly(BuildConfig.Deps.markdownGenerator)
+    implementation(Deps.fastjson)
+    compileOnly(Deps.markdownGenerator)
 
     if (project.hasProperty("broPublish")) {
-        implementation(BuildConfig.Deps.broAnnotationsDev)
-        implementation(BuildConfig.Deps.broCommonDev)
+        implementation(Deps.broAnnotationsDev)
+        implementation(Deps.broCommonDev)
     } else {
         implementation(project(":bro-annotations"))
         implementation(project(":bro-common"))
     }
+    testImplementation(Deps.junit)
+    testImplementation(Deps.mockito)
 }
 
 java {
-    sourceCompatibility = BuildConfig.Versions.broSourceCompatibilityVersion
-    targetCompatibility = BuildConfig.Versions.broTargetCompatibilityVersion
+    sourceCompatibility = Versions.broSourceCompatibilityVersion
+    targetCompatibility = Versions.broTargetCompatibilityVersion
 }

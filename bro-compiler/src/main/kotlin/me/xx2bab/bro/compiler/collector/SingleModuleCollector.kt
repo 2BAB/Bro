@@ -56,6 +56,7 @@ class SingleModuleCollector(private val processors: List<IBroAnnoProcessor>,
         val fileName = (fileUtils.filterIllegalCharsForResFileName(moduleName)
                 + Constants.MODULE_META_INFO_FILE_SUFFIX)
         val result = JSON.toJSONString(elements)
+
         // Write to libMetaDataOutputPath (/{modulePath}/build/intermediates/library_assets/{variantName}/out),
         // however because "javac" task is prior than "package assets" task,
         // and package task will override the output directory.
@@ -64,7 +65,8 @@ class SingleModuleCollector(private val processors: List<IBroAnnoProcessor>,
         // or you can call it monorepo).
         // Please check BroPlugin class in bro-gradle-plugin,
         // to see the hack for copying .bro file into libMetaDataOutputPath again.
-        fileUtils.writeFile(result, libMetaDataOutputPath!!, fileName)
+        fileUtils.writeFile(result, libMetaDataOutputPath, fileName)
+
         // Write to moduleBroBuildDir (/{modulePath}/build/bro),
         // this is a backup, and we will copy from here to libMetaDataOutputPath later
         // Please check BroPlugin class in bro-gradle-plugin,

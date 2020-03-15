@@ -22,6 +22,9 @@ dependencies {
         implementation(project(":bro-annotations"))
         implementation(project(":bro-common"))
     }
+    testImplementation(Deps.junit)
+    testImplementation(Deps.mockito)
+    testImplementation(Deps.mockitoInline)
 }
 
 java {

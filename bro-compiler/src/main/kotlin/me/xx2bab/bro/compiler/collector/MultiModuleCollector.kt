@@ -1,5 +1,6 @@
 package me.xx2bab.bro.compiler.collector
 
+import android.support.annotation.VisibleForTesting
 import com.alibaba.fastjson.JSON
 import me.xx2bab.bro.common.Constants
 import me.xx2bab.bro.common.gen.GenOutputs
@@ -60,29 +61,39 @@ class MultiModuleCollector(private val processors: List<IBroAnnoProcessor>,
         val splitPaths = inputPaths.split(";").toTypedArray()
         for (path in splitPaths) {
             val file = File(path)
-            if (!file.exists() || !file.isDirectory) {
+            loadFile(file)
+        }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun loadFile(folder: File) {
+        if (!folder.exists() || !folder.isDirectory) {
+            return
+        }
+        val childFiles = folder.listFiles()
+        if (childFiles == null || childFiles.isEmpty()) {
+            return
+        }
+        // Traverse all bro intermediates that file name ends with MODULE_META_INFO_FILE_SUFFIX
+        for (child in childFiles) {
+            BroCompileLogger.i("Processing meta data file: " + child.name)
+            if (!child.name.endsWith(Constants.MODULE_META_INFO_FILE_SUFFIX)) {
                 continue
             }
-            val childFiles = file.listFiles()
-            if (childFiles == null || childFiles.isEmpty()) {
-                continue
-            }
-            // Traverse all bro intermediates that file name ends with MODULE_META_INFO_FILE_SUFFIX
-            for (child in childFiles) {
-                BroCompileLogger.i("Processing meta data file: " + child.name)
-                if (!child.name.endsWith(Constants.MODULE_META_INFO_FILE_SUFFIX)) {
-                    continue
-                }
-                val json = fileUtils.readFile(child) ?: continue
-                val mapJsonObj = JSON.parseObject(json)
-                for (key in mapJsonObj.keys) {
-                    val valueJson = mapJsonObj.getString(key)
-                    val value = JSON.parseArray(valueJson, String::class.java)
-                    // The same action as #addMetaRecord(...)
-                    map[key]?.addAll(value)
-                }
+            val json = fileUtils.readFile(child) ?: continue
+            val mapJsonObj = JSON.parseObject(json)
+            for (key in mapJsonObj.keys) {
+                val valueJson = mapJsonObj.getString(key)
+                val value = JSON.parseArray(valueJson, String::class.java)
+                // The same action as #addMetaRecord(...)
+                map[key]?.addAll(value)
             }
         }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun getMap(): MutableMap<String, MutableList<String>> {
+        return map
     }
 
 }

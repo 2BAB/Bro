@@ -27,6 +27,7 @@ object BuildConfig {
         const val markdownGenerator = "net.steppschuh.markdowngenerator:markdowngenerator:1.3.1.1"
         const val junit = "junit:junit:4.12"
         const val mockito = "org.mockito:mockito-core:3.3.1"
+        const val mockitoInline = "org.mockito:mockito-inline:3.3.1"
     }
 
 }

@@ -9,10 +9,10 @@ import me.xx2bab.bro.common.util.FileUtils
 import me.xx2bab.bro.compiler.classloader.GradleClassLoader
 import me.xx2bab.bro.compiler.collector.MultiModuleCollector
 import me.xx2bab.bro.compiler.collector.SingleModuleCollector
+import me.xx2bab.bro.compiler.util.AptGenLocationProvider
 import me.xx2bab.bro.compiler.util.BroCompileLogger.i
 import me.xx2bab.bro.compiler.util.BroCompileLogger.setMessager
 import me.xx2bab.bro.compiler.util.DummyClassCreator
-import me.xx2bab.bro.compiler.util.AptGenLocationProvider
 import java.io.File
 import java.io.IOException
 import java.util.*
