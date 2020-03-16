@@ -53,7 +53,7 @@ Android 的模块化解决方案。
 
 AGP Version| Latest Support Version
 :-----------:|:-----------------:
-3.6.x | [![JCenter](https://api.bintray.com/packages/2bab/maven/bro/images/download.svg)]
+3.6.x | ![JCenter](https://api.bintray.com/packages/2bab/maven/bro/images/download.svg)
 3.5.x | 1.3.4
 3.4.x | 1.1.0
 
