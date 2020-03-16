@@ -81,14 +81,14 @@ class BroBuilder {
                     return false
                 }
 
-                override fun beforeGetModule(context: Context, target: String, module: IBroModule?, properties: BroProperties?): Boolean {
+                override fun beforeGetModule(context: Context, target: String, module: IBroModule, properties: BroProperties?): Boolean {
                     return false
                 }
             }
         }
         if (monitor == null) {
             monitor = object : IBroMonitor {
-                override fun onActivityRudderException(errorCode: Int, builder: Builder?) {}
+                override fun onActivityRudderException(errorCode: Int, builder: Builder) {}
                 override fun onModuleException(errorCode: Int) {}
                 override fun onApiException(errorCode: Int) {}
             }

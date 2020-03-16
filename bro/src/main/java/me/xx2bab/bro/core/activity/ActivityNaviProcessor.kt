@@ -29,8 +29,8 @@ class ActivityNaviProcessor {
         return null
     }
 
-    private fun injectParamsFromUri(originIntent: Intent?, uri: Uri?) {
-        if (originIntent == null || uri == null) {
+    private fun injectParamsFromUri(originIntent: Intent, uri: Uri?) {
+        if (uri == null) {
             return
         }
         var bundle = originIntent.extras
@@ -67,7 +67,7 @@ class ActivityNaviProcessor {
         val name = convertUriToStringWithoutParams(builder.uri)
         val properties = builder.broContext.broRudder
                 .getImplementationByInterface(IBroAliasRoutingTable::class.java)
-                .getRoutingMapByAnnotation(BroActivity::class.java)!![name]
+                .getRoutingMapByAnnotation(BroActivity::class.java)[name]
         val originIntent = Intent()
         originIntent.data = builder.uri
         try {

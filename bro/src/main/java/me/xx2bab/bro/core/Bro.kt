@@ -23,20 +23,20 @@ class Bro internal constructor(private val broContext: BroContext) {
         moduleRudder.onCreate()
     }
 
-    fun startActivityFrom(context: Context?): Builder {
-        return activityRudder.startActivity(context!!)
+    fun startActivityFrom(context: Context): Builder {
+        return activityRudder.startActivity(context)
     }
 
     fun <T : IBroApi> getApi(apiInterface: Class<T>): T? {
         return apiRudder.getApi(apiInterface)
     }
 
-    fun getApi(apiInterface: String?): IBroApi? {
-        return apiRudder.getApi(apiInterface!!)
+    fun getApi(apiInterface: String): IBroApi? {
+        return apiRudder.getApi(apiInterface)
     }
 
-    fun <T : IBroModule?> getModule(moduleClass: Class<T>?): T? {
-        return moduleRudder.getModule(moduleClass!!)
+    fun <T : IBroModule?> getModule(moduleClass: Class<T>): T? {
+        return moduleRudder.getModule(moduleClass)
     }
 
     companion object {
@@ -58,8 +58,10 @@ class Bro internal constructor(private val broContext: BroContext) {
         }
 
         @JvmStatic
-        fun get(): Bro? {
-            return bro
+        fun get(): Bro {
+            // We tend to use non-null return value for better usage experience,
+            // if the app didn't call initialize properly bro should throw NPE here.
+            return bro!!
         }
 
         @JvmStatic

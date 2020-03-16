@@ -1,6 +1,5 @@
 package me.xx2bab.bro.core.module
 
-import android.util.Log
 import me.xx2bab.bro.annotations.BroApi
 import me.xx2bab.bro.annotations.BroModule
 import me.xx2bab.bro.common.BroProperties
@@ -26,8 +25,8 @@ class ModuleRudder(private val broContext: BroContext) {
         val map = broContext.broRudder
                 .getImplementationByInterface(IBroAliasRoutingTable::class.java)
                 .getRoutingMapByAnnotation(BroModule::class.java)
-        for ((_, value) in map!!) {
-            val name = value!!.clazz
+        for ((_, value) in map) {
+            val name = value.clazz
             try {
                 val instance = Class.forName(name).newInstance() as IBroModule
                 val bean = ModuleEntity(name, instance, value)
@@ -38,7 +37,7 @@ class ModuleRudder(private val broContext: BroContext) {
                     val set = instance.getLaunchDependencies()
                     if (set != null) {
                         for (apiClazz in set) {
-                            dag.addPrerequisite(name, getAttachedModule(apiClazz.canonicalName))
+                            dag.addPrerequisite(name, getAttachedModule(apiClazz.canonicalName!!))
                         }
                     }
                 }
@@ -72,15 +71,15 @@ class ModuleRudder(private val broContext: BroContext) {
                 break
             }
         }
+        if (broModule == null) {
+            BroRuntimeLog.e("The Module Alias \"" + moduleName.canonicalName + "\" is not found by Bro!")
+            monitor.onModuleException(BroErrorType.MODULE_CANT_FIND_TARGET)
+            return null
+        }
         if (interceptor.beforeGetModule(broContext.context.get()!!,
                         moduleName.canonicalName!!,
                         broModule,
                         properties)) {
-            return null
-        }
-        if (broModule == null) {
-            BroRuntimeLog.e("The Module Alias \"" + moduleName.canonicalName + "\" is not found by Bro!")
-            monitor.onModuleException(BroErrorType.MODULE_CANT_FIND_TARGET)
             return null
         }
         return broModule as T
@@ -96,7 +95,7 @@ class ModuleRudder(private val broContext: BroContext) {
         val map = broContext.broRudder
                 .getImplementationByInterface(IBroAliasRoutingTable::class.java)
                 .getRoutingMapByAnnotation(BroApi::class.java)
-        if (map!!.containsKey(apiImplAlias)) {
+        if (map.containsKey(apiImplAlias)) {
             return map[apiImplAlias]!!.module
         }
         throw IllegalArgumentException("Couldn't find api's corresponding module.")

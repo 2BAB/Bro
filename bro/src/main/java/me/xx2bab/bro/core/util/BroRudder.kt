@@ -5,7 +5,9 @@ import me.xx2bab.bro.common.gen.GenOutputs.Companion.generateClassNameForImpleme
 import java.util.*
 
 class BroRudder {
-    private val implCache: MutableMap<Class<*>, Any>
+
+    private val implCache: MutableMap<Class<*>, Any> = HashMap()
+
     @Suppress("UNCHECKED_CAST")
     fun <T> getImplementationByInterface(interfaze: Class<T>): T {
         val cacheRes = implCache[interfaze]
@@ -21,7 +23,4 @@ class BroRudder {
         }
     }
 
-    init {
-        implCache = HashMap()
-    }
 }

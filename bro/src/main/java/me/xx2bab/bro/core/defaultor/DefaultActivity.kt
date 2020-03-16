@@ -10,6 +10,7 @@ import android.widget.TextView
 import me.xx2bab.bro.core.defaultor.ArgsParser.parseHintOfType
 
 class DefaultActivity : Activity() {
+
     override fun onCreate(savedInstanceState: Bundle) {
         super.onCreate(savedInstanceState)
         val hint = parseHintOfType(intent, this)
@@ -30,4 +31,5 @@ class DefaultActivity : Activity() {
         root.addView(notice, layoutParams)
         return root
     }
+
 }

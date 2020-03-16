@@ -24,6 +24,6 @@ interface IBroInterceptor {
 
     fun beforeGetModule(context: Context,
                         target: String,
-                        module: IBroModule?,
+                        module: IBroModule,
                         properties: BroProperties?): Boolean
 }

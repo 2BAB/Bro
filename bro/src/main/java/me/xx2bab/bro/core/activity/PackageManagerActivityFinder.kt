@@ -26,7 +26,7 @@ class PackageManagerActivityFinder : IBroActivityFinder {
         return null
     }
 
-    protected fun optimum(context: Context, list: List<ResolveInfo>?): ResolveInfo? {
+    private fun optimum(context: Context, list: List<ResolveInfo>?): ResolveInfo? {
         if (list == null) return null else if (list.size == 1) {
             return list[0]
         }
@@ -47,7 +47,7 @@ class PackageManagerActivityFinder : IBroActivityFinder {
             }
         }
         return if (resolveInfo.size > 0) {
-            if (resolveInfo.size > 1) Collections.sort(resolveInfo)
+            if (resolveInfo.size > 1) resolveInfo.sort()
             val ret = resolveInfo[0].info
             resolveInfo.clear()
             ret
@@ -57,7 +57,9 @@ class PackageManagerActivityFinder : IBroActivityFinder {
     /**
      * @author Oasis
      */
-    inner class SortedResolveInfo(val info: ResolveInfo, private val weight: Int, private val same: Int) : Comparable<SortedResolveInfo> {
+    inner class SortedResolveInfo(val info: ResolveInfo,
+                                  private val weight: Int,
+                                  private val same: Int) : Comparable<SortedResolveInfo> {
 
         override fun compareTo(other: SortedResolveInfo): Int {
             if (this == other) return 0

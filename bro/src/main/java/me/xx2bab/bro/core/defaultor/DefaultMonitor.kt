@@ -5,7 +5,7 @@ import me.xx2bab.bro.core.base.IBroMonitor
 import me.xx2bab.bro.core.util.BroRuntimeLog.e
 
 class DefaultMonitor : IBroMonitor {
-    override fun onActivityRudderException(errorCode: Int, builder: Builder?) {}
+    override fun onActivityRudderException(errorCode: Int, builder: Builder) {}
     override fun onModuleException(errorCode: Int) {
         e("onModuleException: $errorCode")
     }

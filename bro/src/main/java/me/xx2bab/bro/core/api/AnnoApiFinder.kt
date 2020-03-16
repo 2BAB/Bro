@@ -15,7 +15,7 @@ import java.util.*
 
 class AnnoApiFinder(private val broContext: BroContext) : IApiFinder {
 
-    private val aliasInstanceMap: MutableMap<String, IBroApi?> = HashMap()
+    private val aliasInstanceMap: MutableMap<String, IBroApi> = HashMap()
     private val interceptor: IBroInterceptor = broContext.interceptor
     private val monitor: IBroMonitor = broContext.monitor
 
@@ -38,7 +38,7 @@ class AnnoApiFinder(private val broContext: BroContext) : IApiFinder {
         val properties: BroProperties?
         val aliasPropertiesMap = broContext.broRudder
                 .getImplementationByInterface(IBroAliasRoutingTable::class.java)
-                .getRoutingMapByAnnotation(BroApi::class.java)!!
+                .getRoutingMapByAnnotation(BroApi::class.java)
         // If api cache was enabled, looking up from cache map first
         if (aliasInstanceMap.containsKey(alias)) {
             instance = aliasInstanceMap[alias]

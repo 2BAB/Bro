@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class DAG<T> {
     private val inDegree: MutableMap<T, AtomicInteger> = HashMap()
     private val outDegree: MutableMap<T, MutableList<T>> = HashMap()
+
     /**
      * Build Dependent Relationship.
      *

@@ -19,18 +19,22 @@ internal object ArgsParser {
     }
 
     private fun parseHintOfType(type: Int, context: Context): String {
-        val hint: String
-        hint = if (type == Constants.DEFAULT_PAGE_NOT_FOUND) {
-            context.resources.getString(R.string.default_page_not_found)
-        } else if (type == Constants.DEFAULT_PAGE_PERMISSION_DENIED) {
-            context.resources.getString(R.string.default_page_permission_denied)
-        } else if (type == Constants.DEFAULT_PAGE_NOT_NEW_INSTANCE_METHOD) {
-            context.resources.getString(R.string.default_page_not_new_instance_method)
-        } else if (type == Constants.DEFAULT_PAGE_UNKNOWN_ERROR) {
-            context.resources.getString(R.string.default_page_unknown_error)
-        } else {
-            context.resources.getString(R.string.default_page_not_found)
+        return when (type) {
+            Constants.DEFAULT_PAGE_NOT_FOUND -> {
+                context.resources.getString(R.string.default_page_not_found)
+            }
+            Constants.DEFAULT_PAGE_PERMISSION_DENIED -> {
+                context.resources.getString(R.string.default_page_permission_denied)
+            }
+            Constants.DEFAULT_PAGE_NOT_NEW_INSTANCE_METHOD -> {
+                context.resources.getString(R.string.default_page_not_new_instance_method)
+            }
+            Constants.DEFAULT_PAGE_UNKNOWN_ERROR -> {
+                context.resources.getString(R.string.default_page_unknown_error)
+            }
+            else -> {
+                context.resources.getString(R.string.default_page_not_found)
+            }
         }
-        return hint
     }
 }

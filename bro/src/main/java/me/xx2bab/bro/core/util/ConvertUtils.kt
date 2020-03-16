@@ -5,7 +5,7 @@ import android.os.Bundle
 import java.util.*
 
 object ConvertUtils {
-    fun convertHashMapToBundle(hashMap: HashMap<String?, String?>?, b : Bundle?): Bundle {
+    private fun convertHashMapToBundle(hashMap: HashMap<String?, String?>?, b : Bundle?): Bundle {
         var bundle = b
         if (bundle == null) {
             bundle = Bundle()

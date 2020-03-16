@@ -20,7 +20,7 @@ class DefaultInterceptor : IBroInterceptor {
         return false
     }
 
-    override fun beforeGetModule(context: Context, target: String, module: IBroModule?, properties: BroProperties?): Boolean {
+    override fun beforeGetModule(context: Context, target: String, module: IBroModule, properties: BroProperties?): Boolean {
         return false
     }
 }
