@@ -10,7 +10,7 @@ object BuildConfig {
         const val minSdkVersion = 15
         const val targetSdkVersion = 28
 
-        const val broDevVersion = "1.3.4"
+        const val broDevVersion = "1.3.5"
 
         val broSourceCompatibilityVersion = JavaVersion.VERSION_1_7
         val broTargetCompatibilityVersion = JavaVersion.VERSION_1_7
@@ -26,6 +26,8 @@ object BuildConfig {
         const val supportAnno = "com.android.support:support-annotations:28.0.0"
         const val markdownGenerator = "net.steppschuh.markdowngenerator:markdowngenerator:1.3.1.1"
         const val junit = "junit:junit:4.12"
+        const val mockito = "org.mockito:mockito-core:3.3.1"
+        const val mockitoInline = "org.mockito:mockito-inline:3.3.1"
     }
 
 }

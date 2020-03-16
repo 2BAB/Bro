@@ -3,7 +3,6 @@ package me.xx2bab.bro.sample;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;

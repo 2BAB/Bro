@@ -1,17 +1,22 @@
-import me.xx2bab.bro.build.BuildConfig
+import me.xx2bab.bro.build.BuildConfig.Deps
+import me.xx2bab.bro.build.BuildConfig.Versions
 
 plugins {
-    id("java-library")
+    id("kotlin")
 }
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
-    compileOnly(BuildConfig.Deps.androidRuntime)
-    compileOnly(BuildConfig.Deps.orgJson)
-    api(BuildConfig.Deps.supportAnno)
+    implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("reflect"))
+    compileOnly(Deps.androidRuntime)
+    compileOnly(Deps.orgJson)
+    api(Deps.supportAnno)
+    testImplementation(Deps.junit)
+    testImplementation(Deps.mockito)
 }
 
 java {
-    sourceCompatibility = BuildConfig.Versions.broSourceCompatibilityVersion
-    targetCompatibility = BuildConfig.Versions.broTargetCompatibilityVersion
+    sourceCompatibility = Versions.broSourceCompatibilityVersion
+    targetCompatibility = Versions.broTargetCompatibilityVersion
 }
