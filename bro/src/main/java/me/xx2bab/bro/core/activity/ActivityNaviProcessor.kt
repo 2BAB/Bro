@@ -9,7 +9,6 @@ import android.text.TextUtils
 import me.xx2bab.bro.annotations.BroActivity
 import me.xx2bab.bro.common.gen.anno.IBroAliasRoutingTable
 import me.xx2bab.bro.core.base.BroErrorType
-import me.xx2bab.bro.core.util.BroRuntimeLog
 import me.xx2bab.bro.core.util.BroRuntimeLog.e
 import me.xx2bab.bro.core.util.ConvertUtils.convertUriToStringWithoutParams
 
@@ -17,6 +16,7 @@ class ActivityNaviProcessor {
     private val builder: Builder
     private var isIntentValidate: Boolean
     private var isIntercepted: Boolean
+    private var intent: Intent? = null
 
     private fun findActivity(intent: Intent): Intent? {
         for (finder in builder.broContext.activityFinders) {
@@ -27,6 +27,10 @@ class ActivityNaviProcessor {
             }
         }
         return null
+    }
+
+    fun getIntent(): Intent? {
+        return intent
     }
 
     private fun injectParamsFromUri(originIntent: Intent, uri: Uri?) {
@@ -79,7 +83,7 @@ class ActivityNaviProcessor {
         } catch (e: Exception) {
             e(e.message)
         }
-        val intent = findActivity(originIntent)
+        intent = findActivity(originIntent)
         if (intent == null) {
             isIntentValidate = false
             monitor.onActivityRudderException(
@@ -87,18 +91,18 @@ class ActivityNaviProcessor {
             return
         }
         if (!TextUtils.isEmpty(builder.category)) {
-            intent.addCategory(builder.category)
+            intent!!.addCategory(builder.category)
         }
         if (builder.extras != null) {
-            intent.putExtras(builder.extras!!)
+            intent!!.putExtras(builder.extras!!)
         }
         if (builder.flags != Builder.INVALIDATE) {
-            intent.addFlags(builder.flags)
+            intent!!.addFlags(builder.flags)
         }
-        injectParamsFromUri(intent, builder.uri)
+        injectParamsFromUri(intent!!, builder.uri)
         try {
             if (interceptor.beforeStartActivity(builder.context,
-                            builder.uri.toString(), intent, properties)) {
+                            builder.uri.toString(), intent!!, properties)) {
                 isIntercepted = true
                 return
             }
@@ -121,8 +125,9 @@ class ActivityNaviProcessor {
                 (builder.context as Activity).overridePendingTransition(enter, exit)
             }
         } else {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             builder.context.startActivity(intent)
         }
     }
+
 }
