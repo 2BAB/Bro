@@ -1,4 +1,6 @@
-# Bro
+<img src="./case-banner.png" alt="Seal" width="378px">
+
+(v1 version will be deprecated by the end of this year, only major bug will get fixed. Please check dev_v2 branch which renamed project to "Case" for migration and new features.)
 
 **English** | [中文](https://github.com/2BAB/Bro/blob/master/README_zh-cn.md)
 

@@ -1,4 +1,6 @@
-# Bro
+<img src="./case-banner.png" alt="Seal" width="378px">
+
+(v1 版本的支持将会在今年年底结束，只有明显的 bug 会得到修复支持。请关注 dev_v2 分支的新功能和迁移，另外项目名将改成 "Case"。)
 
 中文 | [English](https://github.com/2BAB/Bro/blob/master/README.md)
 
